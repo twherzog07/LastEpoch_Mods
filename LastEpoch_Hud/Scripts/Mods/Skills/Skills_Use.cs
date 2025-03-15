@@ -20,6 +20,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
 
         public class Ability_Mutator
         {
+            public static bool initialized = false;
             private static System.Collections.Generic.List<AbilityMutator> ability_mutators = null;
             public static void Init()
             {
@@ -31,6 +32,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             }
             public static AbilityMutator GetMutatorFromAbility(Ability ability)
             {
+                if (!initialized) { Init(); }
                 AbilityMutator mutator = new AbilityMutator();
                 bool found = false;
                 foreach (AbilityMutator obj in ability_mutators)
@@ -45,9 +47,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                 if ((!found) && (ability.abilityName != "Attack"))
                 {
                     Main.logger_instance.Msg("Ability Mutator Not Found for this Ability : " + ability.abilityName);
+                    return null;
                 }
-
-                return mutator;
+                else { return mutator; }
             }
         }
         private static Ability using_ability = null;
@@ -64,7 +66,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         if (__1 != null)
                         {
                             using_ability = __1;
-
                             //Main.logger_instance.Msg("OnStartedUsingAbility : Ability = " + __1.abilityName);
 
                             if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost) { __1.channelCost = 0f; }
@@ -97,11 +98,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             }
 
                             //Get Mutator
-                            try
+                            AbilityMutator ability_mutator = Ability_Mutator.GetMutatorFromAbility(__1);
+                            if (!ability_mutator.IsNullOrDestroyed())
                             {
-                                AbilityMutator ability_mutator = Ability_Mutator.GetMutatorFromAbility(__1); System.Type type = ability_mutator.GetType();
                                 Il2CppSystem.Type il2cpp_type = ability_mutator.GetIl2CppType();
-
                                 //Main.logger_instance.Msg("OnStartedUsingAbility Prefix : Mutator Type = " + il2cpp_type.ToString());
 
                                 //Use Switch(il2cpp_type.ToString()) instead of if for better result (== is bad)
@@ -394,12 +394,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                                     }
                                 }
                             }
-                            catch { }
+                            else { Main.logger_instance.Error("OnStartedUsingAbility Prefix : Mutator is null"); }
                         }
-                        else { Main.logger_instance.Msg("Ability is null"); }
+                        else { Main.logger_instance.Error("OnStartedUsingAbility Prefix : Ability is null"); }
                     }
                 }
-                catch { }
+                catch { Main.logger_instance.Error("Error OnStartedUsingAbility Prefix"); }
             }
 
             [HarmonyPostfix]
@@ -417,9 +417,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
 
                             if (Save_Manager.instance.data.Skills.Enable_RemoveCooldown) { ability_mutator.RemoveCooldown(); }
                         }
+                        else { Main.logger_instance.Error("OnStartedUsingAbility Postfix : Ability is null"); }
                     }
                 }
-                catch { }
+                catch { Main.logger_instance.Error("Error OnStartedUsingAbility Postfix"); }
             }
         }
 
@@ -433,7 +434,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                 {
                     try
                     {
-                        System.Type type = __1.GetType();
                         Il2CppSystem.Type il2cpp_type = __1.GetIl2CppType();
                         //Main.logger_instance.Msg("OnAbilityUse Prefix : Mutator Type = " + il2cpp_type.ToString());
 
