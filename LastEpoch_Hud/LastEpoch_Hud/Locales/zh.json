@@ -212,5 +212,18 @@
   "Decay": "衰减",
   "Radius": "半径",
   "Disable Summon Limit": "禁用召唤上限",
-  "Disable Health Drain": "禁用生命汲取"
+  "Disable Health Drain": "禁用生命汲取",
+  "Implicits": "Implicits",
+  "Random": "Random",
+  "Forgin": "Forgin",
+  "Value": "Value",
+  "Seal": "Seal",
+  "Select": "Select",
+  "Tier": "Tier",
+  "Affixs": "Affixs",
+  "Nb": "Nb",
+  "Select Affix": "Select Affix",
+  "Weaver": "Weaver",
+  "Shards": "Shards",
+  "Title": "Title"
 }

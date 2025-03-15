@@ -201,5 +201,18 @@
   "Decay": "Decay",
   "Radius": "Radius",
   "Disable Summon Limit": "Disable Summon Limit",
-  "Disable Health Drain": "Disable Health Drain"
+  "Disable Health Drain": "Disable Health Drain",
+  "Implicits": "Implicits",
+  "Random": "Random",
+  "Forgin": "Forgin",
+  "Value": "Value",
+  "Seal": "Seal",
+  "Select": "Select",
+  "Tier": "Tier",
+  "Affixs": "Affixs",
+  "Nb": "Nb",
+  "Select Affix": "Select Affix",
+  "Weaver": "Weaver",
+  "Shards": "Shards",
+  "Title": "Title"
 }
