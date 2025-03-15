@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Il2Cpp;
-using System.Reflection.Emit;
 using System.Linq;
+using Il2CppSystem.Collections.Generic;
 
 namespace LastEpoch_Hud.Scripts
 {
@@ -95,8 +95,33 @@ namespace LastEpoch_Hud.Scripts
                     Object.DontDestroyOnLoad(hud_object);
                     Init_Hud_Refs();
                 }
-                else { Main.logger_instance.Error("Hud Manager : Prefab not found"); }
+                else { Main.logger_instance.Error("Hud Manager : Hud Prefab not found"); }
             }
+
+            //Shard prefab
+            asset_name = "";
+            foreach (string name in asset_bundle.GetAllAssetNames())
+            {
+                if ((Functions.Check_Prefab(name)) && (name.Contains("/hud/")) && (name.Contains("mod_shard.prefab")))
+                {
+                    asset_name = name;
+                    break;
+                }
+            }
+            if (asset_name != "")
+            {
+                GameObject shard_prefab = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();
+                if (!shard_prefab.IsNullOrDestroyed())
+                {
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Instantiate shard prefab"); }
+                    Content.OdlForceDrop.shard_prefab = Object.Instantiate(shard_prefab, Vector3.zero, Quaternion.identity);
+                    Object.DontDestroyOnLoad(Content.OdlForceDrop.shard_prefab);
+                }
+                else { Main.logger_instance.Error("Hud Manager : Shard Prefab not found"); }
+            }
+            else { Main.logger_instance.Error("Hud Manager : Shard Prefab name not found"); }
+
+
             hud_initializing = false;
         }
         void Init_Hud_Refs()
@@ -120,7 +145,11 @@ namespace LastEpoch_Hud.Scripts
             Content.Skills.Get_Refs();
             Content.Skills.Set_Active(false);
 
-            //Content.Headhunter.Get_Refs();
+            Content.OdlForceDrop.Get_Refs();
+            Content.OdlForceDrop.Set_Events();
+            Content.OdlForceDrop.Set_Active(false);
+
+            Content.Headhunter.Get_Refs();
             Content.Headhunter.Set_Active(false);
         }
         void Init_UserData()
@@ -160,7 +189,7 @@ namespace LastEpoch_Hud.Scripts
             {
                 if (hud_canvas.scaleFactor != game_canvas.scaleFactor) { hud_canvas.scaleFactor = game_canvas.scaleFactor; }
             }
-        } 
+        }
         void Update_Locale()
         {
             if (Locales.update)
@@ -268,8 +297,110 @@ namespace LastEpoch_Hud.Scripts
             }            
             if ((Content.Scenes.enable) && (Content.Scenes.controls_initialized)) { Content.Scenes.UpdateVisuals(); }
             if ((Content.Skills.enable) && (Content.Skills.controls_initialized)) { Content.Skills.UpdateVisuals(); }
+            if ((Content.OdlForceDrop.enable) && (Content.OdlForceDrop.initialized))
+            {
+                if (!Content.OdlForceDrop.Type_Initialized) { Content.OdlForceDrop.InitForcedrop(); }
+                else
+                {
+                    Content.OdlForceDrop.implicits.active = Content.OdlForceDrop.implicits_enable;
+                    Content.OdlForceDrop.implicits_border.active = Content.OdlForceDrop.implicits_enable;
+                    if (!Content.OdlForceDrop.implicits_enable) { Content.OdlForceDrop.implicits_roll = false; }                    
+                    Content.OdlForceDrop.implicit_0.active = Content.OdlForceDrop.implicits_roll;
+                    Content.OdlForceDrop.implicit_1.active = Content.OdlForceDrop.implicits_roll;
+                    Content.OdlForceDrop.implicit_2.active = Content.OdlForceDrop.implicits_roll;
+
+                    Content.OdlForceDrop.forgin_potencial.active = Content.OdlForceDrop.forgin_potencial_enable;
+                    Content.OdlForceDrop.forgin_potencial_border.active = Content.OdlForceDrop.forgin_potencial_enable;
+                    if (!Content.OdlForceDrop.forgin_potencial_enable) { Content.OdlForceDrop.forgin_potencial_roll = false; }
+                    Content.OdlForceDrop.forgin_potencial_value.active = Content.OdlForceDrop.forgin_potencial_roll;
+
+                    Content.OdlForceDrop.seal.active = Content.OdlForceDrop.seal_enable;
+                    Content.OdlForceDrop.seal_border.active = Content.OdlForceDrop.seal_enable;
+                    if (!Content.OdlForceDrop.seal_enable) { Content.OdlForceDrop.seal_roll = false; }
+                    Content.OdlForceDrop.seal_shard.active = Content.OdlForceDrop.seal_roll;
+                    Content.OdlForceDrop.seal_tier.active = Content.OdlForceDrop.seal_roll;
+                    Content.OdlForceDrop.seal_value.active = Content.OdlForceDrop.seal_roll;
+                    if (Content.OdlForceDrop.seal_roll)
+                    {
+                        if (Content.OdlForceDrop.seal_id == -1) { Content.OdlForceDrop.seal_name = Content.OdlForceDrop.select_affix; }
+                        //Content.OdlForceDrop.seal_select_btn.GetComponent<Text>().text = Content.OdlForceDrop.seal_name;
+                    }
+
+                    Content.OdlForceDrop.affixs.active = Content.OdlForceDrop.affixs_enable;
+                    Content.OdlForceDrop.affixs_border.active = Content.OdlForceDrop.affixs_enable;
+                    if (!Content.OdlForceDrop.affixs_enable) { Content.OdlForceDrop.affixs_roll = false; }
+                    Content.OdlForceDrop.affixs_numbers.active = Content.OdlForceDrop.affixs_roll;
+                    if (Content.OdlForceDrop.affixs_roll)
+                    {
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 0) { Content.OdlForceDrop.affix_0.active = true; }
+                        else { Content.OdlForceDrop.affix_0.active = false; }
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 1) { Content.OdlForceDrop.affix_1.active = true; }
+                        else { Content.OdlForceDrop.affix_1.active = false; }
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 2) { Content.OdlForceDrop.affix_2.active = true; }
+                        else { Content.OdlForceDrop.affix_2.active = false; }
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 3) { Content.OdlForceDrop.affix_3.active = true; }
+                        else { Content.OdlForceDrop.affix_3.active = false; }
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 4) { Content.OdlForceDrop.affix_4.active = true; }
+                        else { Content.OdlForceDrop.affix_4.active = false; }
+                        if (Content.OdlForceDrop.affixs_numbers_slider.value > 5) { Content.OdlForceDrop.affix_5.active = true; }
+                        else { Content.OdlForceDrop.affix_5.active = false; }
+
+                        if (Content.OdlForceDrop.affix_0_id == -1) { Content.OdlForceDrop.affix_0_name = Content.OdlForceDrop.select_affix; }
+                        if (Content.OdlForceDrop.affix_1_id == -1) { Content.OdlForceDrop.affix_1_name = Content.OdlForceDrop.select_affix; }
+                        if (Content.OdlForceDrop.affix_2_id == -1) { Content.OdlForceDrop.affix_2_name = Content.OdlForceDrop.select_affix; }
+                        if (Content.OdlForceDrop.affix_3_id == -1) { Content.OdlForceDrop.affix_3_name = Content.OdlForceDrop.select_affix; }
+                        if (Content.OdlForceDrop.affix_4_id == -1) { Content.OdlForceDrop.affix_4_name = Content.OdlForceDrop.select_affix; }
+                        if (Content.OdlForceDrop.affix_5_id == -1) { Content.OdlForceDrop.affix_5_name = Content.OdlForceDrop.select_affix; }
+
+                        /*Content.OdlForceDrop.affix_0_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_0_name;
+                        Content.OdlForceDrop.affix_1_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_1_name;
+                        Content.OdlForceDrop.affix_2_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_2_name;
+                        Content.OdlForceDrop.affix_3_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_3_name;
+                        Content.OdlForceDrop.affix_4_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_4_name;
+                        Content.OdlForceDrop.affix_5_button.GetComponent<Text>().text = Content.OdlForceDrop.affix_5_name;*/
+                    }
+                    else
+                    {
+                        Content.OdlForceDrop.affix_0.active = false;
+                        Content.OdlForceDrop.affix_1.active = false;
+                        Content.OdlForceDrop.affix_2.active = false;
+                        Content.OdlForceDrop.affix_3.active = false;
+                        Content.OdlForceDrop.affix_4.active = false;
+                        Content.OdlForceDrop.affix_5.active = false;
+                    }
+                    
+                    Content.OdlForceDrop.unique_mods.active = Content.OdlForceDrop.unique_mods_enable;
+                    Content.OdlForceDrop.unique_mods_border.active = Content.OdlForceDrop.unique_mods_enable;
+                    if (!Content.OdlForceDrop.unique_mods_enable) { Content.OdlForceDrop.unique_mods_roll = false; }
+                    Content.OdlForceDrop.unique_mod_0.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_1.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_2.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_3.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_4.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_5.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_6.active = Content.OdlForceDrop.unique_mods_roll;
+                    Content.OdlForceDrop.unique_mod_7.active = Content.OdlForceDrop.unique_mods_roll;
+
+                    Content.OdlForceDrop.legenday_potencial.active = Content.OdlForceDrop.legenday_potencial_enable;
+                    Content.OdlForceDrop.legenday_potencial_border.active = Content.OdlForceDrop.legenday_potencial_enable;
+                    if (!Content.OdlForceDrop.legenday_potencial_enable) { Content.OdlForceDrop.legenday_potencial_roll = false; }
+                    Content.OdlForceDrop.legenday_potencial_value.active = Content.OdlForceDrop.legenday_potencial_roll;
+
+                    Content.OdlForceDrop.weaver_will.active = Content.OdlForceDrop.weaver_will_enable;
+                    Content.OdlForceDrop.weaver_will_border.active = Content.OdlForceDrop.weaver_will_enable;
+                    if (!Content.OdlForceDrop.weaver_will_enable) { Content.OdlForceDrop.weaver_will_roll = false; }
+                    Content.OdlForceDrop.weaver_will_value.active = Content.OdlForceDrop.weaver_will_roll;
+
+                    Content.OdlForceDrop.quantity.active = Content.OdlForceDrop.quantity_enable;
+                    Content.OdlForceDrop.quantity_border.active = Content.OdlForceDrop.quantity_enable;
+
+                    //Content size
+                    RectTransform rt = Content.OdlForceDrop.left_base_content.GetComponent<RectTransform>();
+                    if (!rt.IsNullOrDestroyed()) { rt.sizeDelta = new Vector2(0f, Content.OdlForceDrop.GetContentSize()); }
+                }
+            }
         }
-        bool IsPauseOpen()
+        public static bool IsPauseOpen()
         {
             if (!game_pause_menu.IsNullOrDestroyed()) { return game_pause_menu.active; }
             else { return false; }
@@ -962,6 +1093,11 @@ namespace LastEpoch_Hud.Scripts
                 btn.onClick = new Button.ButtonClickedEvent();
                 btn.onClick.AddListener(action);
             }
+            public static void Set_Slider_Event(Slider slider, UnityEngine.Events.UnityAction<float> action)
+            {
+                slider.onValueChanged = new Slider.SliderEvent();
+                slider.onValueChanged.AddListener(action);
+            }
             public static void Set_Toggle_Event(Toggle toggle, UnityEngine.Events.UnityAction<bool> action)
             {
                 toggle.onValueChanged = new Toggle.ToggleEvent();
@@ -1109,6 +1245,7 @@ namespace LastEpoch_Hud.Scripts
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Items", Items_OnClick_Action);
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Scenes", Scenes_OnClick_Action);
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_TreeSkills", Skills_OnClick_Action);
+                Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_ForceDrop", OldForceDrop_OnClick_Action);
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Headhunter", Headhunter_OnClick_Action);
             }
             
@@ -1118,6 +1255,7 @@ namespace LastEpoch_Hud.Scripts
                 Content.Items.Set_Active(false);
                 Content.Scenes.Set_Active(false);
                 Content.Skills.Set_Active(false);
+                Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Set_Active(false);
                 Content.Character.Toggle_Active();          
             }
@@ -1128,6 +1266,7 @@ namespace LastEpoch_Hud.Scripts
                 Content.Character.Set_Active(false);
                 Content.Scenes.Set_Active(false);
                 Content.Skills.Set_Active(false);
+                Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Set_Active(false);
                 Content.Items.Toggle_Active();
             }
@@ -1138,6 +1277,7 @@ namespace LastEpoch_Hud.Scripts
                 Content.Character.Set_Active(false);
                 Content.Items.Set_Active(false);
                 Content.Skills.Set_Active(false);
+                Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Set_Active(false);
                 Content.Scenes.Toggle_Active();
             }
@@ -1147,9 +1287,21 @@ namespace LastEpoch_Hud.Scripts
             {
                 Content.Character.Set_Active(false);
                 Content.Items.Set_Active(false);
-                Content.Scenes.Set_Active(false);             
+                Content.Scenes.Set_Active(false);
+                Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Set_Active(false);
                 Content.Skills.Toggle_Active();
+            }
+
+            private static readonly System.Action OldForceDrop_OnClick_Action = new System.Action(OldForceDrop_Click);
+            public static void OldForceDrop_Click()
+            {
+                Content.Character.Set_Active(false);
+                Content.Items.Set_Active(false);
+                Content.Scenes.Set_Active(false);
+                Content.Skills.Set_Active(false);
+                Content.Headhunter.Set_Active(false);
+                Content.OdlForceDrop.Toggle_Active();
             }
 
             private static readonly System.Action Headhunter_OnClick_Action = new System.Action(Headhunter_Click);
@@ -1158,7 +1310,8 @@ namespace LastEpoch_Hud.Scripts
                 Content.Character.Set_Active(false);
                 Content.Items.Set_Active(false);
                 Content.Scenes.Set_Active(false);
-                Content.Skills.Set_Active(false);                
+                Content.Skills.Set_Active(false);
+                Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Toggle_Active();
             }
         }                
@@ -1170,8 +1323,8 @@ namespace LastEpoch_Hud.Scripts
                 if (!content_obj.IsNullOrDestroyed())
                 {
                     bool show = false;
-                    if ((Character.enable) || (Items.enable) || (Scenes.enable) || (Skills.enable))
-                    { show = true; }
+                    if ((Character.enable) || (Items.enable) || (Scenes.enable) || (Skills.enable) ||
+                        (OdlForceDrop.enable) || (Headhunter.enable)) { show = true; }
                     if (content_obj.active != show) { content_obj.active = show; }
                 }
             }
@@ -3682,6 +3835,1378 @@ namespace LastEpoch_Hud.Scripts
                     public static Toggle enable_dreadShades_health_drain_toggle = null;
                 }
             }
+            public class OdlForceDrop
+            {
+                public static bool initialized = false;
+                public static bool enable = false;
+
+                public static GameObject content_obj = null;
+                public static GameObject left_base_content = null;
+                public static GameObject center_content = null;
+                //public static GameObject right_content = null;
+
+                //Type
+                public static int type_size = 24;
+                public static Dropdown type_dropdown = null;
+                public static int item_type = -1;
+                public static bool Type_Initialized = false;
+                public static bool Initializing_type = false;
+
+                //Rarity
+                public static int rarity_size = 24;
+                public static Dropdown rarity_dropdown = null;
+                public static int item_rarity = -1;
+
+                //Items
+                public static int items_size = 24;
+                public static Dropdown items_dropdown = null;
+                public static int item_subtype = -1;
+                public static int item_unique_id = -1;
+
+                //Implicits
+                public static bool implicits_enable = false;
+                public static int implicits_size = 24;
+                public static bool implicits_roll = false;
+                public static int implicits_roll_size = 44;
+                public static GameObject implicits = null;
+                public static GameObject implicits_border = null;
+                public static Dropdown implicits_dropdown = null;
+
+                public static GameObject implicit_0 = null;
+                public static Text implicit_0_Text = null;
+                public static Slider implicit_0_slider = null;
+                public static readonly System.Action<float> implicit_0_Action = new System.Action<float>(SetImplicit_0);
+
+                public static GameObject implicit_1 = null;
+                public static Text implicit_1_Text = null;
+                public static Slider implicit_1_slider = null;
+                public static readonly System.Action<float> implicit_1_Action = new System.Action<float>(SetImplicit_1);
+
+                public static GameObject implicit_2 = null;
+                public static Text implicit_2_Text = null;
+                public static Slider implicit_2_slider = null;
+                public static readonly System.Action<float> implicit_2_Action = new System.Action<float>(SetImplicit_2);
+
+                //Forgin potencial
+                public static bool forgin_potencial_enable = false;
+                public static int forgin_potencial_size = 24;
+                public static bool forgin_potencial_roll = false;
+                public static int forgin_potencial_roll_size = 42;
+                public static GameObject forgin_potencial = null;
+                public static GameObject forgin_potencial_border = null;
+                public static Dropdown forgin_potencial_dropdown = null;
+
+                public static GameObject forgin_potencial_value = null;
+                public static Text forgin_potencial_text = null;
+                public static Slider forgin_potencial_slider = null;
+                public static readonly System.Action<float> forgin_potencial_Action = new System.Action<float>(SetForginPotencial);
+
+                public static string select_affix = "Select Affix";
+
+                //Seal
+                public static bool seal_enable = false;
+                public static int seal_id = -1;
+                public static string seal_name = "";
+                public static int seal_size = 24;
+                public static bool seal_roll = false;
+                public static int seal_roll_size = 106;
+                public static GameObject seal = null;
+                public static GameObject seal_border = null;
+                public static Dropdown seal_dropdown = null;
+
+                public static GameObject seal_shard = null;
+                public static Button seal_select_btn = null;
+                public static readonly System.Action Seal_OnClick_Action = new System.Action(SelectSeal);
+
+                public static GameObject seal_tier = null;
+                public static Text seal_tier_text = null;
+                public static Slider seal_tier_slider = null;
+                public static readonly System.Action<float> seal_tier_Action = new System.Action<float>(SetSealTier);
+
+                public static GameObject seal_value = null;
+                public static Text seal_value_text = null;
+                public static Slider seal_value_slider = null;
+                public static readonly System.Action<float> seal_value_Action = new System.Action<float>(SetSealValue);
+
+                //Affix
+                public static bool affixs_enable = false;
+                public static int affixs_size = 24;
+                public static bool affixs_roll = false;
+                public static int affixs_numbers_size = 42;
+                public static int affixs_roll_size = 124;
+                public static GameObject affixs = null;
+                public static GameObject affixs_border = null;
+                public static Dropdown affixs_dropdown = null;
+
+                public static GameObject affixs_numbers = null;
+                public static Text affixs_numbers_text = null;
+                public static Slider affixs_numbers_slider = null;
+
+                public static bool affix_0_enable = false;
+                public static int affix_0_id = -1;
+                public static string affix_0_name = "";
+                public static GameObject affix_0 = null;
+                public static Button affix_0_button = null;
+                public static readonly System.Action affix_0_OnClick_Action = new System.Action(SelectAffix_0);
+                public static Text affix_0_tier_text = null;
+                public static Slider affix_0_tier_slider = null;
+                public static readonly System.Action<float> affix_0_tier_Action = new System.Action<float>(SetAffix_0_Tier);
+                public static Text affix_0_value_text = null;
+                public static Slider affix_0_value_slider = null;
+                public static readonly System.Action<float> affix_0_value_Action = new System.Action<float>(SetAffix_0_Value);
+
+                public static bool affix_1_enable = false;
+                public static int affix_1_id = -1;
+                public static string affix_1_name = "";
+                public static GameObject affix_1 = null;
+                public static Button affix_1_button = null;
+                public static readonly System.Action affix_1_OnClick_Action = new System.Action(SelectAffix_1);
+                public static Text affix_1_tier_text = null;
+                public static Slider affix_1_tier_slider = null;
+                public static readonly System.Action<float> affix_1_tier_Action = new System.Action<float>(SetAffix_1_Tier);
+                public static Text affix_1_value_text = null;
+                public static Slider affix_1_value_slider = null;
+                public static readonly System.Action<float> affix_1_value_Action = new System.Action<float>(SetAffix_1_Value);
+
+                public static bool affix_2_enable = false;
+                public static int affix_2_id = -1;
+                public static string affix_2_name = "";
+                public static GameObject affix_2 = null;
+                public static Button affix_2_button = null;
+                public static readonly System.Action affix_2_OnClick_Action = new System.Action(SelectAffix_2);
+                public static Text affix_2_tier_text = null;
+                public static Slider affix_2_tier_slider = null;
+                public static readonly System.Action<float> affix_2_tier_Action = new System.Action<float>(SetAffix_2_Tier);
+                public static Text affix_2_value_text = null;
+                public static Slider affix_2_value_slider = null;
+                public static readonly System.Action<float> affix_2_value_Action = new System.Action<float>(SetAffix_2_Value);
+
+                public static bool affix_3_enable = false;
+                public static int affix_3_id = -1;
+                public static string affix_3_name = "";
+                public static GameObject affix_3 = null;
+                public static Button affix_3_button = null;
+                public static readonly System.Action affix_3_OnClick_Action = new System.Action(SelectAffix_3);
+                public static Text affix_3_tier_text = null;
+                public static Slider affix_3_tier_slider = null;
+                public static readonly System.Action<float> affix_3_tier_Action = new System.Action<float>(SetAffix_3_Tier);
+                public static Text affix_3_value_text = null;
+                public static Slider affix_3_value_slider = null;
+                public static readonly System.Action<float> affix_3_value_Action = new System.Action<float>(SetAffix_3_Value);
+
+                public static bool affix_4_enable = false;
+                public static int affix_4_id = -1;
+                public static string affix_4_name = "";
+                public static GameObject affix_4 = null;
+                public static Button affix_4_button = null;
+                public static readonly System.Action affix_4_OnClick_Action = new System.Action(SelectAffix_4);
+                public static Text affix_4_tier_text = null;
+                public static Slider affix_4_tier_slider = null;
+                public static readonly System.Action<float> affix_4_tier_Action = new System.Action<float>(SetAffix_4_Tier);
+                public static Text affix_4_value_text = null;
+                public static Slider affix_4_value_slider = null;
+                public static readonly System.Action<float> affix_4_value_Action = new System.Action<float>(SetAffix_4_Value);
+
+                public static bool affix_5_enable = false;
+                public static int affix_5_id = -1;
+                public static string affix_5_name = "";
+                public static GameObject affix_5 = null;
+                public static Button affix_5_button = null;
+                public static readonly System.Action affix_5_OnClick_Action = new System.Action(SelectAffix_5);
+                public static Text affix_5_tier_text = null;
+                public static Slider affix_5_tier_slider = null;
+                public static readonly System.Action<float> affix_5_tier_Action = new System.Action<float>(SetAffix_5_Tier);
+                public static Text affix_5_value_text = null;
+                public static Slider affix_5_value_slider = null;
+                public static readonly System.Action<float> affix_5_value_Action = new System.Action<float>(SetAffix_5_Value);
+
+                //Unique mods
+                public static bool unique_mods_enable = false;
+                public static int unique_mods_size = 24;
+                public static bool unique_mods_roll = false;
+                public static int unique_mods_roll_size = 106;
+                public static GameObject unique_mods = null;
+                public static GameObject unique_mods_border = null;
+                public static Dropdown unique_mods_dropdown = null;
+
+                public static GameObject unique_mod_0 = null;
+                public static Text unique_mod_0_Text = null;
+                public static Slider unique_mod_0_slider = null;
+                public static readonly System.Action<float> unique_mod_0_Action = new System.Action<float>(SetUniqueMod_0);
+
+                public static GameObject unique_mod_1 = null;
+                public static Text unique_mod_1_Text = null;
+                public static Slider unique_mod_1_slider = null;
+                public static readonly System.Action<float> unique_mod_1_Action = new System.Action<float>(SetUniqueMod_1);
+
+                public static GameObject unique_mod_2 = null;
+                public static Text unique_mod_2_Text = null;
+                public static Slider unique_mod_2_slider = null;
+                public static readonly System.Action<float> unique_mod_2_Action = new System.Action<float>(SetUniqueMod_2);
+
+                public static GameObject unique_mod_3 = null;
+                public static Text unique_mod_3_Text = null;
+                public static Slider unique_mod_3_slider = null;
+                public static readonly System.Action<float> unique_mod_3_Action = new System.Action<float>(SetUniqueMod_3);
+
+                public static GameObject unique_mod_4 = null;
+                public static Text unique_mod_4_Text = null;
+                public static Slider unique_mod_4_slider = null;
+                public static readonly System.Action<float> unique_mod_4_Action = new System.Action<float>(SetUniqueMod_4);
+
+                public static GameObject unique_mod_5 = null;
+                public static Text unique_mod_5_Text = null;
+                public static Slider unique_mod_5_slider = null;
+                public static readonly System.Action<float> unique_mod_5_Action = new System.Action<float>(SetUniqueMod_5);
+
+                public static GameObject unique_mod_6 = null;
+                public static Text unique_mod_6_Text = null;
+                public static Slider unique_mod_6_slider = null;
+                public static readonly System.Action<float> unique_mod_6_Action = new System.Action<float>(SetUniqueMod_6);
+
+                public static GameObject unique_mod_7 = null;
+                public static Text unique_mod_7_Text = null;
+                public static Slider unique_mod_7_slider = null;
+                public static readonly System.Action<float> unique_mod_7_Action = new System.Action<float>(SetUniqueMod_7);
+                                
+                public static UniqueList.LegendaryType item_legendary_type = UniqueList.LegendaryType.LegendaryPotential;
+
+                public static bool legenday_potencial_enable = false;
+                public static int legenday_potencial_size = 24;
+                public static bool legenday_potencial_roll = false;
+                public static int legenday_potencial_roll_size = 24;
+                public static GameObject legenday_potencial = null;
+                public static GameObject legenday_potencial_border = null;
+                public static Dropdown legenday_potencial_dropdown = null;
+                public static GameObject legenday_potencial_value = null;
+                public static Text legenday_potencial_Text = null;
+                public static Slider legenday_potencial_slider = null;
+                public static readonly System.Action<float> legenday_potencial_Action = new System.Action<float>(SetLegendayPotencial);
+
+                public static bool weaver_will_enable = false;
+                public static int weaver_will_size = 24;
+                public static bool weaver_will_roll = false;
+                public static int weaver_will_roll_size = 24;
+                public static GameObject weaver_will = null;
+                public static GameObject weaver_will_border = null;
+                public static Dropdown weaver_will_dropdown = null;
+                public static GameObject weaver_will_value = null;
+                public static Text weaver_will_Text = null;
+                public static Slider weaver_will_slider = null;
+                public static readonly System.Action<float> weaver_will_Action = new System.Action<float>(SetWeaverWill);
+
+                public static bool quantity_enable = false;
+                public static int quantity_size = 44;
+                public static GameObject quantity = null;
+                public static GameObject quantity_border = null;
+                public static Text quantity_text = null;
+                public static Slider forcedrop_quantity_slider = null;
+
+                public static Button forcedrop_drop_button = null;
+                public static bool btn_enable = false;
+                public static readonly System.Action Drop_OnClick_Action = new System.Action(Drop);
+
+                //Shards View
+                public static GameObject shard_prefab = null;
+                public static bool shard_initialized = false;
+                public static bool shard_seal = false;
+                public static int shard_number = -1;
+                public static int shard_id = -1;
+                private static readonly System.Action<int> shard_OnClick_Action = new System.Action<int>(SelectShard);
+
+                public static void Get_Refs()
+                {
+                    bool error = false;
+                    content_obj = Functions.GetChild(Content.content_obj, "Old_ForceDrop_Content");
+                    if (!content_obj.IsNullOrDestroyed())
+                    {
+                        left_base_content = Functions.GetViewportContent(content_obj, "Left", "Item");
+                        if (!left_base_content.IsNullOrDestroyed())
+                        {
+                            type_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Type", "Dropdown_Items_ForceDrop_Type", new System.Action<int>((_) => { SelectType(); }));
+                            if (type_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error type_dropdown not found"); }
+
+                            rarity_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Rarity", "Dropdown_Items_ForceDrop_Rarity", new System.Action<int>((_) => { SelectRarity(); }));
+                            if (rarity_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error rarity_dropdown not found"); }
+
+                            items_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Item", "Dropdown_Items_ForceDrop_Item", new System.Action<int>((_) => { SelectItem(); }));
+                            if (items_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error items_dropdown not found"); }
+
+                            implicits = Functions.GetChild(left_base_content, "EnableImplicits");
+                            implicits_border = Functions.GetChild(left_base_content, "ImplicitsBorder");
+                            implicits_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableImplicits", "Dropdown", new System.Action<int>((_) => { EnableImplicits(); }));
+                            if (implicits_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error implicits_dropdown not found"); }
+
+                            implicit_0 = Functions.GetChild(left_base_content, "Implicit_0");
+                            implicit_0_Text = Functions.Get_TextInPanel(left_base_content, "Implicit_0", "Value");
+                            implicit_0_slider = Functions.Get_SliderInPanel(left_base_content, "Implicit_0", "Slider");
+
+                            implicit_1 = Functions.GetChild(left_base_content, "Implicit_1");
+                            implicit_1_Text = Functions.Get_TextInPanel(left_base_content, "Implicit_1", "Value");
+                            implicit_1_slider = Functions.Get_SliderInPanel(left_base_content, "Implicit_1", "Slider");
+
+                            implicit_2 = Functions.GetChild(left_base_content, "Implicit_2");
+                            implicit_2_Text = Functions.Get_TextInPanel(left_base_content, "Implicit_2", "Value");
+                            implicit_2_slider = Functions.Get_SliderInPanel(left_base_content, "Implicit_2", "Slider");
+
+                            forgin_potencial = Functions.GetChild(left_base_content, "EnableForginPotencial");
+                            forgin_potencial_border = Functions.GetChild(left_base_content, "ForginPotencialBorder");
+                            forgin_potencial_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableForginPotencial", "Dropdown", new System.Action<int>((_) => { EnableForginPotencial(); }));
+                            forgin_potencial_value = Functions.GetChild(left_base_content, "ForginPotencial");
+                            forgin_potencial_text = Functions.Get_TextInPanel(left_base_content, "ForginPotencial", "Value");
+                            forgin_potencial_slider = Functions.Get_SliderInPanel(left_base_content, "ForginPotencial", "Slider");
+
+                            seal = Functions.GetChild(left_base_content, "EnableSeal");
+                            seal_border = Functions.GetChild(left_base_content, "SealBorder");
+                            seal_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableSeal", "Dropdown", new System.Action<int>((_) => { EnableSeal(); }));
+                            seal_shard = Functions.GetChild(left_base_content, "SelectSeal");
+                            seal_select_btn = Functions.Get_ButtonInPanel(seal_shard, "Button");
+                            seal_tier = Functions.GetChild(left_base_content, "SealTier");
+                            seal_tier_text = Functions.Get_TextInPanel(left_base_content, "SealTier", "Value");
+                            seal_tier_slider = Functions.Get_SliderInPanel(left_base_content, "SealTier", "Slider");
+                            seal_value = Functions.GetChild(left_base_content, "SealValue");
+                            seal_value_text = Functions.Get_TextInPanel(left_base_content, "SealValue", "Value");
+                            seal_value_slider = Functions.Get_SliderInPanel(left_base_content, "SealValue", "Slider");
+
+                            affixs = Functions.GetChild(left_base_content, "EnableAffixs");
+                            if (affixs.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs is null"); }
+                            affixs_border = Functions.GetChild(left_base_content, "AffixsBorder");
+                            if (affixs_border.IsNullOrDestroyed()) { Main.logger_instance.Error("seal_border is null"); }
+                            affixs_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableAffixs", "Dropdown", new System.Action<int>((_) => { EnableAffixs(); }));
+                            if (affixs_dropdown.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_dropdown is null"); }
+                            affixs_numbers = Functions.GetChild(left_base_content, "AffixsNb");
+                            if (affixs_numbers.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers is null"); }
+                            affixs_numbers_text = Functions.Get_TextInPanel(left_base_content, "AffixsNb", "Value");
+                            if (affixs_numbers_text.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers_text is null"); }
+                            affixs_numbers_slider = Functions.Get_SliderInPanel(left_base_content, "AffixsNb", "Slider");
+                            if (affixs_numbers_slider.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers_slider is null"); }
+                            affix_0 = Functions.GetChild(left_base_content, "Affix_0");
+                            affix_0_button = Functions.Get_ButtonInPanel(affix_0, "Button");
+                            affix_0_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_0", "TierValue");
+                            affix_0_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_0", "TierSlider");
+                            affix_0_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_0", "Value");
+                            affix_0_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_0", "ValueSlider");
+                            affix_1 = Functions.GetChild(left_base_content, "Affix_1");
+                            affix_1_button = Functions.Get_ButtonInPanel(affix_1, "Button");
+                            affix_1_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_1", "TierValue");
+                            affix_1_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_1", "TierSlider");
+                            affix_1_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_1", "Value");
+                            affix_1_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_1", "ValueSlider");
+                            affix_2 = Functions.GetChild(left_base_content, "Affix_2");
+                            affix_2_button = Functions.Get_ButtonInPanel(affix_2, "Button");
+                            affix_2_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_2", "TierValue");
+                            affix_2_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_2", "TierSlider");
+                            affix_2_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_2", "Value");
+                            affix_2_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_2", "ValueSlider");
+                            affix_3 = Functions.GetChild(left_base_content, "Affix_3");
+                            affix_3_button = Functions.Get_ButtonInPanel(affix_3, "Button");
+                            affix_3_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_3", "TierValue");
+                            affix_3_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_3", "TierSlider");
+                            affix_3_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_3", "Value");
+                            affix_3_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_3", "ValueSlider");
+                            affix_4 = Functions.GetChild(left_base_content, "Affix_4");
+                            affix_4_button = Functions.Get_ButtonInPanel(affix_4, "Button");
+                            affix_4_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_4", "TierValue");
+                            affix_4_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_4", "TierSlider");
+                            affix_4_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_4", "Value");
+                            affix_4_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_4", "ValueSlider");
+                            affix_5 = Functions.GetChild(left_base_content, "Affix_5");
+                            affix_5_button = Functions.Get_ButtonInPanel(affix_5, "Button");
+                            affix_5_tier_text = Functions.Get_TextInPanel(left_base_content, "Affix_5", "TierValue");
+                            affix_5_tier_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_5", "TierSlider");
+                            affix_5_value_text = Functions.Get_TextInPanel(left_base_content, "Affix_5", "Value");
+                            affix_5_value_slider = Functions.Get_SliderInPanel(left_base_content, "Affix_5", "ValueSlider");
+
+                            unique_mods = Functions.GetChild(left_base_content, "EnableUniqueMods");
+                            unique_mods_border = Functions.GetChild(left_base_content, "UniqueModsBorder");
+                            unique_mods_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableUniqueMods", "Dropdown", new System.Action<int>((_) => { EnableUniqueMods(); }));
+                            unique_mod_0 = Functions.GetChild(left_base_content, "UniqueMod_0");
+                            unique_mod_0_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_0", "Value");
+                            unique_mod_0_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_0", "Slider");
+                            unique_mod_1 = Functions.GetChild(left_base_content, "UniqueMod_1");
+                            unique_mod_1_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_1", "Value");
+                            unique_mod_1_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_1", "Slider");
+                            unique_mod_2 = Functions.GetChild(left_base_content, "UniqueMod_2");
+                            unique_mod_2_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_2", "Value");
+                            unique_mod_2_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_2", "Slider");
+                            unique_mod_3 = Functions.GetChild(left_base_content, "UniqueMod_3");
+                            unique_mod_3_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_3", "Value");
+                            unique_mod_3_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_3", "Slider");
+                            unique_mod_4 = Functions.GetChild(left_base_content, "UniqueMod_4");
+                            unique_mod_4_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_4", "Value");
+                            unique_mod_4_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_4", "Slider");
+                            unique_mod_5 = Functions.GetChild(left_base_content, "UniqueMod_5");
+                            unique_mod_5_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_5", "Value");
+                            unique_mod_5_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_5", "Slider");
+                            unique_mod_6 = Functions.GetChild(left_base_content, "UniqueMod_6");
+                            unique_mod_6_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_6", "Value");
+                            unique_mod_6_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_6", "Slider");
+                            unique_mod_7 = Functions.GetChild(left_base_content, "UniqueMod_7");
+                            unique_mod_7_Text = Functions.Get_TextInPanel(left_base_content, "UniqueMod_7", "Value");
+                            unique_mod_7_slider = Functions.Get_SliderInPanel(left_base_content, "UniqueMod_7", "Slider");
+
+                            legenday_potencial = Functions.GetChild(left_base_content, "EnableLegendaryPotencial");
+                            legenday_potencial_border = Functions.GetChild(left_base_content, "LegendaryPotencialBorder");
+                            legenday_potencial_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableLegendaryPotencial", "Dropdown", new System.Action<int>((_) => { EnableLegendaryPotencial(); }));
+                            legenday_potencial_value = Functions.GetChild(left_base_content, "LegendaryPotencial");
+                            legenday_potencial_Text = Functions.Get_TextInPanel(left_base_content, "LegendaryPotencial", "Value");
+                            legenday_potencial_slider = Functions.Get_SliderInPanel(left_base_content, "LegendaryPotencial", "Slider");
+
+                            weaver_will = Functions.GetChild(left_base_content, "EnableWeaverWill");
+                            weaver_will_border = Functions.GetChild(left_base_content, "WeaverWillBorder");
+                            weaver_will_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableWeaverWill", "Dropdown", new System.Action<int>((_) => { EnableWeaverWill(); }));
+                            weaver_will_value = Functions.GetChild(left_base_content, "WeaverWill");
+                            weaver_will_Text = Functions.Get_TextInPanel(left_base_content, "WeaverWill", "Value");
+                            weaver_will_slider = Functions.Get_SliderInPanel(left_base_content, "WeaverWill", "Slider");
+
+                            quantity = Functions.GetChild(left_base_content, "Quantity");
+                            quantity_border = Functions.GetChild(left_base_content, "QuantityBorder");
+                            forcedrop_quantity_slider = Functions.Get_SliderInPanel(left_base_content, "Quantity", "Slider_Items_ForceDrop_Quantity");
+                            if (forcedrop_quantity_slider.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error forcedrop_quantity_slider not found"); }
+                        }
+                        else { error = true; Main.logger_instance.Error("left_content not found"); }
+
+                        center_content = Functions.GetViewportContent(content_obj, "Center", "Content");
+                        if (!center_content.IsNullOrDestroyed())
+                        {
+
+                        }
+                        else { error = true; Main.logger_instance.Error("center_content not found"); }
+
+                        /*right_content = Functions.GetViewportContent(content_obj, "R", "Content");
+                        if (!right_content.IsNullOrDestroyed())
+                        {
+
+                        }
+                        else { error = true; Main.logger_instance.Error("right_content not found"); }
+                        */
+
+                        //Drop button
+                        GameObject left_obj = Functions.GetChild(content_obj, "Left");
+                        if (!left_obj.IsNullOrDestroyed())
+                        {
+                            GameObject new_obj = Functions.GetChild(left_obj, "Btn");
+                            if (!new_obj.IsNullOrDestroyed())
+                            {
+                                forcedrop_drop_button = Functions.Get_ButtonInPanel(new_obj, "Btn_Drop");
+                                if (forcedrop_drop_button.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error forcedrop_drop_button not found"); }
+                            }
+                            else { error = true; Main.logger_instance.Error("left Btn panel not found"); }
+                        }
+                        else { error = true; Main.logger_instance.Error("left_obj not found"); }
+                    }
+                    else { error = true; Main.logger_instance.Error("content_obj is null"); }
+
+                    if (!error) { initialized = true; }
+                }
+                public static void Set_Events()
+                {
+                    if (!forcedrop_drop_button.IsNullOrDestroyed())
+                    {
+                        Events.Set_Slider_Event(implicit_0_slider, implicit_0_Action);
+                        Events.Set_Slider_Event(implicit_1_slider, implicit_1_Action);
+                        Events.Set_Slider_Event(implicit_2_slider, implicit_2_Action);
+                        Events.Set_Slider_Event(forgin_potencial_slider, forgin_potencial_Action);
+                        Events.Set_Button_Event(seal_select_btn, Seal_OnClick_Action);
+                        Events.Set_Slider_Event(seal_tier_slider, seal_tier_Action);
+                        Events.Set_Slider_Event(seal_value_slider, seal_value_Action);                                                
+                        Events.Set_Button_Event(affix_0_button, affix_0_OnClick_Action);
+                        Events.Set_Slider_Event(affix_0_tier_slider, affix_0_tier_Action);
+                        Events.Set_Slider_Event(affix_0_value_slider, affix_0_value_Action);
+                        Events.Set_Button_Event(affix_1_button, affix_1_OnClick_Action);
+                        Events.Set_Slider_Event(affix_1_tier_slider, affix_1_tier_Action);
+                        Events.Set_Slider_Event(affix_1_value_slider, affix_1_value_Action);
+                        Events.Set_Button_Event(affix_2_button, affix_2_OnClick_Action);
+                        Events.Set_Slider_Event(affix_2_tier_slider, affix_2_tier_Action);
+                        Events.Set_Slider_Event(affix_2_value_slider, affix_2_value_Action);
+                        Events.Set_Button_Event(affix_3_button, affix_3_OnClick_Action);
+                        Events.Set_Slider_Event(affix_3_tier_slider, affix_3_tier_Action);
+                        Events.Set_Slider_Event(affix_3_value_slider, affix_3_value_Action);
+                        Events.Set_Button_Event(affix_4_button, affix_4_OnClick_Action);
+                        Events.Set_Slider_Event(affix_4_tier_slider, affix_4_tier_Action);
+                        Events.Set_Slider_Event(affix_4_value_slider, affix_4_value_Action);
+                        Events.Set_Button_Event(affix_5_button, affix_5_OnClick_Action);
+                        Events.Set_Slider_Event(affix_5_tier_slider, affix_5_tier_Action);
+                        Events.Set_Slider_Event(affix_5_value_slider, affix_5_value_Action);
+                        Events.Set_Slider_Event(unique_mod_0_slider, unique_mod_0_Action);
+                        Events.Set_Slider_Event(unique_mod_1_slider, unique_mod_1_Action);
+                        Events.Set_Slider_Event(unique_mod_2_slider, unique_mod_2_Action);
+                        Events.Set_Slider_Event(unique_mod_3_slider, unique_mod_3_Action);
+                        Events.Set_Slider_Event(unique_mod_4_slider, unique_mod_4_Action);
+                        Events.Set_Slider_Event(unique_mod_5_slider, unique_mod_5_Action);
+                        Events.Set_Slider_Event(unique_mod_6_slider, unique_mod_6_Action);
+                        Events.Set_Slider_Event(unique_mod_7_slider, unique_mod_7_Action);
+                        Events.Set_Slider_Event(legenday_potencial_slider, legenday_potencial_Action);
+                        Events.Set_Slider_Event(weaver_will_slider, weaver_will_Action);
+                        Events.Set_Button_Event(forcedrop_drop_button, Drop_OnClick_Action);
+                    }
+                }
+                public static void Set_Active(bool show)
+                {
+                    if (!content_obj.IsNullOrDestroyed())
+                    {
+                        content_obj.active = show;
+                        enable = show;
+                    }
+                }
+                public static void Toggle_Active()
+                {
+                    if (!content_obj.IsNullOrDestroyed())
+                    {
+                        bool show = !content_obj.active;
+                        content_obj.active = show;
+                        enable = show;
+                    }
+                }
+
+                public static void InitForcedrop()
+                {
+                    if ((!Type_Initialized) && (!Initializing_type))
+                    {
+                        Initializing_type = true;
+                        type_dropdown.ClearOptions();
+                        Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
+                        options.Add(new Dropdown.OptionData { text = "Select" });
+                        foreach (ItemList.BaseEquipmentItem item in ItemList.get().EquippableItems)
+                        {
+                            options.Add(new Dropdown.OptionData { text = item.BaseTypeName });
+                        }
+                        foreach (ItemList.BaseNonEquipmentItem item in ItemList.get().nonEquippableItems)
+                        {
+                            options.Add(new Dropdown.OptionData { text = item.BaseTypeName });
+                        }
+                        type_dropdown.options = options;
+                        type_dropdown.value = 0;
+
+                        rarity_dropdown.ClearOptions();
+                        rarity_dropdown.enabled = false;
+
+                        items_dropdown.ClearOptions();
+                        items_dropdown.enabled = false;
+
+                        //forcedrop_drop_button.enabled = false;
+
+                        Type_Initialized = true;
+                        Initializing_type = false;
+                    }
+                }
+                public static void SelectType()
+                {
+                    if (Type_Initialized)
+                    {
+                        int index = type_dropdown.value;
+                        if (index < type_dropdown.options.Count)
+                        {
+                            string type_str = type_dropdown.options[type_dropdown.value].text;
+                            item_type = -1;
+                            bool found = false;
+                            foreach (ItemList.BaseEquipmentItem item in ItemList.get().EquippableItems)
+                            {
+                                if (item.BaseTypeName == type_str)
+                                {
+                                    item_type = item.baseTypeID;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                            {
+                                foreach (ItemList.BaseNonEquipmentItem item in ItemList.get().nonEquippableItems)
+                                {
+                                    if (item.BaseTypeName == type_str)
+                                    {
+                                        item_type = item.baseTypeID;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!found) { item_type = -1; }
+                            UpdateRarity();
+                            UpdateItems();
+                            //UpdateUI();
+                        }
+                    }
+                    UpdateUI();
+                }
+                public static void UpdateRarity()
+                {
+                    if ((enable) && (LastEpoch_Hud.Scenes.IsGameScene()) &&
+                        (!Refs_Manager.item_list.IsNullOrDestroyed()) &&
+                        (Type_Initialized) &&
+                        (!type_dropdown.IsNullOrDestroyed()) &&
+                        (!rarity_dropdown.IsNullOrDestroyed()) &&
+                        (!items_dropdown.IsNullOrDestroyed()))
+                    {
+                        rarity_dropdown.ClearOptions();
+                        Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
+                        options.Add(new Dropdown.OptionData { text = "Select" });
+                        if ((type_dropdown.value > 0) && (item_type > -1))
+                        {
+                            bool has_unique = false;
+                            bool has_set = false;
+                            if (UniqueList.instance.IsNullOrDestroyed()) { UniqueList.getUnique(0); }
+                            if (!UniqueList.instance.IsNullOrDestroyed())
+                            {
+                                foreach (UniqueList.Entry unique in UniqueList.instance.uniques)
+                                {
+                                    if (unique.baseType == item_type)
+                                    {
+                                        if (unique.isSetItem) { has_set = true; }
+                                        else { has_unique = true; }
+                                    }
+                                }
+                            }
+                            options.Add(new Dropdown.OptionData { text = "Base Item" });
+                            if (has_unique) { options.Add(new Dropdown.OptionData { text = "Unique" }); }
+                            if (has_set) { options.Add(new Dropdown.OptionData { text = "Set" }); }
+                            rarity_dropdown.enabled = true;
+                        }
+                        else { rarity_dropdown.enabled = false; }
+                        rarity_dropdown.options = options;
+                        rarity_dropdown.value = 0;
+                        item_rarity = -1;
+                    }
+                }
+                public static void SelectRarity()
+                {
+                    if (Type_Initialized)
+                    {
+                        int index = rarity_dropdown.value;
+                        if (index < rarity_dropdown.options.Count)
+                        {
+                            string rarity_str = rarity_dropdown.options[index].text;
+                            item_rarity = -1;
+                            if (rarity_str == "Base Item") { item_rarity = 0; }
+                            else if (rarity_str == "Unique") { item_rarity = 7; }
+                            else if (rarity_str == "Set") { item_rarity = 8; }
+                            UpdateItems();
+                            //UpdateUI();
+                        }
+                    }
+                    UpdateUI();
+                }
+                public static void UpdateItems()
+                {
+                    if ((enable) && (LastEpoch_Hud.Scenes.IsGameScene()) &&
+                        (!Refs_Manager.item_list.IsNullOrDestroyed()) &&
+                        (Type_Initialized) &&
+                        //(!forcedrop_type_dropdown.IsNullOrDestroyed()) &&
+                        //(!forcedrop_rarity_dropdown.IsNullOrDestroyed()) &&
+                        (!items_dropdown.IsNullOrDestroyed()))
+                    {
+                        //Main.logger_instance.Msg("Update Items : Type = " + item_type + ", Rarity = " + item_rarity);
+                        items_dropdown.ClearOptions();
+
+                        Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
+                        options.Add(new Dropdown.OptionData { text = "Select" });
+                        if ((item_type > -1) && (item_rarity > -1))
+                        {
+                            if (item_rarity == 0)
+                            {
+                                bool type_found = false;
+                                foreach (ItemList.BaseEquipmentItem item_t in ItemList.get().EquippableItems)
+                                {
+                                    if (item_t.baseTypeID == item_type)
+                                    {
+                                        foreach (ItemList.EquipmentItem item in item_t.subItems)
+                                        {
+                                            string name = item.displayName;
+                                            if (name == "") { name = item.name; }
+                                            options.Add(new Dropdown.OptionData { text = name });
+                                        }
+                                        type_found = true;
+                                    }
+                                }
+                                if (!type_found)
+                                {
+                                    foreach (ItemList.BaseNonEquipmentItem item_t in ItemList.get().nonEquippableItems)
+                                    {
+                                        if (item_t.baseTypeID == item_type)
+                                        {
+                                            foreach (ItemList.NonEquipmentItem item in item_t.subItems)
+                                            {
+                                                string name = item.displayName;
+                                                if (name == "") { name = item.name; }
+                                                options.Add(new Dropdown.OptionData { text = name });
+                                            }
+
+                                            type_found = true;
+                                        }
+                                    }
+                                }
+                            }
+                            else if ((item_rarity == 7) || (item_rarity == 8))
+                            {
+                                if (UniqueList.instance.IsNullOrDestroyed()) { UniqueList.getUnique(0); }
+                                if (!UniqueList.instance.IsNullOrDestroyed())
+                                {
+                                    foreach (UniqueList.Entry unique in UniqueList.instance.uniques)
+                                    {
+                                        if ((unique.baseType == item_type) &&
+                                            (((item_rarity == 7) && (!unique.isSetItem)) ||
+                                            ((item_rarity == 8) && (unique.isSetItem))))
+                                        {
+                                            string name = unique.displayName;
+                                            if (name == "") { name = unique.name; }
+                                            options.Add(new Dropdown.OptionData { text = name });
+                                        }
+                                    }
+                                }
+                            }
+                            items_dropdown.enabled = true;
+                        }
+                        else { items_dropdown.enabled = false; }
+                        items_dropdown.options = options;
+                        items_dropdown.value = 0;
+                    }
+                }
+                public static void SelectItem()
+                {
+                    if (Type_Initialized)
+                    {
+                        int index = items_dropdown.value;
+                        if (index < items_dropdown.options.Count)
+                        {
+                            string item_str = items_dropdown.options[items_dropdown.value].text;
+                            //Main.logger_instance.Msg("Select : Item = " + item_str);
+
+                            item_subtype = -1;
+                            item_unique_id = 0;
+
+                            bool item_found = false;
+                            if (item_rarity == 0)
+                            {
+                                foreach (ItemList.BaseEquipmentItem item_t in ItemList.get().EquippableItems)
+                                {
+                                    if (item_t.baseTypeID == item_type)
+                                    {
+                                        foreach (ItemList.EquipmentItem item in item_t.subItems)
+                                        {
+                                            if ((item_str == item.displayName) || (item_str == item.name))
+                                            {
+                                                item_subtype = item.subTypeID;
+                                                item_found = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!item_found)
+                                {
+                                    foreach (ItemList.BaseNonEquipmentItem item_t in ItemList.get().nonEquippableItems)
+                                    {
+                                        if (item_t.baseTypeID == item_type)
+                                        {
+                                            foreach (ItemList.NonEquipmentItem item in item_t.subItems)
+                                            {
+                                                if ((item_str == item.displayName) || (item_str == item.name))
+                                                {
+                                                    item_subtype = item.subTypeID;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else if ((item_rarity == 7) || (item_rarity == 8))
+                            {
+                                if (UniqueList.instance.IsNullOrDestroyed()) { UniqueList.getUnique(0); }
+                                if (!UniqueList.instance.IsNullOrDestroyed())
+                                {
+                                    foreach (UniqueList.Entry unique in UniqueList.instance.uniques)
+                                    {
+                                        if ((item_str == unique.displayName) || (item_str == unique.name))
+                                        {
+                                            item_subtype = unique.subTypes[0]; //need to be fix here
+                                            item_unique_id = unique.uniqueID;
+                                            item_legendary_type = unique.legendaryType;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            UpdateUI();
+                        }
+                    }
+                }
+                public static void EnableImplicits()
+                {
+                    int index = implicits_dropdown.value;
+                    if (index < implicits_dropdown.options.Count)
+                    {
+                        if (index == 1) { implicits_roll = true; }
+                        else { implicits_roll = false; }
+                    }
+                }
+                public static void SetImplicit_0(float f)
+                {
+                    int result = System.Convert.ToInt32((implicit_0_slider.value / 255) * 100);
+                    implicit_0_Text.text = result.ToString() + " %";
+                }
+                public static void SetImplicit_1(float f)
+                {
+                    int result = System.Convert.ToInt32((implicit_1_slider.value / 255) * 100);
+                    implicit_1_Text.text = result.ToString() + " %";
+                }
+                public static void SetImplicit_2(float f)
+                {
+                    int result = System.Convert.ToInt32((implicit_2_slider.value / 255) * 100);
+                    implicit_2_Text.text = result.ToString() + " %";
+                }
+                public static void EnableForginPotencial()
+                {
+                    int index = forgin_potencial_dropdown.value;
+                    if (index < forgin_potencial_dropdown.options.Count)
+                    {
+                        if (index == 1) { forgin_potencial_roll = true; }
+                        else { forgin_potencial_roll = false; }
+                    }
+                }
+                public static void SetForginPotencial(float f)
+                {
+                    forgin_potencial_text.text = System.Convert.ToInt32(forgin_potencial_slider.value).ToString();
+                }
+                public static void EnableSeal()
+                {
+                    int index = seal_dropdown.value;
+                    if (index < seal_dropdown.options.Count)
+                    {
+                        if (index == 1) { seal_roll = true; }
+                        else { seal_roll = false; }
+                    }
+                }
+                public static void SelectSeal()
+                {
+                    OpenShardsView(0, true);
+                }
+                public static void SetSealTier(float f)
+                {
+                    int t = System.Convert.ToInt32(seal_tier_slider.value) + 1;
+                    seal_tier_text.text = t.ToString();
+                }
+                public static void SetSealValue(float f)
+                {
+                    int result = System.Convert.ToInt32((seal_value_slider.value / 255) * 100);
+                    seal_value_text.text = result.ToString() + " %";
+                }
+                public static void EnableAffixs()
+                {
+                    int index = affixs_dropdown.value;
+                    if (index < affixs_dropdown.options.Count)
+                    {
+                        if (index == 1) { affixs_roll = true; }
+                        else { affixs_roll = false; }
+                    }
+                }
+                public static void SelectAffix_0()
+                {
+                    OpenShardsView(0, false);
+                }
+                public static void SetAffix_0_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_0_tier_slider.value) + 1;
+                    affix_0_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_0_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_0_value_slider.value / 255) * 100);
+                    affix_0_value_text.text = result.ToString() + " %";
+                }
+                public static void SelectAffix_1()
+                {
+                    OpenShardsView(1, false);
+                }
+                public static void SetAffix_1_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_1_tier_slider.value) + 1;
+                    affix_1_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_1_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_1_value_slider.value / 255) * 100);
+                    affix_1_value_text.text = result.ToString() + " %";
+                }
+                public static void SelectAffix_2()
+                {
+                    OpenShardsView(2, false);
+                }
+                public static void SetAffix_2_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_2_tier_slider.value) + 1;
+                    affix_2_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_2_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_2_value_slider.value / 255) * 100);
+                    affix_2_value_text.text = result.ToString() + " %";
+                }
+                public static void SelectAffix_3()
+                {
+                    OpenShardsView(3, false);
+                }
+                public static void SetAffix_3_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_3_tier_slider.value) + 1;
+                    affix_3_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_3_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_3_value_slider.value / 255) * 100);
+                    affix_3_value_text.text = result.ToString() + " %";
+                }
+                public static void SelectAffix_4()
+                {
+                    OpenShardsView(4, false);
+                }
+                public static void SetAffix_4_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_4_tier_slider.value) + 1;
+                    affix_4_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_4_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_4_value_slider.value / 255) * 100);
+                    affix_4_value_text.text = result.ToString() + " %";
+                }
+                public static void SelectAffix_5()
+                {
+                    OpenShardsView(5, false);
+                }
+                public static void SetAffix_5_Tier(float f)
+                {
+                    int t = System.Convert.ToInt32(affix_5_tier_slider.value) + 1;
+                    affix_5_tier_text.text = t.ToString();
+                }
+                public static void SetAffix_5_Value(float f)
+                {
+                    int result = System.Convert.ToInt32((affix_5_value_slider.value / 255) * 100);
+                    affix_5_value_text.text = result.ToString() + " %";
+                }                
+                public static void EnableUniqueMods()
+                {
+                    int index = unique_mods_dropdown.value;
+                    if (index < unique_mods_dropdown.options.Count)
+                    {
+                        if (index == 1) { unique_mods_roll = true; }
+                        else { unique_mods_roll = false; }
+                    }
+                }
+                public static void SetUniqueMod_0(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_0_slider.value / 255) * 100);
+                    unique_mod_0_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_1(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_1_slider.value / 255) * 100);
+                    unique_mod_1_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_2(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_2_slider.value / 255) * 100);
+                    unique_mod_2_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_3(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_3_slider.value / 255) * 100);
+                    unique_mod_3_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_4(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_4_slider.value / 255) * 100);
+                    unique_mod_4_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_5(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_5_slider.value / 255) * 100);
+                    unique_mod_5_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_6(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_6_slider.value / 255) * 100);
+                    unique_mod_6_Text.text = result.ToString() + " %";
+                }
+                public static void SetUniqueMod_7(float f)
+                {
+                    int result = System.Convert.ToInt32((unique_mod_7_slider.value / 255) * 100);
+                    unique_mod_7_Text.text = result.ToString() + " %";
+                }
+                public static void EnableLegendaryPotencial()
+                {
+                    int index = legenday_potencial_dropdown.value;
+                    if (index < legenday_potencial_dropdown.options.Count)
+                    {
+                        if (index == 1) { legenday_potencial_roll = true; }
+                        else { legenday_potencial_roll = false; }
+                    }
+                }
+                public static void SetLegendayPotencial(float f)
+                {
+                    legenday_potencial_Text.text = System.Convert.ToInt32(legenday_potencial_slider.value).ToString();
+                }
+                public static void EnableWeaverWill()
+                {
+                    int index = weaver_will_dropdown.value;
+                    if (index < weaver_will_dropdown.options.Count)
+                    {
+                        if (index == 1) { weaver_will_roll = true; }
+                        else { weaver_will_roll = false; }
+                    }
+                }
+                public static void SetWeaverWill(float f)
+                {
+                    weaver_will_Text.text = System.Convert.ToInt32(weaver_will_slider.value).ToString();
+                }
+
+                public static void OpenShardsView(int affix_number, bool seal)
+                {
+                    shard_seal = seal;
+                    shard_number = affix_number;
+                    if (!shard_initialized) { InitializeShardsView(); }
+                    center_content.active = true;
+                }
+                public static void CloseShardsView()
+                {
+                    center_content.active = false;
+                }
+                public static void InitializeShardsView() //Add a button for filter then call this function
+                {
+                    //Filter by type //Add a dropdown (ex : shard_filter_type) in Hud to enable this
+                    bool filter_by_type = false;                    
+                    AffixList.AffixType wanted_type = AffixList.AffixType.PREFIX;                    
+                    /*if (shard_filter_type.value > 0)
+                    {
+                        filter_by_type = true;
+                        if (shard_filter_type.value == 1) { wanted_type = AffixType.PREFIX; }
+                        else if (shard_filter_type.value == 2) { wanted_type = AffixType.SUFFIX; }
+                    }
+                    else { filter_by_type = false; }*/
+
+                    //Filter by name //Add a text (ex : shard_filter_text) in Hud to enable this
+                    bool filter_by_name = false;
+                    string wanted_name = "";
+                    /*if (shard_filter_text.text != "")
+                    {
+                        filter_by_name = true;
+                        wanted_name = shard_filter_text.text;
+                    }*/
+
+                    foreach (AffixList.SingleAffix affix in AffixList.instance.singleAffixes)
+                    {
+                        if ((((filter_by_type) && (affix.type == wanted_type)) || (!filter_by_type))
+                            && (((filter_by_name) && (affix.affixName.Contains(wanted_name))) || (!filter_by_name)))
+                        {
+                            AddShardInView(affix.affixId, affix.affixName);
+                        }
+                    }
+                    foreach (AffixList.MultiAffix affix in AffixList.instance.multiAffixes)
+                    {
+                        if ((((filter_by_type) && (affix.type == wanted_type)) || (!filter_by_type))
+                            && (((filter_by_name) && (affix.affixName.Contains(wanted_name))) || (!filter_by_name)))
+                        {
+                            AddShardInView(affix.affixId, affix.affixName);
+                        }
+                    }
+                    shard_initialized = true;
+                }
+                public static void AddShardInView(int id, string name)
+                {
+                    GameObject g = Object.Instantiate(shard_prefab, Vector3.zero, Quaternion.identity);
+                    g.transform.SetParent(center_content.transform);
+                    GameObject shard_btn_object = Functions.GetChild(g, "shard_btn");
+                    Button shard_btn = shard_btn_object.GetComponent<Button>();
+
+                    shard_btn.onClick = new Button.ButtonClickedEvent();
+                    //shard_btn.onClick.AddListener(shard_OnClick_Action); //set action here
+
+                    GameObject shard_id_object = Functions.GetChild(shard_btn_object, "shard_id");
+                    Text shard_id = shard_id_object.GetComponent<Text>();
+                    shard_id.text = id.ToString();
+                    GameObject shard_name_object = Functions.GetChild(shard_btn_object, "shard_name");
+                    Text shard_name = shard_name_object.GetComponent<Text>();
+                    shard_name.text = name.ToString();
+                }
+                public static void SelectShard(int id)
+                {
+                    if (shard_seal) { seal_id = id; }
+                    else
+                    {
+                        if (shard_number == 0) { affix_0_id = id; }
+                        else if (shard_number == 1) { affix_1_id = id; }
+                        else if (shard_number == 2) { affix_2_id = id; }
+                        else if (shard_number == 3) { affix_3_id = id; }
+                        else if (shard_number == 4) { affix_4_id = id; }
+                        else if (shard_number == 5) { affix_5_id = id; }
+                    }
+                }
+                public static ItemAffix MakeAffix(byte id, byte tier, byte roll, bool seal)
+                {
+                    ItemAffix new_affix = null;
+                    bool found = false;
+                    foreach (AffixList.SingleAffix affix in AffixList.instance.singleAffixes)
+                    {
+                        if (id == affix.affixId)
+                        {
+                            new_affix = new ItemAffix
+                            {
+                                affixId = (ushort)affix.affixId,
+                                affixName = affix.affixName,
+                                affixTitle = affix.affixTitle,
+                                affixType = affix.type,
+                                isSealedAffix = seal,
+                                affixTier = tier,
+                                affixRoll = roll
+                            };
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        foreach (AffixList.MultiAffix affix in AffixList.instance.multiAffixes)
+                        {
+                            if (id == affix.affixId)
+                            {
+                                new_affix = new ItemAffix
+                                {
+                                    affixId = (ushort)affix.affixId,
+                                    affixName = affix.affixName,
+                                    affixTitle = affix.affixTitle,
+                                    affixType = affix.type,
+                                    isSealedAffix = seal,
+                                    affixTier = tier,
+                                    affixRoll = roll
+                                };
+                            }
+                        }
+                    }
+
+                    return new_affix;
+                }
+
+                public static void UpdateUI()
+                {
+                    implicits_enable = false;
+                    seal_enable = false;
+                    forgin_potencial_enable = false;
+                    affixs_enable = false;
+                    unique_mods_enable = false;
+                    legenday_potencial_enable = false;
+                    weaver_will_enable = false;
+                    quantity_enable = false;
+                    btn_enable = false;
+
+                    if ((type_dropdown.value > 0) && (rarity_dropdown.value > 0) && (items_dropdown.value > 0))
+                    {
+                        implicits_enable = true;
+                        if (item_type < 100) { seal_enable = true; affixs_enable = true; }
+                        if ((item_type < 100) && (item_rarity < 7)) { forgin_potencial_enable = true; }
+                        if (item_rarity > 6)
+                        {
+                            unique_mods_enable = true;
+                            if (item_legendary_type == UniqueList.LegendaryType.LegendaryPotential) { legenday_potencial_enable = true; }
+                            //else { legenday_potencial_enable = false; }
+                            weaver_will_enable = !legenday_potencial_enable;
+                        }
+                        quantity_enable = true;
+                        btn_enable = true;
+                    }
+                }
+                public static float GetContentSize() //need to be fix
+                {
+                    float size = type_size + rarity_size + items_size;
+                    if (implicits_enable)
+                    {
+                        size += implicits_size;
+                        if (implicits_roll) { size += (implicits_roll_size * 3); }
+                    }
+                    if (forgin_potencial_enable)
+                    {
+                        size += forgin_potencial_size;
+                        if (forgin_potencial_roll) { size += forgin_potencial_roll_size; }
+                    }
+                    if (seal_enable)
+                    {
+                        size += seal_size;
+                        if (seal_roll) { size += seal_roll_size; }
+                    }
+                    if (affixs_enable)
+                    {
+                        size += affixs_size;
+                        if (affixs_roll)
+                        {
+                            size += affixs_numbers_size;
+                            size += (affixs_roll_size * System.Convert.ToInt32(affixs_numbers_slider.value));
+                        }
+                    }
+                    if (unique_mods_enable)
+                    {
+                        size += unique_mods_size;
+                        if (unique_mods_roll) { size += (unique_mods_roll_size * 8); }
+                    }
+                    if (legenday_potencial_enable)
+                    {
+                        size += legenday_potencial_size;
+                        if (legenday_potencial_roll) { size += legenday_potencial_roll_size; }
+                    }
+                    if (weaver_will_enable)
+                    {
+                        size += weaver_will_size;
+                        if (weaver_will_roll) { size += weaver_will_roll_size; }
+                    }
+                    if (quantity_enable) { size += quantity_size; }
+
+                    return size;
+                }
+                public static void Drop()
+                {
+                    if ((btn_enable) && (!Refs_Manager.ground_item_manager.IsNullOrDestroyed()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()))
+                    {
+                        for (int i = 0; i < forcedrop_quantity_slider.value; i++)
+                        {
+                            //Rarity
+                            byte ra = (byte)item_rarity;
+
+                            //Forgin potencial
+                            byte fg = 0;
+                            if ((item_type < 100) && (ra < 7))
+                            {                                
+                                if (forgin_potencial_roll) { fg = (byte)forgin_potencial_slider.value; }
+                                else { fg = (byte)Random.RandomRange(0f, 255f); } //Random
+                            }
+
+                            //Affixes
+                            bool sa = false; //Seal
+                            byte an = 0; //Affix numbers
+                            List<ItemAffix> af = new List<ItemAffix>(); //Affixes
+                            if (seal_roll)
+                            {
+                                ItemAffix affix = MakeAffix((byte)seal_id, (byte)seal_tier_slider.value, (byte)seal_value_slider.value, true);
+                                if (!affix.IsNullOrDestroyed())
+                                {
+                                    sa = true;
+                                    an = 1; //Set affix number
+                                    af.Add(affix);
+                                }
+                                else { Main.logger_instance.Error("Seal is null"); }
+                            }
+                            if (affixs_roll)
+                            {
+                                System.Collections.Generic.List<ItemAffix> new_affixes = new System.Collections.Generic.List<ItemAffix>();
+                                new_affixes.Add(MakeAffix((byte)affix_0_id, (byte)affix_0_tier_slider.value, (byte)affix_0_value_slider.value, false));
+                                new_affixes.Add(MakeAffix((byte)affix_1_id, (byte)affix_1_tier_slider.value, (byte)affix_1_value_slider.value, false));
+                                new_affixes.Add(MakeAffix((byte)affix_2_id, (byte)affix_2_tier_slider.value, (byte)affix_2_value_slider.value, false));
+                                new_affixes.Add(MakeAffix((byte)affix_3_id, (byte)affix_3_tier_slider.value, (byte)affix_3_value_slider.value, false));
+                                new_affixes.Add(MakeAffix((byte)affix_4_id, (byte)affix_4_tier_slider.value, (byte)affix_4_value_slider.value, false));
+                                new_affixes.Add(MakeAffix((byte)affix_5_id, (byte)affix_5_tier_slider.value, (byte)affix_5_value_slider.value, false));
+
+                                int j = 0;
+                                int count = (int)affixs_numbers_slider.value;
+                                byte new_count = 0;
+                                foreach (ItemAffix a in new_affixes)
+                                {
+                                    if (count > j)
+                                    {
+                                        if (!a.IsNullOrDestroyed())
+                                        {
+                                            af.Add(a);
+                                            new_count++;
+                                        }
+                                        else { Main.logger_instance.Error("Affix[" + j + "] is null"); }
+                                    }
+                                    else { break; }
+                                    j++;
+                                }
+                                new_affixes.Clear();
+                                an += new_count; //Set affix number
+                                if (ra < 7) { ra = new_count; } //Set rarity to affix numbers for base item only
+                            }
+
+                            //Unique
+                            byte lp = 0; //Legendary potencial
+                            byte ww = 0; //Weaver will
+                            if (ra > 6)                            
+                            {
+                                if (item_legendary_type == UniqueList.LegendaryType.LegendaryPotential)
+                                {                                    
+                                    if (legenday_potencial_roll)
+                                    {
+                                        lp = (byte)legenday_potencial_slider.value;
+                                    }
+                                    else { lp = (byte)Random.RandomRange(0f, 4f); } //Random
+                                }
+                                else
+                                {                                    
+                                    if (weaver_will_roll)
+                                    {
+                                        ww = (byte)weaver_will_slider.value;
+                                    }
+                                    else { ww = (byte)Random.RandomRange(0f, 28f); } //Random
+                                }
+                            }
+
+                            //Create item
+                            ItemDataUnpacked item = new ItemDataUnpacked
+                            {
+                                LvlReq = 0,
+                                classReq = ItemList.ClassRequirement.Any,
+                                itemType = (byte)item_type,
+                                subType = (ushort)item_subtype,
+                                rarity = (byte)ra,                                
+                                forgingPotential = fg,
+                                hasSealedAffix = sa,
+                                sockets = (byte)an,
+                                affixes = af,
+                                uniqueID = (ushort)item_unique_id,
+                                legendaryPotential = lp,
+                                weaversWill = ww
+                            };
+
+                            //Set Implicits
+                            if (implicits_roll)
+                            {
+                                item.implicitRolls[0] = (byte)implicit_0_slider.value;
+                                item.implicitRolls[1] = (byte)implicit_1_slider.value;
+                                item.implicitRolls[2] = (byte)implicit_2_slider.value;
+                            }
+                            else //Random
+                            {
+                                for (int k = 0; k < item.implicitRolls.Count; k++)
+                                {
+                                    item.implicitRolls[k] = (byte)Random.RandomRange(0f, 255f);
+                                }
+                            }
+
+                            //Set Unique mods
+                            if (item.isUniqueSetOrLegendary())
+                            {
+                                if (unique_mods_roll)
+                                {
+                                    item.uniqueRolls[0] = (byte)unique_mod_0_slider.value;
+                                    item.uniqueRolls[1] = (byte)unique_mod_1_slider.value;
+                                    item.uniqueRolls[2] = (byte)unique_mod_2_slider.value;
+                                    item.uniqueRolls[3] = (byte)unique_mod_3_slider.value;
+                                    item.uniqueRolls[4] = (byte)unique_mod_4_slider.value;
+                                    item.uniqueRolls[5] = (byte)unique_mod_5_slider.value;
+                                    item.uniqueRolls[6] = (byte)unique_mod_6_slider.value;
+                                    item.uniqueRolls[7] = (byte)unique_mod_7_slider.value;
+                                }
+                                else //Random
+                                {
+                                    for (int k = 0; k < item.uniqueRolls.Count; k++)
+                                    {
+                                        item.uniqueRolls[k] = (byte)Random.RandomRange(0f, 255f);
+                                    }
+                                }
+                            }
+                            item.RefreshIDAndValues(); //Refresh item for implicits and unique mods
+
+                            Refs_Manager.ground_item_manager.dropItemForPlayer(Refs_Manager.player_actor, item.TryCast<ItemData>(), Refs_Manager.player_actor.position(), false);
+                        }
+                    }
+                }
+            }
             public class Headhunter
             {
                 public static GameObject content_obj = null;
@@ -3689,7 +5214,7 @@ namespace LastEpoch_Hud.Scripts
 
                 public static void Get_Refs()
                 {
-
+                    content_obj = Functions.GetChild(Content.content_obj, "Headhunter_Content");
                 }
                 public static void Set_Active(bool show)
                 {

@@ -60,7 +60,7 @@ namespace LastEpoch_Hud
         public static bool update = false;
         public static bool debug_text = false; //used to generate default json from prefab
         public static List<string> debug_json;
-        public static char[] igrone_str = { '+', '%', '0', '1' };
+        public static char[] igrone_str = { '+', '%', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         [HarmonyPatch(typeof(Localization), "get_Locale")]
         public class Localization_get_Locale
@@ -211,6 +211,14 @@ namespace LastEpoch_Hud
 
             return result;
         }
+        public static Text Get_TextInPanel(GameObject obj, string panel_name, string obj_name)
+        {
+            Text result = null;
+            GameObject panel = GetChild(obj, panel_name);
+            if (!panel.IsNullOrDestroyed()) { result = Functions.GetChild(panel, obj_name).GetComponent<Text>(); }
+
+            return result;
+        }
         public static Slider Get_SliderInPanel(GameObject obj, string panel_name, string obj_name)
         {
             Slider result = null;
@@ -266,8 +274,10 @@ namespace LastEpoch_Hud
                     result.onValueChanged = new Dropdown.DropdownEvent();
                     result.onValueChanged.AddListener(action);
                 }
+                else { Main.logger_instance.Error("Dropdown : " + dropdown_name + " not found in " + panel_name); }
             }
-
+            else { Main.logger_instance.Error("Panel : "+ panel_name + " not found"); }
+            
             return result;
         }
         public static Toggle Get_ToggleInLabel(GameObject obj, string panel_name, string obj_name, bool makeSureItsActive = false)
