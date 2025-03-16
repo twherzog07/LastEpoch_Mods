@@ -20,19 +20,21 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
 
         public class Ability_Mutator
         {
-            public static bool initialized = false;
+            //public static bool initialized = false;
             private static System.Collections.Generic.List<AbilityMutator> ability_mutators = null;
             public static void Init()
             {
+                Main.logger_instance.Msg("Init ability_mutators List");
                 ability_mutators = new System.Collections.Generic.List<AbilityMutator>();
                 foreach (UnityEngine.Object obj in UnityEngine.Object.FindObjectsOfType<AbilityMutator>())
                 {
                     ability_mutators.Add(obj.TryCast<AbilityMutator>());
                 }
+                //initialized = true;
             }
             public static AbilityMutator GetMutatorFromAbility(Ability ability)
             {
-                if (!initialized) { Init(); }
+                //if (!initialized) { Init(); }
                 AbilityMutator mutator = new AbilityMutator();
                 bool found = false;
                 foreach (AbilityMutator obj in ability_mutators)
@@ -44,11 +46,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         break;
                     }
                 }
-                if ((!found) && (ability.abilityName != "Attack"))
+                if (!found)
                 {
                     Main.logger_instance.Msg("Ability Mutator Not Found for this Ability : " + ability.abilityName);
                     return null;
                 }
+                else if (ability.abilityName == "Attack") { return null; }
                 else { return mutator; }
             }
         }
