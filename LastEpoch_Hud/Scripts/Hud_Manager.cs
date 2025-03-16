@@ -1332,6 +1332,10 @@ namespace LastEpoch_Hud.Scripts
             {
                 Character.enable = false;
                 Items.enable = false;
+                Scenes.enable = false;
+                Skills.enable = false;
+                OdlForceDrop.enable = false;
+                Headhunter.enable = false;
             }
 
             public class Character
