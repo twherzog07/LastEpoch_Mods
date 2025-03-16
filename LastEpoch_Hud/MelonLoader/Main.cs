@@ -27,12 +27,6 @@ namespace LastEpoch_Hud
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             Scenes.SceneName = SceneManager.GetActiveScene().name;
-
-            //Debug for Skills (should be move to a new MonoBehaviour)
-            if (Scenes.IsGameScene())
-            {
-                LastEpoch_Hud.Scripts.Mods.Skills.Skills_Use.Ability_Mutator.Init();
-            }
         }
         public override void OnLateUpdate()
         {
