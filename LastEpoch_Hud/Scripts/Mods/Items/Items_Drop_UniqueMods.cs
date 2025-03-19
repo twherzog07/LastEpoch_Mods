@@ -10,7 +10,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
             {
-                if (!Save_Manager.instance.data.IsNullOrDestroyed())
+                if ((Hud_Manager.IsPauseOpen()) && (Hud_Manager.Content.OdlForceDrop.enable)) { return false; }
+                else if (!Save_Manager.instance.data.IsNullOrDestroyed())
                 {
                     return Save_Manager.instance.data.Items.Drop.Enable_UniqueMods;
                 }

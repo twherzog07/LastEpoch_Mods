@@ -8,7 +8,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
     {
         private static bool CanRun()
         {
-            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
+            if ((Hud_Manager.IsPauseOpen()) && (Hud_Manager.Content.OdlForceDrop.enable)) { return false; }
+            else if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
             {
                 if ((!Save_Manager.instance.data.IsNullOrDestroyed()) &&
                     ((Save_Manager.instance.data.Items.Drop.Enable_ForceUnique) ||
