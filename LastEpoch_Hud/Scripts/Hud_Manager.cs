@@ -276,7 +276,7 @@ namespace LastEpoch_Hud.Scripts
                         if (Locales.current_dictionary != null)
                         {
                             if (Locales.current_dictionary.ContainsKey(label.text)) { label.text = Locales.current_dictionary[label.text]; }
-                            else { Main.logger_instance.Error(label.text + ", not found in dictionnary"); }
+                            //else { Main.logger_instance.Error(label.text + ", not found in dictionnary"); }
                         }
                     }
                 }
@@ -450,6 +450,141 @@ namespace LastEpoch_Hud.Scripts
         
         public class Hooks
         {
+            //Disable Ladder(L)
+            [HarmonyPatch(typeof(UIBase), "LadderKeyDown")]
+            public class UIBase_LadderKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    return false;
+                }
+            }
+            //Disable Chat
+            [HarmonyPatch(typeof(UIBase), "ChatKeyDown")]
+            public class UIBase_ChatKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    return false;
+                }
+            }
+
+            //Disable Keys when hud is open (allow inputField)
+            [HarmonyPatch(typeof(Input), "GetKeyDown", new System.Type[] { typeof(UnityEngine.KeyCode) })]
+            public class Input_GetKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix(bool __result, UnityEngine.KeyCode __0)
+                {
+                    if ((IsPauseOpen()) && (__0 != KeyCode.Escape)) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "FactionsKeyDown")] //Y
+            public class UIBase_FactionsKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "openInventory")] //I
+            public class UIBase_openInventory
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "SettingsKeyDown")] //O
+            public class UIBase_SettingsKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "PassiveGridKeyDown")] //P
+            public class UIBase_PassiveGridKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "openCraftingPanel")] //F
+            public class UIBase_openCraftingPanel
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "GameGuideKeyDown")] //G
+            public class UIBase_GameGuideKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "SocialKeyDown")] //H
+            public class UIBase_SocialKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "SkillsKeyDown")] //K
+            public class UIBase_SkillsKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "MapKeyDown")] //M
+            public class UIBase_MapKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+            [HarmonyPatch(typeof(UIBase), "CharacterStatsKeyDown")] //C
+            public class UIBase_CharacterStatsKeyDown
+            {
+                [HarmonyPrefix]
+                static bool Prefix()
+                {
+                    if (IsPauseOpen()) { return false; }
+                    return true;
+                }
+            }
+
+
+            //Select Shards
             [HarmonyPatch(typeof(Button), "Press")]
             public class Button_Press
             {
@@ -475,7 +610,6 @@ namespace LastEpoch_Hud.Scripts
                     }
                 }
             }
-
 
             //All Hooks have to be replace by Unity Actions
             [HarmonyPatch(typeof(Toggle), "OnPointerClick")]
@@ -4173,6 +4307,14 @@ namespace LastEpoch_Hud.Scripts
                 public static bool btn_enable = false;
                 public static readonly System.Action Drop_OnClick_Action = new System.Action(Drop);
 
+                //Shards Filters
+                public static GameObject shard_filters = null;
+                public static Dropdown shards_filter_type = null;
+                public static Dropdown shards_filter_class = null;
+                public static InputField shards_filter_name = null;
+                public static Button shards_filters_button = null;
+                public static readonly System.Action Resfresh_OnClick_Action = new System.Action(InitializeShardsView);
+
                 //Shards View
                 public static GameObject shard_prefab = null;
                 public static readonly string shard_btn_name = "ShardBtn_";
@@ -4341,21 +4483,56 @@ namespace LastEpoch_Hud.Scripts
                         }
                         else { error = true; Main.logger_instance.Error("left_content not found"); }
 
+                        //Shards filters
+                        GameObject center = Functions.GetChild(content_obj, "Center");
+                        if (!center.IsNullOrDestroyed())
+                        {
+                            shard_filters = Functions.GetChild(center, "Filters");
+                            if (!shard_filters.IsNullOrDestroyed())
+                            {
+                                GameObject line_0 = Functions.GetChild(shard_filters, "Line_0");
+                                if (!line_0.IsNullOrDestroyed())
+                                {
+                                    shards_filter_type = Functions.Get_DopboxInPanel(line_0, "Type", "Dropdown", new System.Action<int>((value) => { }));
+                                    shards_filter_class = Functions.Get_DopboxInPanel(line_0, "Class", "Dropdown", new System.Action<int>((_) => { }));
+                                }
+                                else { error = true; Main.logger_instance.Error("line_0 not found"); }
+
+                                GameObject line_1 = Functions.GetChild(shard_filters, "Line_1");
+                                if (!line_1.IsNullOrDestroyed())
+                                {
+                                    GameObject name = Functions.GetChild(line_1, "Name");
+                                    if(!name.IsNullOrDestroyed())
+                                    {
+                                        GameObject g = Functions.GetChild(name, "InputField");
+                                        if (!g.IsNullOrDestroyed()) { shards_filter_name = g.GetComponent<InputField>(); }
+                                        else { error = true; Main.logger_instance.Error("g_name not found"); }
+                                    }
+                                    else { error = true; Main.logger_instance.Error("name not found"); }
+
+                                    GameObject refresh = Functions.GetChild(line_1, "Refresh");
+                                    if (!refresh.IsNullOrDestroyed())
+                                    {
+                                        GameObject g = Functions.GetChild(refresh, "Button");
+                                        if (!g.IsNullOrDestroyed()) { shards_filters_button = g.GetComponent<Button>(); }
+                                        else { error = true; Main.logger_instance.Error("g_refresh not found"); }
+                                    }
+                                    else { error = true; Main.logger_instance.Error("refresh not found"); }
+                                }
+                                else { error = true; Main.logger_instance.Error("line_1 not found"); }
+                            }
+                            else { error = true; Main.logger_instance.Error("shard_filters not found"); }
+                        }
+                        else { error = true; Main.logger_instance.Error("center not found"); }
+
+                        //Shards
                         center_content = Functions.GetViewportContent(content_obj, "Center", "Content");
                         if (!center_content.IsNullOrDestroyed())
                         {
 
                         }
                         else { error = true; Main.logger_instance.Error("center_content not found"); }
-
-                        /*right_content = Functions.GetViewportContent(content_obj, "R", "Content");
-                        if (!right_content.IsNullOrDestroyed())
-                        {
-
-                        }
-                        else { error = true; Main.logger_instance.Error("right_content not found"); }
-                        */
-
+                        
                         //Drop button
                         GameObject left_obj = Functions.GetChild(content_obj, "Left");
                         if (!left_obj.IsNullOrDestroyed())
@@ -4413,6 +4590,9 @@ namespace LastEpoch_Hud.Scripts
                         Events.Set_Slider_Event(unique_mod_7_slider, unique_mod_7_Action);
                         Events.Set_Slider_Event(legenday_potencial_slider, legenday_potencial_Action);
                         Events.Set_Slider_Event(weaver_will_slider, weaver_will_Action);
+                                                
+                        Events.Set_Button_Event(shards_filters_button, Resfresh_OnClick_Action);
+
                         Events.Set_Button_Event(forcedrop_drop_button, Drop_OnClick_Action);
                     }
                 }
@@ -4755,7 +4935,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectSeal()
                 {
-                    OpenShardsView(0, true);
+                    SetShardsView(0, true);
                 }
                 public static void SetSealTier(float f)
                 {
@@ -4778,7 +4958,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_0()
                 {
-                    OpenShardsView(0, false);
+                    SetShardsView(0, false);
                 }
                 public static void SetAffix_0_Tier(float f)
                 {
@@ -4792,7 +4972,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_1()
                 {
-                    OpenShardsView(1, false);
+                    SetShardsView(1, false);
                 }
                 public static void SetAffix_1_Tier(float f)
                 {
@@ -4806,7 +4986,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_2()
                 {
-                    OpenShardsView(2, false);
+                    SetShardsView(2, false);
                 }
                 public static void SetAffix_2_Tier(float f)
                 {
@@ -4820,7 +5000,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_3()
                 {
-                    OpenShardsView(3, false);
+                    SetShardsView(3, false);
                 }
                 public static void SetAffix_3_Tier(float f)
                 {
@@ -4834,7 +5014,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_4()
                 {
-                    OpenShardsView(4, false);
+                    SetShardsView(4, false);
                 }
                 public static void SetAffix_4_Tier(float f)
                 {
@@ -4848,7 +5028,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void SelectAffix_5()
                 {
-                    OpenShardsView(5, false);
+                    SetShardsView(5, false);
                 }
                 public static void SetAffix_5_Tier(float f)
                 {
@@ -4936,63 +5116,51 @@ namespace LastEpoch_Hud.Scripts
                     weaver_will_Text.text = System.Convert.ToInt32(weaver_will_slider.value).ToString();
                 }
 
-                public static void OpenShardsView(int affix_number, bool seal)
+                public static void SetShardsView(int affix_number, bool seal)
                 {
                     shard_seal = seal;
                     shard_number = affix_number;
-                    if (!shard_initialized) { InitializeShardsView(); }
-                    center_content.active = true;
+                    if (!shard_initialized) { InitializeShardsView(); }                    
                 }
-                public static void CloseShardsView()
+                public static void InitializeShardsView()
                 {
-                    center_content.active = false;
-                }
-                public static void InitializeShardsView() //Add a button for filter then call this function
-                {
-                    //Filter by type //Add a dropdown (ex : shard_filter_type) in Hud to enable this
+                    RemoveShardsInView();
                     bool filter_by_type = false;                    
                     AffixList.AffixType wanted_type = AffixList.AffixType.PREFIX;
-                    /*if (shard_filter_type.value > 0)
+                    if (shards_filter_type.value > 0)
                     {
                         filter_by_type = true;
-                        if (shard_filter_type.value == 1) { wanted_type = AffixType.PREFIX; }
-                        else if (shard_filter_type.value == 2) { wanted_type = AffixType.SUFFIX; }
-                    }*/
-
-                    //Filter by Class //Add a dropdown (ex : shard_filter_class) in Hud to enable this
+                        if (shards_filter_type.value == 1) { wanted_type = AffixList.AffixType.PREFIX; }
+                        else if (shards_filter_type.value == 2) { wanted_type = AffixList.AffixType.SUFFIX; }
+                    }
                     bool filter_by_class = false;
                     AffixList.ClassSpecificity wanted_class = AffixList.ClassSpecificity.None;
-                    /*if (shard_filter_class.value > 0)
+                    if (shards_filter_class.value > 0)
                     {
                         filter_by_class = true;
-                        if (shard_filter_class.value == 1) { wanted_class = ClassSpecificity.NonSpecific; }
-                        else if (shard_filter_class.value == 2) { wanted_class = ClassSpecificity.Primalist; }
-                        else if (shard_filter_class.value == 2) { wanted_class = ClassSpecificity.Mage; }
-                        else if (shard_filter_class.value == 2) { wanted_class = ClassSpecificity.Sentinel; }
-                        else if (shard_filter_class.value == 2) { wanted_class = ClassSpecificity.Acolyte; }
-                        else if (shard_filter_class.value == 2) { wanted_class = ClassSpecificity.Rogue; }
-                        
-                    }*/
-
-                    //Filter by name //Add a text (ex : shard_filter_text) in Hud to enable this
+                        if (shards_filter_class.value == 1) { wanted_class = AffixList.ClassSpecificity.NonSpecific; }
+                        else if (shards_filter_class.value == 2) { wanted_class = AffixList.ClassSpecificity.Primalist; }
+                        else if (shards_filter_class.value == 3) { wanted_class = AffixList.ClassSpecificity.Mage; }
+                        else if (shards_filter_class.value == 4) { wanted_class = AffixList.ClassSpecificity.Sentinel; }
+                        else if (shards_filter_class.value == 5) { wanted_class = AffixList.ClassSpecificity.Acolyte; }
+                        else if (shards_filter_class.value == 6) { wanted_class = AffixList.ClassSpecificity.Rogue; }                        
+                    }
                     bool filter_by_name = false;
                     string wanted_name = "";
-                    /*if (shard_filter_text.text != "")
+                    if (shards_filter_name.text != "")
                     {
                         filter_by_name = true;
-                        wanted_name = shard_filter_text.text;
-                    }*/
-
+                        wanted_name = shards_filter_name.text;
+                    }
                     bool item_idol = false;
                     if ((item_type > 24) && (item_type < 34)) { item_idol = true; }
-                    
                     foreach (AffixList.SingleAffix affix in AffixList.instance.singleAffixes)
                     {
                         bool affix_idol = false;
                         if (affix.affixName.Contains("Idol ")) { affix_idol = true; }
 
                         if (((item_idol && affix_idol) || (!item_idol && !affix_idol)) &&
-                            (((filter_by_name) && (affix.affixName.Contains(wanted_name))) || (!filter_by_name)) &&
+                            (((filter_by_name) && (affix.affixName.ToLower().Contains(wanted_name.ToLower()))) || (!filter_by_name)) &&
                             (((filter_by_type) && (affix.type == wanted_type)) || (!filter_by_type)) &&
                             (((filter_by_class) && (affix.classSpecificity == wanted_class)) || (!filter_by_class))
                             )
@@ -5006,7 +5174,7 @@ namespace LastEpoch_Hud.Scripts
                         if (affix.affixName.Contains("Idol ")) { affix_idol = true; }
 
                         if (((item_idol && affix_idol) || (!item_idol && !affix_idol)) &&
-                            (((filter_by_name) && (affix.affixName.Contains(wanted_name))) || (!filter_by_name)) &&
+                            (((filter_by_name) && (affix.affixName.ToLower().Contains(wanted_name.ToLower()))) || (!filter_by_name)) &&
                             (((filter_by_type) && (affix.type == wanted_type)) || (!filter_by_type)) &&
                             (((filter_by_class) && (affix.classSpecificity == wanted_class)) || (!filter_by_class))
                             )
@@ -5015,6 +5183,14 @@ namespace LastEpoch_Hud.Scripts
                         }
                     }
                     shard_initialized = true;
+                }
+                public static void RemoveShardsInView()
+                {
+                    foreach (GameObject go in Functions.GetAllChild(center_content))
+                    {
+                        Destroy(go);
+                    }
+                        
                 }
                 public static void AddShardInView(int id, string name)
                 {
@@ -5043,7 +5219,6 @@ namespace LastEpoch_Hud.Scripts
                         else if (shard_number == 4) { affix_4_id = id; affix_4_name = name; }
                         else if (shard_number == 5) { affix_5_id = id; affix_5_name = name; }
                     }
-                    CloseShardsView();
                 }
                 public static ItemAffix MakeAffix(int id, byte tier, byte roll, bool seal)
                 {
@@ -5204,7 +5379,7 @@ namespace LastEpoch_Hud.Scripts
                                 an += new_count; //Set affix number
                                 if (ra < 7) { ra = new_count; } //Set rarity to affix numbers for base item only
                                 //else if (an > 0) { ra = 9; }//Set rarity to legendary if seal or affix
-                                else if (new_count > 0) { ra = 9; }//Set rarity to legendary if affix only
+                                else if (new_count > 0) { ra = 9; } //Set rarity to legendary if affix only
                             }
 
                             //Unique
