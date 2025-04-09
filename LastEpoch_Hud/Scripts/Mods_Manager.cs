@@ -7,7 +7,7 @@ namespace LastEpoch_Hud.Scripts
     public class Mods_Manager : MonoBehaviour
     {
         public Mods_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Mods_Manager instance { get; private set; }        
+        public static Mods_Manager instance { get; private set; }
         GameObject character_autopotion_obj = null;
         GameObject character_potionreplenishment_obj = null;
         GameObject character_blessings_obj = null;
@@ -26,13 +26,13 @@ namespace LastEpoch_Hud.Scripts
         GameObject minimap_icons_obj = null;        
 
         bool initialized = false;
-
+        
         void Awake()
         {
             instance = this;
             Main.logger_instance.Msg("Mods Manager : Initialize");
             Il2CppSystem.Collections.Generic.List<GameObject> Mods_Objects = new Il2CppSystem.Collections.Generic.List<GameObject>();
-
+            
             character_autopotion_obj = Object.Instantiate(new GameObject { name = "Mod_Character_AutoPotion" }, Vector3.zero, Quaternion.identity);
             character_autopotion_obj.active = false;
             character_autopotion_obj.AddComponent<Mods.Character.Character_AutoPotions>();

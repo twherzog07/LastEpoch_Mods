@@ -471,14 +471,17 @@ namespace LastEpoch_Hud.Scripts
                 }
             }
 
-            //Disable Keys when hud is open (allow inputField)
+            //Disable Keys when hud is open (allow inputField)            
             [HarmonyPatch(typeof(Input), "GetKeyDown", new System.Type[] { typeof(UnityEngine.KeyCode) })]
             public class Input_GetKeyDown
             {
                 [HarmonyPrefix]
                 static bool Prefix(bool __result, UnityEngine.KeyCode __0)
                 {
-                    if ((IsPauseOpen()) && (__0 != KeyCode.Escape)) { return false; }
+                    if ((IsPauseOpen()) &&
+                        (__0 != KeyCode.Escape) && //Open / Close Pause
+                        (__0 != KeyCode.F7) && (__0 != KeyCode.F8)) // Unity Explorer
+                    { return false; }
                     return true;
                 }
             }
@@ -1036,141 +1039,129 @@ namespace LastEpoch_Hud.Scripts
                                     case "Slider_Items_Drop_Implicits_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.Implicits_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.Implicits_Min > Save_Manager.instance.data.Items.Drop.Implicits_Max)
-                                            { Content.Items.Drop.implicits_slider_max.value = Save_Manager.instance.data.Items.Drop.Implicits_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.Implicits_Max) { Content.Items.Drop.implicits_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_Implicits_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.Implicits_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.Implicits_Max < Save_Manager.instance.data.Items.Drop.Implicits_Min)
-                                            { Content.Items.Drop.implicits_slider_min.value = Save_Manager.instance.data.Items.Drop.Implicits_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.Implicits_Min) { Content.Items.Drop.implicits_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_ForginPotencial_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.ForginPotencial_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.ForginPotencial_Min > Save_Manager.instance.data.Items.Drop.ForginPotencial_Max)
-                                            { Content.Items.Drop.forgin_potencial_slider_max.value = Save_Manager.instance.data.Items.Drop.ForginPotencial_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.ForginPotencial_Max) { Content.Items.Drop.forgin_potencial_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_ForginPotencial_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.ForginPotencial_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.ForginPotencial_Max < Save_Manager.instance.data.Items.Drop.ForginPotencial_Min)
-                                            { Content.Items.Drop.forgin_potencial_slider_min.value = Save_Manager.instance.data.Items.Drop.ForginPotencial_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.ForginPotencial_Min) { Content.Items.Drop.forgin_potencial_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_SealTier_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.SealTier_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.SealTier_Min > Save_Manager.instance.data.Items.Drop.SealTier_Max)
-                                            { Content.Items.Drop.seal_tier_slider_max.value = Save_Manager.instance.data.Items.Drop.SealTier_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.SealTier_Max) { Content.Items.Drop.seal_tier_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_SealTier_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.SealTier_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.SealTier_Max < Save_Manager.instance.data.Items.Drop.SealTier_Min)
-                                            { Content.Items.Drop.seal_tier_slider_min.value = Save_Manager.instance.data.Items.Drop.SealTier_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.SealTier_Min) { Content.Items.Drop.seal_tier_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_SealValue_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.SealValue_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.SealValue_Min > Save_Manager.instance.data.Items.Drop.SealValue_Max)
-                                            { Content.Items.Drop.seal_value_slider_max.value = Save_Manager.instance.data.Items.Drop.SealValue_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.SealValue_Max) { Content.Items.Drop.seal_value_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_SealValue_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.SealValue_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.SealValue_Max < Save_Manager.instance.data.Items.Drop.SealValue_Min)
-                                            { Content.Items.Drop.seal_value_slider_min.value = Save_Manager.instance.data.Items.Drop.SealValue_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.SealValue_Min) { Content.Items.Drop.seal_value_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_NbAffixes_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.AffixCount_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.AffixCount_Min > Save_Manager.instance.data.Items.Drop.AffixCount_Max)
-                                            { Content.Items.Drop.affix_count_slider_max.value = Save_Manager.instance.data.Items.Drop.AffixCount_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.AffixCount_Max) { Content.Items.Drop.affix_count_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_NbAffixes_Max":
                                         {
-                                            Save_Manager.instance.data.Items.Drop.AffixCount_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.AffixCount_Max < Save_Manager.instance.data.Items.Drop.AffixCount_Min)
-                                            { Content.Items.Drop.affix_count_slider_min.value = Save_Manager.instance.data.Items.Drop.AffixCount_Max; }
+                                            if (Save_Manager.instance.data.Items.Drop.AffixCount_Max != __0) { Save_Manager.instance.data.Items.Drop.AffixCount_Max = __0; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.AffixCount_Min) { Content.Items.Drop.affix_count_slider_min.value = __0; }
+                                            
                                             break;
                                         }
                                     case "Slider_Items_Drop_AffixesTiers_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.AffixTiers_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.AffixTiers_Min > Save_Manager.instance.data.Items.Drop.AffixTiers_Max)
-                                            { Content.Items.Drop.affix_tiers_slider_max.value = Save_Manager.instance.data.Items.Drop.AffixTiers_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.AffixTiers_Max)
+                                            { Content.Items.Drop.affix_tiers_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_AffixesTiers_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.AffixTiers_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.AffixTiers_Max < Save_Manager.instance.data.Items.Drop.AffixTiers_Min)
-                                            { Content.Items.Drop.affix_tiers_slider_min.value = Save_Manager.instance.data.Items.Drop.AffixTiers_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.AffixTiers_Min)
+                                            { Content.Items.Drop.affix_tiers_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_AffixesValues_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.AffixValues_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.AffixValues_Min > Save_Manager.instance.data.Items.Drop.AffixValues_Max)
-                                            { Content.Items.Drop.affix_values_slider_max.value = Save_Manager.instance.data.Items.Drop.AffixValues_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.AffixValues_Max)
+                                            { Content.Items.Drop.affix_values_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_AffixesValues_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.AffixValues_Max = __0;
                                             if (Save_Manager.instance.data.Items.Drop.AffixValues_Max < Save_Manager.instance.data.Items.Drop.AffixValues_Min)
-                                            { Content.Items.Drop.affix_values_slider_min.value = Save_Manager.instance.data.Items.Drop.AffixValues_Max; }
+                                            { Content.Items.Drop.affix_values_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_UniqueMods_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.UniqueMods_Min = __0;
                                             if (Save_Manager.instance.data.Items.Drop.UniqueMods_Min > Save_Manager.instance.data.Items.Drop.UniqueMods_Max)
-                                            { Content.Items.Drop.unique_mods_slider_max.value = Save_Manager.instance.data.Items.Drop.UniqueMods_Min; }
+                                            { Content.Items.Drop.unique_mods_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_UniqueMods_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.UniqueMods_Max = __0;
                                             if (Save_Manager.instance.data.Items.Drop.UniqueMods_Max < Save_Manager.instance.data.Items.Drop.UniqueMods_Min)
-                                            { Content.Items.Drop.unique_mods_slider_min.value = Save_Manager.instance.data.Items.Drop.UniqueMods_Max; }
+                                            { Content.Items.Drop.unique_mods_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_LegendaryPotencial_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min = __0;
                                             if (Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min > Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max)
-                                            { Content.Items.Drop.legendary_potencial_slider_max.value = Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min; }
+                                            { Content.Items.Drop.legendary_potencial_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_LegendaryPotencial_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max < Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min)
-                                            { Content.Items.Drop.legendary_potencial_slider_min.value = Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min) { Content.Items.Drop.legendary_potencial_slider_min.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_WeaverWill_Min":
                                         {
                                             Save_Manager.instance.data.Items.Drop.WeaverWill_Min = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.WeaverWill_Min > Save_Manager.instance.data.Items.Drop.WeaverWill_Max)
-                                            { Content.Items.Drop.weaver_will_slider_max.value = Save_Manager.instance.data.Items.Drop.WeaverWill_Min; }
+                                            if (__0 > Save_Manager.instance.data.Items.Drop.WeaverWill_Max) { Content.Items.Drop.weaver_will_slider_max.value = __0; }
                                             break;
                                         }
                                     case "Slider_Items_Drop_WeaverWill_Max":
                                         {
                                             Save_Manager.instance.data.Items.Drop.WeaverWill_Max = __0;
-                                            if (Save_Manager.instance.data.Items.Drop.WeaverWill_Max < Save_Manager.instance.data.Items.Drop.WeaverWill_Min)
-                                            { Content.Items.Drop.weaver_will_slider_min.value = Save_Manager.instance.data.Items.Drop.WeaverWill_Max; }
+                                            if (__0 < Save_Manager.instance.data.Items.Drop.WeaverWill_Min) { Content.Items.Drop.weaver_will_slider_min.value = __0; }
                                             break;
                                         }
                                     //Craft
@@ -5199,7 +5190,6 @@ namespace LastEpoch_Hud.Scripts
                     GameObject shard_btn_object = Functions.GetChild(g, "shard_btn");
                     Button shard_btn = shard_btn_object.GetComponent<Button>();
                     shard_btn.name = shard_btn_name + id;
-
                     GameObject shard_id_object = Functions.GetChild(shard_btn_object, "shard_id");
                     Text shard_id = shard_id_object.GetComponent<Text>();
                     shard_id.text = id.ToString();
@@ -5460,7 +5450,7 @@ namespace LastEpoch_Hud.Scripts
                                 }
                             }
                             item.RefreshIDAndValues(); //Refresh item for implicits and unique mods
-
+                            
                             Refs_Manager.ground_item_manager.dropItemForPlayer(Refs_Manager.player_actor, item.TryCast<ItemData>(), Refs_Manager.player_actor.position(), false);
                         }
                     }

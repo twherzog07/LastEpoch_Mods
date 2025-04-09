@@ -49,7 +49,7 @@ namespace LastEpoch_Hud.Scripts
                 data = Get_DefaultConfig();
                 Save();
             }
-            Fix_Errors();
+            Check_Update();
             data_duplicate = data; //Use to check for data changed
             Main.logger_instance.Msg("Save Manager : Data initialized");
             initialized = true;
@@ -168,6 +168,9 @@ namespace LastEpoch_Hud.Scripts
                         Enable_AffixCount = false,
                         AffixCount_Min = 0,
                         AffixCount_Max = 4,
+                        Enable_IdolAffixCount = false,
+                        IdolAffixCount_Min = 0,
+                        IdolAffixCount_Max = 2,
                         Enable_AffixTiers = false,
                         AffixTiers_Min = 0,
                         AffixTiers_Max = 6,
@@ -464,13 +467,14 @@ namespace LastEpoch_Hud.Scripts
 
             return result;
         }
-        void Fix_Errors()
+        void Check_Update()
         {
             bool data_changed = false;
             if (data.ModVersion != Main.mod_version)
             {
                 //Update save when mod update here
                 data.KeyBinds.EternityCache = KeyCode.F4;
+                if (Main.mod_version == "4.2.3") { data.Items.Drop.IdolAffixCount_Max = 2; }
 
                 data.ModVersion = Main.mod_version;
                 data_changed = true;
@@ -636,6 +640,10 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_AffixCount;
                 public float AffixCount_Min;
                 public float AffixCount_Max;
+
+                public bool Enable_IdolAffixCount;
+                public float IdolAffixCount_Min;
+                public float IdolAffixCount_Max;
 
                 public bool Enable_AffixTiers;
                 public float AffixTiers_Min;

@@ -17,7 +17,7 @@ namespace LastEpoch_Hud
         public const string company_name = "Eleventh Hour Games";
         public const string game_name = "Last Epoch";
         public const string mod_name = "LastEpoch_Hud";
-        public const string mod_version = "4.2.2"; //LastEpoch 1.1.7.17
+        public const string mod_version = "4.2.3"; //LastEpoch 1.1.7.17
         public static bool debug = true;
 
         public override void OnInitializeMelon()
@@ -320,6 +320,26 @@ namespace LastEpoch_Hud
             {
                 return true;
             }
+            else { return false; }
+        }
+        public static Sprite GetItemIcon(ItemDataUnpacked item)
+        {
+            Sprite result = null;
+            try { result = UITooltipItem.SetItemSprite(item); }
+            catch { Main.logger_instance.Error("Error GetItemIcon"); }
+
+            return result;
+        }
+        public static bool CheckClass(int classe, ItemList.ClassRequirement req)
+        {
+            if ((req == ItemList.ClassRequirement.Any) ||
+                (req == ItemList.ClassRequirement.None) ||
+                ((req == ItemList.ClassRequirement.Primalist) && (classe == 0)) ||
+                ((req == ItemList.ClassRequirement.Mage) && (classe == 1)) ||
+                ((req == ItemList.ClassRequirement.Sentinel) && (classe == 2)) ||
+                ((req == ItemList.ClassRequirement.Acolyte) && (classe == 3)) ||
+                ((req == ItemList.ClassRequirement.Rogue) && (classe == 4)))
+            { return true; }
             else { return false; }
         }
     }
