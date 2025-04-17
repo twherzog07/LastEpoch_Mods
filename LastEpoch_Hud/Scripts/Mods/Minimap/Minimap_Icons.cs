@@ -127,7 +127,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Minimap
                             base_object.transform.localPosition = __instance.gameObject.transform.localPosition;
                             base_object.AddComponent<DMMapIcon>();
                             base_object.AddComponent<Minimap_Icons_UI>();
-                            base_object.GetComponent<Minimap_Icons_UI>().icon = UITooltipItem.SetItemSprite(__0);
+                            base_object.GetComponent<Minimap_Icons_UI>().icon = UITooltipItem.GetItemSprite(__0, ItemUIContext.Default);
 
                             items_in_map.Add(new objects_structure { scene_name = Scenes.SceneName, id = __1, base_object = base_object });
                         }
@@ -136,7 +136,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Minimap
             }
         }
         
-        [HarmonyPatch(typeof(GroundItemManager), "pickupItem", new System.Type[] { typeof(Actor), typeof(uint) })]
+        [HarmonyPatch(typeof(GroundItemManager), "pickupItem", new System.Type[] { typeof(Actor), typeof(uint), typeof(StackableItemFlags) })]
         public class GroundItemManager_pickupItem
         {
             [HarmonyPostfix]

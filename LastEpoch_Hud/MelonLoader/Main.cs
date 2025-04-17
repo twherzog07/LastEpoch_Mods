@@ -163,17 +163,24 @@ namespace LastEpoch_Hud
         }
         public static GameObject GetChild(GameObject obj, string name)
         {
-            GameObject result = null;
-            for (int i = 0; i < obj.transform.childCount; i++)
+            GameObject result = null;            
+            if (!obj.IsNullOrDestroyed())
             {
-                string obj_name = obj.transform.GetChild(i).gameObject.name;
-                if (obj_name == name)
+                bool found = false;
+                for (int i = 0; i < obj.transform.childCount; i++)
                 {
-                    result = obj.transform.GetChild(i).gameObject;
-                    break;
+                    string obj_name = obj.transform.GetChild(i).gameObject.name;
+                    if (obj_name == name)
+                    {
+                        result = obj.transform.GetChild(i).gameObject;
+                        found = true;
+                        break;
+                    }
                 }
+                if (!found) { Main.logger_instance.Error("Functions.GetChild, Child : " + name + " not Found"); }
             }
-
+            else { Main.logger_instance.Error("Obj is null "); }
+            
             return result;
         }
         public static List<GameObject> GetAllChild(GameObject obj)
@@ -325,7 +332,29 @@ namespace LastEpoch_Hud
         public static Sprite GetItemIcon(ItemDataUnpacked item)
         {
             Sprite result = null;
-            try { result = UITooltipItem.SetItemSprite(item); }
+
+            /*
+             static void Postfix(Il2Cpp.UITooltipItem __instance, Il2Cpp.ItemDataUnpacked __0, Il2Cpp.UITooltipItem.ItemTooltipInfo __1, bool __2)
+{
+    try {
+       StringBuilder sb = new StringBuilder();
+       sb.AppendLine("--------------------");
+       sb.AppendLine("void Il2Cpp.UITooltipItem::SetItemImage(Il2Cpp.ItemDataUnpacked item, Il2Cpp.UITooltipItem+ItemTooltipInfo ttInfo, bool forComparison)");
+       sb.Append("- __instance: ").AppendLine(__instance.ToString());
+       sb.Append("- Parameter 0 'item': ").AppendLine(__0?.ToString() ?? "null");
+       sb.Append("- Parameter 1 'ttInfo': ").AppendLine(__1?.ToString() ?? "null");
+       sb.Append("- Parameter 2 'forComparison': ").AppendLine(__2.ToString());
+       UnityExplorer.ExplorerCore.Log(sb.ToString());
+    }
+    catch (System.Exception ex) {
+        UnityExplorer.ExplorerCore.LogWarning($"Exception in patch of void Il2Cpp.UITooltipItem::SetItemImage(Il2Cpp.ItemDataUnpacked item, Il2Cpp.UITooltipItem+ItemTooltipInfo ttInfo, bool forComparison):\n{ex}");
+    }
+}
+
+             */
+
+            //try { result = UITooltipItem.SetItemSprite(item); }
+            try { result = UITooltipItem.GetItemSprite(item, ItemUIContext.Default); }
             catch { Main.logger_instance.Error("Error GetItemIcon"); }
 
             return result;

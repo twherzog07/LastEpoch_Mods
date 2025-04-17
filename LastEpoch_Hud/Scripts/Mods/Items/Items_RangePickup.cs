@@ -36,7 +36,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         {
                             found = true;
                             ground_item.location = Refs_Manager.player_actor.position();
-                            GroundItemManager.instance.pickupItem(Refs_Manager.player_actor, ground_item.id);
+                            GroundItemManager.instance.pickupItem(Refs_Manager.player_actor, ground_item.id, StackableItemFlags.None);
                             break;
                         }
                     }

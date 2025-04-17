@@ -83,7 +83,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                 var exalted = __instance.beforeOther.Container.GetContent()[0].data;
                                 if (!unique.IsNullOrDestroyed() && !exalted.IsNullOrDestroyed())
                                 {
-                                    unique.absorb4ModExaltedItemToBecomeLegendary(exalted);
+                                    unique.absorb4ModExaltedItemToBecomeLegendary(exalted, null);
                                     result = true;
                                 }
                             }

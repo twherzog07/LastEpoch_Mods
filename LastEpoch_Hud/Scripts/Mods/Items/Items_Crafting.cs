@@ -1730,7 +1730,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             }
             private static Sprite Get_AffixImgFromAffixList(int affix_id)
             {
-                Sprite sprite = UITooltipItem.SetItemSprite(new ItemDataUnpacked
+                Sprite sprite = UITooltipItem.GetItemSprite(new ItemDataUnpacked
                 {
                     LvlReq = 0,
                     classReq = ItemList.ClassRequirement.Any,
@@ -1743,7 +1743,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     legendaryPotential = (byte)0,
                     weaversWill = (byte)0,
                     hasSealedAffix = false
-                });
+                }, ItemUIContext.Default);
 
                 return sprite;
             }

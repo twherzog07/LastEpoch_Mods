@@ -179,6 +179,7 @@ namespace LastEpoch_Hud.Scripts
             {
                 if ((game_canvas.IsNullOrDestroyed()) && (Refs_Manager.game_uibase.canvases.Count > 0)) { game_canvas = Refs_Manager.game_uibase.canvases[0]; }
                 if ((game_pause_menu.IsNullOrDestroyed()) || (Hud_Base.Default_PauseMenu_Btns.IsNullOrDestroyed())) { Hud_Base.Get_DefaultPauseMenu(); }
+                if ((!Hud_Base.initiliazed_events) && (!game_pause_menu.IsNullOrDestroyed()) && (!Hud_Base.Default_PauseMenu_Btns.IsNullOrDestroyed())) { Hud_Base.Set_Events(); }
                 if (Hud_Base.Get_DefaultPauseMenu_Open()) { Hud_Base.Toogle_DefaultPauseMenu(false); }
             }
             if ((!asset_bundle.IsNullOrDestroyed()) && (hud_object.IsNullOrDestroyed()) && (!hud_initializing)) { Init_Hud(); }
@@ -1267,20 +1268,27 @@ namespace LastEpoch_Hud.Scripts
         {
             public static void Set_Base_Button_Event(GameObject base_obj, string child, string btn_name, UnityEngine.Events.UnityAction action)
             {
-                GameObject go = Functions.GetChild(base_obj, child);
-                if (!go.IsNullOrDestroyed())
+                if (!base_obj.IsNullOrDestroyed())
                 {
-                    GameObject btn_obj = Functions.GetChild(go, btn_name);
-                    if (!btn_obj.IsNullOrDestroyed())
+                    GameObject go = Functions.GetChild(base_obj, child);
+                    if (!go.IsNullOrDestroyed())
                     {
-                        Button btn = btn_obj.GetComponent<Button>();
-                        if (!btn.IsNullOrDestroyed())
+                        GameObject btn_obj = Functions.GetChild(go, btn_name);
+                        if (!btn_obj.IsNullOrDestroyed())
                         {
-                            btn.onClick = new Button.ButtonClickedEvent();
-                            btn.onClick.AddListener(action);
+                            Button btn = btn_obj.GetComponent<Button>();
+                            if (!btn.IsNullOrDestroyed())
+                            {
+                                btn.onClick = new Button.ButtonClickedEvent();
+                                btn.onClick.AddListener(action);
+                            }
+                            else { Main.logger_instance.Error("Set_Base_Button_Event Can't found button"); }
                         }
+                        else { Main.logger_instance.Error("Set_Base_Button_Event Can't found GameObject button " + btn_name); }
                     }
+                    else { Main.logger_instance.Error("Set_Base_Button_Event Can't found " + child + " in base_obj"); }
                 }
+                else { Main.logger_instance.Error("Set_Base_Button_Event base_obj is null"); }
             }
             public static void Set_Button_Event(Button btn, UnityEngine.Events.UnityAction action)
             {
@@ -1302,6 +1310,7 @@ namespace LastEpoch_Hud.Scripts
         {
             public static bool Initialized = false;
             public static bool Initializing = false;
+            public static bool initiliazed_events = false;
             public static GameObject Default_PauseMenu_Btns = null;
             public static Button Btn_Resume;
             public static Button Btn_Settings;
@@ -1318,14 +1327,19 @@ namespace LastEpoch_Hud.Scripts
                 if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
                 {
                     GameObject Draw_over_login_canvas = Functions.GetChild(UIBase.instance.gameObject, "Draw Over Login Canvas");
-                    if (!Draw_over_login_canvas.IsNullOrDestroyed()) { game_pause_menu = Functions.GetChild(Draw_over_login_canvas, "Menu"); }
-                    if (!game_pause_menu.IsNullOrDestroyed())
+                    if (!Draw_over_login_canvas.IsNullOrDestroyed())
                     {
-                        Default_PauseMenu_Btns = Functions.GetChild(game_pause_menu, "Menu Image");
-                        Get_Refs();
-                        Set_Events();
-                    }   
-                    result = true;
+                        game_pause_menu = Functions.GetChild(Draw_over_login_canvas, "Menu");
+                        if (!game_pause_menu.IsNullOrDestroyed())
+                        {
+                            Default_PauseMenu_Btns = Functions.GetChild(game_pause_menu, "Menu Image");
+                            Get_Refs();
+                            //Set_Events();
+                            result = true;
+                        }
+                        else { Main.logger_instance.Msg("Get_DefaultPauseMenu : game_pause_menu NOT FOUND"); }                        
+                    }
+                    else { Main.logger_instance.Msg("Get_DefaultPauseMenu : Draw_over_login_canvas NOT FOUND"); }
                 }
 
                 return result;
@@ -1377,11 +1391,15 @@ namespace LastEpoch_Hud.Scripts
             }            
             public static void Set_Events()
             {
-                Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Resume", Resume_OnClick_Action);
-                Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Settings", Settings_OnClick_Action);
-                Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_GameGuide", GameGuide_OnClick_Action);
-                Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_LeaveGame", LeaveGame_OnClick_Action);
-                Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_ExitDesktop", ExitDesktop_OnClick_Action);
+                if ((!Default_PauseMenu_Btns.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed()))
+                {
+                    Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Resume", Resume_OnClick_Action);
+                    Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Settings", Settings_OnClick_Action);
+                    Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_GameGuide", GameGuide_OnClick_Action);
+                    Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_LeaveGame", LeaveGame_OnClick_Action);
+                    Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_ExitDesktop", ExitDesktop_OnClick_Action);
+                    initiliazed_events = true;
+                }
             }
 
             private static readonly System.Action Resume_OnClick_Action = new System.Action(Resume_Click);

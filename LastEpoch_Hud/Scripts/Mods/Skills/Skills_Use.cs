@@ -230,10 +230,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonMageMutator")
                         //else if (type == typeof(SummonMageMutator))
                         {
-                            if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems)
+                            //remove in LastEpoch 1.2
+                            /*if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems)
                             {
                                 __1.TryCast<SummonMageMutator>().additionalSkeletonsFromItems = Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromItems;
-                            }
+                            }*/
                             if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromPassives)
                             {
                                 __1.TryCast<SummonMageMutator>().additionalSkeletonsFromPassives = Save_Manager.instance.data.Skills.Minions.Mages.additionalSkeletonsFromPassives;

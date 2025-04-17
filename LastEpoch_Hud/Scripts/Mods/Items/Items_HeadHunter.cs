@@ -323,7 +323,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 return legendaryType;
             }
 
-            [HarmonyPatch(typeof(InventoryItemUI), "GetSpriteImage")]
+            //Not work in 1.2
+            /*[HarmonyPatch(typeof(InventoryItemUI), "GetSpriteImage")]
             public class InventoryItemUI_GetSpriteImage
             {
                 [HarmonyPostfix]
@@ -334,15 +335,29 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         __result = Icon;
                     }
                 }
-            }
+            }*/            
 
-            [HarmonyPatch(typeof(UITooltipItem), "SetItemSprite")]
-            public class UITooltipItem_SetItemSprite
+            //Fix for V1.2 (icon in inventory)
+            [HarmonyPatch(typeof(InventoryItemUI), "SetImageSpritesAndColours")]
+            public class InventoryItemUI_SetImageSpritesAndColours
             {
                 [HarmonyPostfix]
-                static void Postfix(ref UnityEngine.Sprite __result, ItemDataUnpacked __0)
+                static void Postfix(ref Il2Cpp.InventoryItemUI __instance)
                 {
-                    if ((__0.FullName == Get_Unique_Name()) && (!Icon.IsNullOrDestroyed()))
+                    if ((__instance.EntryRef.data.getAsUnpacked().FullName == Get_Unique_Name()) && (!Icon.IsNullOrDestroyed()))
+                    {
+                        __instance.contentImage.sprite = Icon;
+                    }
+                }
+            }
+
+            [HarmonyPatch(typeof(UITooltipItem), "GetItemSprite")]
+            public class UITooltipItem_GetItemSprite
+            {
+                [HarmonyPostfix]
+                static void Postfix(ref UnityEngine.Sprite __result, ItemData __0)
+                {
+                    if ((__0.getAsUnpacked().FullName == Get_Unique_Name()) && (!Icon.IsNullOrDestroyed()))
                     {
                         __result = Icon;
                     }

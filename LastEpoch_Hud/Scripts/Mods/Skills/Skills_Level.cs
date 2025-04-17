@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills
 {
@@ -17,25 +18,39 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             }
             else { return false; }
         }
-        [HarmonyPatch(typeof(SkillsPanelManager), "openSkillTree")]
+
+        //Need a fix for LastEpoch 1.2
+        /*[HarmonyPatch(typeof(SkillsPanelManager), "openSkillTree")]
         public class SkillsPanelManager_OpenSkillTree
         {
             [HarmonyPrefix]
             static void Prefix(ref SkillsPanelManager __instance, Ability __0)
             {
-                if (CanRun())
+                
+                if ((CanRun()) && (!__0.IsNullOrDestroyed()))
                 {
-                    foreach (LocalTreeData.SkillTreeData skill_tree_data in Refs_Manager.player_treedata.specialisedSkillTrees)
+                    try
                     {
-                        if (skill_tree_data.ability.abilityName == __0.abilityName)
+                        foreach (LocalTreeData.SkillTreeData skill_tree_data in Refs_Manager.player_treedata.specialisedSkillTrees)
                         {
-                            skill_tree_data.level = (byte)Save_Manager.instance.data.Skills.SkillLevel;
-                            break;
+                            if (!skill_tree_data.ability.IsNullOrDestroyed())
+                            {
+                                if (skill_tree_data.ability.abilityName == __0.abilityName)
+                                {
+                                    skill_tree_data.level = (byte)Save_Manager.instance.data.Skills.SkillLevel;
+                                    break;
+                                }
+                            }
                         }
                     }
+                    catch { Main.logger_instance.Error("SkillsPanelManager.openSkillTree ERROR Set skill level"); }
+                    try { __instance.updateVisuals(false); }
+                    catch { Main.logger_instance.Error("SkillsPanelManager.openSkillTree ERROR updateVisuals"); }
                 }
-                __instance.updateVisuals();
+                //__instance.updateVisuals();
+                
+                
             }
-        }
+        }*/
     }
 }
