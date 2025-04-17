@@ -21,6 +21,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
         public static void Open()
         {
+            //Main.logger_instance.Msg("Cosmetics_Flyout.Open()");
             if (!Cosmetics_Panel.instance.IsNullOrDestroyed())
             {
                 if (!Cosmetics_Panel.instance.flyoutWindow.IsNullOrDestroyed())
@@ -44,11 +45,23 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
         }
         public static void Close()
         {
+            //Main.logger_instance.Msg("Cosmetics_Flyout.Close()");
             if (!Cosmetics_Panel.instance.IsNullOrDestroyed())
             {
                 if (!Cosmetics_Panel.instance.flyoutWindow.IsNullOrDestroyed())
                 {
                     Cosmetics_Panel.instance.flyoutWindow.active = false;
+                }              
+            }
+        }
+        public static void ResetContent()
+        {
+            //Main.logger_instance.Msg("Cosmetics_Flyout.ResetContent()");
+            if (!flyout_content.IsNullOrDestroyed())
+            {
+                foreach (GameObject g in Functions.GetAllChild(flyout_content))
+                {
+                    if (g.name.Contains(skins_name)) { Object.Destroy(g); }
                 }
             }
         }
@@ -66,14 +79,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             [HarmonyPostfix]
             static void Postfix(ref CosmeticsFlyoutSelectionContentNavigable __instance)
             {
+                //Main.logger_instance.Msg("CosmeticsFlyoutSelectionContentNavigable.OnEnable()");
                 isOpen = true;
                 if ((!__instance.scrollContent.IsNullOrDestroyed()) && (flyout_content.IsNullOrDestroyed()))
                 {
+                    //Main.logger_instance.Msg("Set cosmetic Flyout Ref");
                     flyout_content = __instance.scrollContent.gameObject;
                 }
                 if (!flyout_content.IsNullOrDestroyed())
                 {
                     //Clear btn
+                    //Main.logger_instance.Msg("Set cleay button event");
                     GameObject cleat_btn_gameobject = Functions.GetChild(flyout_content, "Remove Button");
                     if (!cleat_btn_gameobject.IsNullOrDestroyed())
                     {
@@ -85,6 +101,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         }
                     }
                     //Add skins
+                    //Main.logger_instance.Msg("Add Basic Skins");
                     foreach (ItemList.BaseEquipmentItem item in ItemList.instance.EquippableItems)
                     {
                         if ((item.baseTypeID == selected_slot) ||
@@ -114,6 +131,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             }
                         }
                     }
+                    //Main.logger_instance.Msg("Add Unique Skins");
                     foreach (UniqueList.Entry unique in UniqueList.instance.uniques)
                     {
                         ItemList.EquipmentItem base_item = ItemList.instance.EquippableItems[unique.baseType].subItems[unique.subTypes[0]];
@@ -144,6 +162,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         }
                     }
                 }
+                else { Main.logger_instance.Error("Flyout content is null"); }
             }
         }
 
@@ -153,18 +172,20 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             [HarmonyPostfix]
             static void Postfix()
             {
+                //Main.logger_instance.Msg("CosmeticsFlyoutSelectionContentNavigable.OnDisable()");
                 isOpen = false;
                 selected_slot = -1;
                 selected_type = -1;
                 selected_rarity = -1;
                 selected_unique = -1;
-                if (!flyout_content.IsNullOrDestroyed())
+                ResetContent();
+                /*if (!flyout_content.IsNullOrDestroyed())
                 {
                     foreach (GameObject g in Functions.GetAllChild(flyout_content))
                     {
                         if (g.name.Contains(skins_name)) { Object.Destroy(g); }
                     }
-                }
+                }*/
             }
         }
         
