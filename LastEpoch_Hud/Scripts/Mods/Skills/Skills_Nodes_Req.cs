@@ -17,16 +17,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             }
             else { return false; }
         }
-
-
-        //Need a fix for LastEpoch 1.2
-        //[HarmonyPatch(typeof(LocalTreeData), "fulfilledRequirementExists")]
-        /*[HarmonyPatch(typeof(LocalTreeData), "fulfilledRequirementExists", new System.Type[] { typeof(LocalTreeData), typeof(GlobalTreeData.TreeData), typeof(GlobalTreeData.NodeData), typeof(GlobalTreeData.TreeData), typeof(GlobalTreeData.NodeData) })]
+        
+        [HarmonyPatch(typeof(LocalTreeData), "fulfilledRequirementExists", new System.Type[] { typeof(GlobalTreeData.TreeData), typeof(GlobalTreeData.NodeData), typeof(LocalTreeData.TreeData), typeof(LocalTreeData.NodeData) })]
         public class LocalTreeData_FulfilledRequirementExists
         {
             [HarmonyPrefix]
-            //static bool Prefix(LocalTreeData __instance, ref bool __result , GlobalTreeData.TreeData __0, ref GlobalTreeData.NodeData __1, LocalTreeData.TreeData __2, LocalTreeData.NodeData __3)
-            static void Prefix()// ref bool __result)
+            static bool Prefix(ref bool __result)
             {
                 if (CanRun())
                 {
@@ -35,6 +31,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                 }
                 else { return true; }
             }
-        }*/
+        }
     }
 }
