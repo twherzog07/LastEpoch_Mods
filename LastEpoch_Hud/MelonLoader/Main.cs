@@ -17,7 +17,7 @@ namespace LastEpoch_Hud
         public const string company_name = "Eleventh Hour Games";
         public const string game_name = "Last Epoch";
         public const string mod_name = "LastEpoch_Hud";
-        public const string mod_version = "4.2.3"; //LastEpoch 1.1.7.17
+        public const string mod_version = "4.2.4"; //LastEpoch 1.2
         public static bool debug = true;
 
         public override void OnInitializeMelon()
@@ -332,28 +332,6 @@ namespace LastEpoch_Hud
         public static Sprite GetItemIcon(ItemDataUnpacked item)
         {
             Sprite result = null;
-
-            /*
-             static void Postfix(Il2Cpp.UITooltipItem __instance, Il2Cpp.ItemDataUnpacked __0, Il2Cpp.UITooltipItem.ItemTooltipInfo __1, bool __2)
-{
-    try {
-       StringBuilder sb = new StringBuilder();
-       sb.AppendLine("--------------------");
-       sb.AppendLine("void Il2Cpp.UITooltipItem::SetItemImage(Il2Cpp.ItemDataUnpacked item, Il2Cpp.UITooltipItem+ItemTooltipInfo ttInfo, bool forComparison)");
-       sb.Append("- __instance: ").AppendLine(__instance.ToString());
-       sb.Append("- Parameter 0 'item': ").AppendLine(__0?.ToString() ?? "null");
-       sb.Append("- Parameter 1 'ttInfo': ").AppendLine(__1?.ToString() ?? "null");
-       sb.Append("- Parameter 2 'forComparison': ").AppendLine(__2.ToString());
-       UnityExplorer.ExplorerCore.Log(sb.ToString());
-    }
-    catch (System.Exception ex) {
-        UnityExplorer.ExplorerCore.LogWarning($"Exception in patch of void Il2Cpp.UITooltipItem::SetItemImage(Il2Cpp.ItemDataUnpacked item, Il2Cpp.UITooltipItem+ItemTooltipInfo ttInfo, bool forComparison):\n{ex}");
-    }
-}
-
-             */
-
-            //try { result = UITooltipItem.SetItemSprite(item); }
             try { result = UITooltipItem.GetItemSprite(item, ItemUIContext.Default); }
             catch { Main.logger_instance.Error("Error GetItemIcon"); }
 
