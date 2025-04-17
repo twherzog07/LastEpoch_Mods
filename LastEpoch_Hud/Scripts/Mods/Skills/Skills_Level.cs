@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using Unity.Collections.LowLevel.Unsafe;
 
 namespace LastEpoch_Hud.Scripts.Mods.Skills
 {
@@ -19,9 +18,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             else { return false; }
         }
 
-        //Need a fix for LastEpoch 1.2
-        /*[HarmonyPatch(typeof(SkillsPanelManager), "openSkillTree")]
-        public class SkillsPanelManager_OpenSkillTree
+        [HarmonyPatch(typeof(SkillsPanelManager), "openSkillTree")]
+        public class SkillsPanelManager_openSkillTree
         {
             [HarmonyPrefix]
             static void Prefix(ref SkillsPanelManager __instance, Ability __0)
@@ -47,10 +45,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     try { __instance.updateVisuals(false); }
                     catch { Main.logger_instance.Error("SkillsPanelManager.openSkillTree ERROR updateVisuals"); }
                 }
-                //__instance.updateVisuals();
-                
-                
             }
-        }*/
+        }
     }
 }
