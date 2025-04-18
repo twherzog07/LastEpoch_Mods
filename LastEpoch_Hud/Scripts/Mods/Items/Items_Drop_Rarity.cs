@@ -74,25 +74,31 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     if (Save_Manager.instance.data.Items.Drop.Enable_ForceUnique) { __result = 7; return false; }
                     else if (Save_Manager.instance.data.Items.Drop.Enable_ForceSet) { __result = 8; return false; }
-                    else if (Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary) { __result = 9; return false; }
-                    else if (Save_Manager.instance.data.Items.Drop.Enable_AffixCount)
+                    else if (Save_Manager.instance.data.Items.Drop.Enable_ForceLegendary) { __result = 9; return false; }                    
+                    else { return true; }
+                }
+                else { return true; }                
+            }
+            [HarmonyPostfix]
+            static void Postfix(ref byte __result, int __0)
+            {
+                if (CanRun())
+                {
+                    if ((__result < 7) && (Save_Manager.instance.data.Items.Drop.Enable_AffixCount))
                     {
                         int min = (int)Save_Manager.instance.data.Items.Drop.AffixCount_Min;
                         int max = (int)Save_Manager.instance.data.Items.Drop.AffixCount_Max;
-                        if ((min == 0) && (max == 4)) { return true; }
-                        else
-                        {                            
+                        if ((min != 0) || (max != 4))
+                        {
                             if (min < 0) { min = 0; Save_Manager.instance.data.Items.Drop.AffixCount_Min = 0f; }
                             else if (min > 6) { min = 6; Save_Manager.instance.data.Items.Drop.AffixCount_Min = 6f; }
                             if (max < 0) { max = 0; Save_Manager.instance.data.Items.Drop.AffixCount_Max = 0f; }
                             else if (max > 6) { max = 6; Save_Manager.instance.data.Items.Drop.AffixCount_Max = 6f; }
                             __result = (byte)UnityEngine.Random.RandomRangeInt(min, (max + 1)); //Should be replace
-                            return false;
+                            
                         }
                     }
-                    else { return true; }
                 }
-                else { return true; }                
             }
         }
 
