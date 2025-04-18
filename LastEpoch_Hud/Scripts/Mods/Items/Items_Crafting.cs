@@ -26,7 +26,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             else { NewSlots.Initialized = false; }
         }
 
-        public static bool ForgeModIsEnabled => !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod;
+        public static bool ForgeModIsEnabled = false; // => !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod;
+        //public static bool BypassReq = Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq; //Allow craft unique, idols, T6, T7
 
         public class Current
         {
@@ -285,7 +286,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             if (!container.content.IsNullOrDestroyed()) { Current.item = container.content.data; }
                         }
                     }
-                    if ((Scenes.IsGameScene()) && (!EditingItem) && ForgeModIsEnabled) // && (!Crafting_Slot_Manager.forgin))
+                    if ((Scenes.IsGameScene()) && (!EditingItem) && (!Crafting_Slot_Manager.forgin))
                     {
                         if ((!Current.item.IsNullOrDestroyed()) && (first_time) &&
                             (!Save_Manager.instance.IsNullOrDestroyed()))
@@ -294,123 +295,126 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             EditingItem = true;
                             if (!Save_Manager.instance.data.IsNullOrDestroyed())
                             {
-                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_ForginPotencial)
+                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod)
                                 {
-                                    Current.item.forgingPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.ForginPotencial;
-                                }
-
-                                System.Collections.Generic.List<bool> implicits_enables = new System.Collections.Generic.List<bool>();
-                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_0);
-                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_1);
-                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2);
-                                System.Collections.Generic.List<float> implicits_values = new System.Collections.Generic.List<float>();
-                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_0);
-                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_1);
-                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_2);
-
-                                for (int z = 0; z < Current.item.implicitRolls.Count; z++)
-                                {
-                                    if (implicits_enables[z]) { Current.item.implicitRolls[z] = (byte)implicits_values[z]; }
-                                }
-                                implicits_enables.Clear();
-                                implicits_values.Clear();
-
-                                System.Collections.Generic.List<bool> affix_tier_enables = new System.Collections.Generic.List<bool>();
-                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Tier);
-                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Tier);
-                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Tier);
-                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Tier);
-                                System.Collections.Generic.List<float> affix_tier_values = new System.Collections.Generic.List<float>();
-                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier);
-                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier);
-                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier);
-                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Tier);
-                                System.Collections.Generic.List<bool> affix_value_enables = new System.Collections.Generic.List<bool>();
-                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Value);
-                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Value);
-                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Value);
-                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Value);
-                                System.Collections.Generic.List<float> affix_value_values = new System.Collections.Generic.List<float>();
-                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value);
-                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value);
-                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value);
-                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value);
-
-                                int nb_prefix = 0;
-                                int nb_suffix = 0;
-                                foreach (ItemAffix affix in Current.item.affixes)
-                                {
-                                    if (affix.isSealedAffix)
+                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_ForginPotencial)
                                     {
-                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier) { affix.affixTier = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier; }
-                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Value) { affix.affixRoll = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Value; }
+                                        Current.item.forgingPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.ForginPotencial;
                                     }
-                                    else
+
+                                    System.Collections.Generic.List<bool> implicits_enables = new System.Collections.Generic.List<bool>();
+                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_0);
+                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_1);
+                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2);
+                                    System.Collections.Generic.List<float> implicits_values = new System.Collections.Generic.List<float>();
+                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_0);
+                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_1);
+                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_2);
+
+                                    for (int z = 0; z < Current.item.implicitRolls.Count; z++)
                                     {
-                                        int result = -1;
-                                        if ((affix.affixType == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs))
-                                        {
-                                            result = 0 + nb_prefix;
-                                            nb_prefix++;
-                                        }
-                                        else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))
-                                        {
-                                            result = 2 + nb_suffix;
-                                            nb_suffix++;
-                                        }
+                                        if (implicits_enables[z]) { Current.item.implicitRolls[z] = (byte)implicits_values[z]; }
+                                    }
+                                    implicits_enables.Clear();
+                                    implicits_values.Clear();
 
-                                        if ((result > -1) && (result < (Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                                    System.Collections.Generic.List<bool> affix_tier_enables = new System.Collections.Generic.List<bool>();
+                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Tier);
+                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Tier);
+                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Tier);
+                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Tier);
+                                    System.Collections.Generic.List<float> affix_tier_values = new System.Collections.Generic.List<float>();
+                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier);
+                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier);
+                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier);
+                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Tier);
+                                    System.Collections.Generic.List<bool> affix_value_enables = new System.Collections.Generic.List<bool>();
+                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Value);
+                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Value);
+                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Value);
+                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Value);
+                                    System.Collections.Generic.List<float> affix_value_values = new System.Collections.Generic.List<float>();
+                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value);
+                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value);
+                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value);
+                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value);
+
+                                    int nb_prefix = 0;
+                                    int nb_suffix = 0;
+                                    foreach (ItemAffix affix in Current.item.affixes)
+                                    {
+                                        if (affix.isSealedAffix)
                                         {
-                                            if ((result < affix_tier_enables.Count) && (result < affix_tier_values.Count) &&
-                                                (result < affix_value_enables.Count) && (result < affix_value_values.Count))
+                                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier) { affix.affixTier = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier; }
+                                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Value) { affix.affixRoll = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Value; }
+                                        }
+                                        else
+                                        {
+                                            int result = -1;
+                                            if ((affix.affixType == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs))
                                             {
-                                                if (affix_tier_enables[result]) { affix.affixTier = (byte)affix_tier_values[result]; }
-                                                if (affix_value_enables[result]) { affix.affixRoll = (byte)affix_value_values[result]; }
+                                                result = 0 + nb_prefix;
+                                                nb_prefix++;
+                                            }
+                                            else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))
+                                            {
+                                                result = 2 + nb_suffix;
+                                                nb_suffix++;
+                                            }
 
+                                            if ((result > -1) && (result < (Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                                            {
+                                                if ((result < affix_tier_enables.Count) && (result < affix_tier_values.Count) &&
+                                                    (result < affix_value_enables.Count) && (result < affix_value_values.Count))
+                                                {
+                                                    if (affix_tier_enables[result]) { affix.affixTier = (byte)affix_tier_values[result]; }
+                                                    if (affix_value_enables[result]) { affix.affixRoll = (byte)affix_value_values[result]; }
+
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                affix_tier_enables.Clear();
-                                affix_tier_values.Clear();
-                                affix_value_enables.Clear();
-                                affix_value_values.Clear();
+                                    affix_tier_enables.Clear();
+                                    affix_tier_values.Clear();
+                                    affix_value_enables.Clear();
+                                    affix_value_values.Clear();
 
-                                if (Current.item.rarity > 6)
-                                {
-                                    System.Collections.Generic.List<bool> unique_mods_enables = new System.Collections.Generic.List<bool>();
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_0);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_3);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_4);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_5);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_6);
-                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_7);
-                                    System.Collections.Generic.List<float> unique_mods_values = new System.Collections.Generic.List<float>();
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_3);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_4);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_5);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_6);
-                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_7);
-                                    for (int z = 0; z < Current.item.uniqueRolls.Count; z++)
+                                    if (Current.item.rarity > 6)
                                     {
-                                        if (unique_mods_enables[z]) { Current.item.uniqueRolls[z] = (byte)unique_mods_values[z]; }
+                                        System.Collections.Generic.List<bool> unique_mods_enables = new System.Collections.Generic.List<bool>();
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_0);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_3);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_4);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_5);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_6);
+                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_7);
+                                        System.Collections.Generic.List<float> unique_mods_values = new System.Collections.Generic.List<float>();
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_3);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_4);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_5);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_6);
+                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_7);
+                                        for (int z = 0; z < Current.item.uniqueRolls.Count; z++)
+                                        {
+                                            if (unique_mods_enables[z]) { Current.item.uniqueRolls[z] = (byte)unique_mods_values[z]; }
+                                        }
+                                        unique_mods_enables.Clear();
+                                        unique_mods_values.Clear();
+
+                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_LegendaryPotencial)
+                                        { Current.item.legendaryPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.LegendaryPotencial; }
+
+                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_WeaverWill)
+                                        { Current.item.weaversWill = (byte)Save_Manager.instance.data.Items.CraftingSlot.WeaverWill; }
                                     }
-                                    unique_mods_enables.Clear();
-                                    unique_mods_values.Clear();
 
-                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_LegendaryPotencial)
-                                    { Current.item.legendaryPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.LegendaryPotencial; }
-
-                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_WeaverWill)
-                                    { Current.item.weaversWill = (byte)Save_Manager.instance.data.Items.CraftingSlot.WeaverWill; }
+                                    Current.item.RefreshIDAndValues();
                                 }
-
-                                Current.item.RefreshIDAndValues();
                             }
                             EditingItem = false;
                         }
@@ -442,7 +446,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; };
                     int affix_id = __instance.appliedAffixID;
                     int affix_tier = Get.Tier(Current.item, affix_id);
-                    if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && ForgeModIsEnabled)
+                    if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq))
                     {
                         if (__0 == Locales.cant_craft_unique)
                         {
@@ -553,7 +557,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static void Prefix(ref OneSlotItemContainer __instance, bool __result, ItemData __0)
                 {
-                    if ((Scenes.IsGameScene()) && (!__0.IsNullOrDestroyed()) && ForgeModIsEnabled)
+                    if ((Scenes.IsGameScene()) && (!__0.IsNullOrDestroyed()) && (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq))
                     {
                         if ((__instance.ToString() == "CraftingMainItemContainer") && (!rect_transform.IsNullOrDestroyed()))
                         {
@@ -591,7 +595,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postifx(ref CraftingMainItemContainer __instance, ref bool __result, ItemData __0, int __1)
                 {
-                    if (ForgeModIsEnabled)
+                    if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
                     {
                         main_item_container = __instance;
                         if (Get.IsCraftable(__0)) { __result = true; } //Allow all item type < 34
@@ -608,7 +612,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static void Prefix(ref CraftingUpgradeButton __instance, int __0, ref bool __1)
                 {
-                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()) && ForgeModIsEnabled)
+                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()) && Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
                     {
                         AffixSlotForge temp = __instance.gameObject.GetComponentInParent<AffixSlotForge>();
                         if (!temp.IsNullOrDestroyed())
@@ -647,7 +651,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(ref AffixSlotForge __instance)
                 {
-                    if (Scenes.IsGameScene() && ForgeModIsEnabled)
+                    if (Scenes.IsGameScene())
                     {
                         Current.slot = __instance;
                         GameObject upgrade = Functions.GetChild(__instance.gameObject, "upgradeAvailable");
@@ -685,7 +689,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(CraftingMaterialsPanelUI __instance, ref Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> __0)
                 {
-                    //if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : AddShardsFromList : Postfix"); }
+                    if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : AddShardsFromList : Postfix"); }
                     if (!Refs_Manager.item_list.IsNullOrDestroyed() && ForgeModIsEnabled)
                     {
                         //int count = Refs_Manager.item_list.affixList.singleAffixes.Count + Refs_Manager.item_list.affixList.multiAffixes.Count;
@@ -718,6 +722,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(CraftingMaterialsPanelUI __instance)
                 {
+                    if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : PopulateShardList : Postfix"); }
                     if (ForgeModIsEnabled)
                     {
                         System.Collections.Generic.List<int> already = new System.Collections.Generic.List<int>();
@@ -756,6 +761,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingMaterialsPanelUI __instance)
                 {
+                    if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : RefreshAffixList : Postfix"); }
                     if ((Scenes.IsGameScene()) && ForgeModIsEnabled)
                     {
                         if (!Current.item.IsNullOrDestroyed())
@@ -920,9 +926,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             hidden_list.Clear();
 
                             //Use to Debug
-                            //Main.logger_instance.Msg("Unused count = " + unused_holder.transform.childCount);
-                            //Main.logger_instance.Msg("Incompatible count = " + incompatible_holder.transform.childCount);
-                            //Main.logger_instance.Msg("Hidden count = " + hidden_holder.transform.childCount);
+                            Main.logger_instance.Msg("Unused count = " + unused_holder.transform.childCount);
+                            Main.logger_instance.Msg("Incompatible count = " + incompatible_holder.transform.childCount);
+                            Main.logger_instance.Msg("Hidden count = " + hidden_holder.transform.childCount);
                         }
                     }
                 }
@@ -937,7 +943,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static void Prefix(/*ShardAffixListElement __instance,*/ ref int __0)
                 {
-                    if (Current.item != null && ForgeModIsEnabled)
+                    if (Current.item != null && Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
                     {
                         if ((Get.IsIdol(Current.item)) || (Current.item.isUniqueSetOrLegendary()))
                         {
@@ -985,187 +991,185 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 static bool Prefix(ref CraftingSlotManager __instance)
                 {
                     bool result = true;
-                    if (ForgeModIsEnabled)
+                    forgin = true;
+                    __instance.forgeButton.gameObject.active = false;
+                    affix_id = -1;
+                    affix_tier = -1;
+
+                    //glyphs
+                    bool glyph_of_hope = false; //25% no forgin potencial cost
+                    bool glyph_of_chaos = false; //Change affix //Not Added
+                    bool glyph_of_order = false; //don't roll when upgrade
+                    bool glyph_of_despair = false; //chance to seal
+                    bool glyph_of_insight = false; //prefix to experimental //Not Added
+                    bool glyph_of_envy = false; //increase monolith stability //Not Added
+
+                    OneItemContainer glyph_container = __instance.GetSupport();
+                    if (!glyph_container.IsNullOrDestroyed())
                     {
-                        forgin = true;
-                        __instance.forgeButton.gameObject.active = false;
-                        affix_id = -1;
-                        affix_tier = -1;
-
-                        //glyphs
-                        bool glyph_of_hope = false; //25% no forgin potencial cost
-                        bool glyph_of_chaos = false; //Change affix //Not Added
-                        bool glyph_of_order = false; //don't roll when upgrade
-                        bool glyph_of_despair = false; //chance to seal
-                        bool glyph_of_insight = false; //prefix to experimental //Not Added
-                        bool glyph_of_envy = false; //increase monolith stability //Not Added
-
-                        OneItemContainer glyph_container = __instance.GetSupport();
-                        if (!glyph_container.IsNullOrDestroyed())
+                        if (!glyph_container.content.IsNullOrDestroyed())
                         {
-                            if (!glyph_container.content.IsNullOrDestroyed())
+                            if (glyph_container.content.data.itemType == 103)
                             {
-                                if (glyph_container.content.data.itemType == 103)
+                                ushort sub_type = glyph_container.content.data.subType;
+                                switch (sub_type)
                                 {
-                                    ushort sub_type = glyph_container.content.data.subType;
-                                    switch (sub_type)
-                                    {
-                                        case 0: { glyph_of_hope = true; break; }
-                                        case 1: { glyph_of_chaos = true; break; }
-                                        case 2: { glyph_of_order = true; break; }
-                                        case 3: { glyph_of_despair = true; break; }
-                                        case 4: { glyph_of_insight = true; break; }
-                                        case 5: { glyph_of_envy = true; break; }
+                                    case 0: { glyph_of_hope = true; break; }
+                                    case 1: { glyph_of_chaos = true; break; }
+                                    case 2: { glyph_of_order = true; break; }
+                                    case 3: { glyph_of_despair = true; break; }
+                                    case 4: { glyph_of_insight = true; break; }
+                                    case 5: { glyph_of_envy = true; break; }
 
-                                    }
                                 }
                             }
                         }
+                    }
 
-                        bool forgin_no_cost = Save_Manager.instance.data.modsNotInHud.Craft_No_Forgin_Potencial_Cost;
-                        int glyph_of_hope_result = UnityEngine.Random.Range(0, 4); //25% chance no forgin potencial cost when Glyph of Hope
-                        if ((glyph_of_hope) && (glyph_of_hope_result == 0)) { forgin_no_cost = false; }
+                    bool forgin_no_cost = Save_Manager.instance.data.modsNotInHud.Craft_No_Forgin_Potencial_Cost;
+                    int glyph_of_hope_result = UnityEngine.Random.Range(0, 4); //25% chance no forgin potencial cost when Glyph of Hope
+                    if ((glyph_of_hope) && (glyph_of_hope_result == 0)) { forgin_no_cost = false; }
 
-                        if (Crafting_Manager.latest_string == Crafting_Manager.forge_string) //Forge Mod
+                    if (Crafting_Manager.latest_string == Crafting_Manager.forge_string) //Forge Mod
+                    {
+                        if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
                         {
-                            if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
-                            {
-                                affix_id = __instance.appliedAffixID;
-                                affix_tier = Get.Tier(Current.item, affix_id);
-                                if (Current.slot.IsNullOrDestroyed()) { Update_Slot(__instance, affix_id); }
-                                Update_UpgradeBtn();
+                            affix_id = __instance.appliedAffixID;
+                            affix_tier = Get.Tier(Current.item, affix_id);
+                            if (Current.slot.IsNullOrDestroyed()) { Update_Slot(__instance, affix_id); }
+                            Update_UpgradeBtn();
 
-                                bool legendary = Current.item.isUniqueSetOrLegendary();
-                                bool idol = Get.IsIdol(Current.item);
-                                AffixList.AffixType affix_type = AffixList.AffixType.SPECIAL;
-                                if (legendary) { Current.item.rarity = 9; }
-                                if (affix_tier > -1) //update affix
+                            bool legendary = Current.item.isUniqueSetOrLegendary();
+                            bool idol = Get.IsIdol(Current.item);
+                            AffixList.AffixType affix_type = AffixList.AffixType.SPECIAL;
+                            if (legendary) { Current.item.rarity = 9; }
+                            if (affix_tier > -1) //update affix
+                            {
+                                if (!idol)
                                 {
-                                    if (!idol)
+                                    bool force_upgrade = false;
+                                    ItemAffix seal_affix = null;
+                                    foreach (ItemAffix affix in Current.item.affixes)
                                     {
-                                        bool force_upgrade = false;
-                                        ItemAffix seal_affix = null;
-                                        foreach (ItemAffix affix in Current.item.affixes)
+                                        if (affix.affixId == affix_id)
                                         {
-                                            if (affix.affixId == affix_id)
+                                            affix_type = affix.affixType;
+                                            if ((affix_tier == affix.affixTier) && (affix_tier < 6))
                                             {
-                                                affix_type = affix.affixType;
-                                                if ((affix_tier == affix.affixTier) && (affix_tier < 6))
+                                                bool error = false;
+                                                if ((!legendary) && (!forgin_no_cost))
                                                 {
-                                                    bool error = false;
-                                                    if ((!legendary) && (!forgin_no_cost))
+                                                    int min = 0;
+                                                    int max = 0;
+                                                    if (affix_tier == 4) { min = 1; max = 23; }
+                                                    else if (affix_tier == 5) { min = 1; max = 27; }
+                                                    if (Current.item.forgingPotential >= (max - 1)) { Current.item.forgingPotential -= (byte)Random.RandomRangeInt(min, max); }
+                                                    else
                                                     {
-                                                        int min = 0;
-                                                        int max = 0;
-                                                        if (affix_tier == 4) { min = 1; max = 23; }
-                                                        else if (affix_tier == 5) { min = 1; max = 27; }
-                                                        if (Current.item.forgingPotential >= (max - 1)) { Current.item.forgingPotential -= (byte)Random.RandomRangeInt(min, max); }
-                                                        else
-                                                        {
-                                                            error = true; //Don't increment affix
-                                                            Main.logger_instance.Error("You need " + (max - 1) + " forgin potencial on this item to craft T" + (affix_tier + 2));
-                                                        }
-                                                    }
-                                                    if (!error)
-                                                    {
-                                                        force_upgrade = true;
-                                                        affix.affixTier++;
-                                                        affix_tier = (int)affix.affixTier;
-                                                        if (!glyph_of_order) { affix.affixRoll = (byte)Random.Range(0f, 255f); }
-                                                        if (glyph_of_despair) { seal_affix = affix; }
+                                                        error = true; //Don't increment affix
+                                                        Main.logger_instance.Error("You need " + (max - 1) + " forgin potencial on this item to craft T" + (affix_tier + 2));
                                                     }
                                                 }
-                                                break;
+                                                if (!error)
+                                                {
+                                                    force_upgrade = true;
+                                                    affix.affixTier++;
+                                                    affix_tier = (int)affix.affixTier;
+                                                    if (!glyph_of_order) { affix.affixRoll = (byte)Random.Range(0f, 255f); }
+                                                    if (glyph_of_despair) { seal_affix = affix; }
+                                                }
                                             }
+                                            break;
                                         }
-                                        if (glyph_of_hope)
+                                    }
+                                    if (glyph_of_hope)
+                                    {
+                                        //remove one glyph of hope from character items
+                                    }
+                                    if (glyph_of_order)
+                                    {
+                                        //remove one glyph of order from character items
+                                    }
+                                    if (glyph_of_despair)
+                                    //if (force_seal) //glyph of despair
+                                    {
+                                        seal_affix.affixTier = Save_Manager.instance.data.modsNotInHud.Craft_Seal_Tier;
+                                        Current.item.SealAffix(seal_affix);
+                                        //remove one glyph of despair from character items
+                                    }
+                                    if (force_upgrade)
+                                    {
+                                        Current.item.RefreshIDAndValues();
+                                        result = false;
+                                    }
+                                    else { Main.logger_instance.Error("Error when upgrading item"); }
+                                }
+                            }
+                            else //Add Affix
+                            {
+                                int nb_prefix = 0;
+                                int nb_suffix = 0;
+                                bool already_contain_affix = false;
+                                bool already_contain_seal = false;
+                                foreach (ItemAffix item_affix in Current.item.affixes)
+                                {
+                                    if (item_affix.affixId == affix_id) { already_contain_affix = true; break; }
+                                    if ((item_affix.affixType == AffixList.AffixType.PREFIX) && (!item_affix.isSealedAffix)) { nb_prefix++; }
+                                    else if ((item_affix.affixType == AffixList.AffixType.SUFFIX) && (!item_affix.isSealedAffix)) { nb_suffix++; }
+                                    else if (item_affix.isSealedAffix) { already_contain_seal = true; }
+                                }
+                                if (!already_contain_affix)
+                                {
+                                    AffixList.AffixType new_affix_type = AffixList.instance.GetAffixType(affix_id);
+                                    if (((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
+                                        ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                                    {
+                                        ItemAffix affix = new ItemAffix
                                         {
-                                            //remove one glyph of hope from character items
-                                        }
-                                        if (glyph_of_order)
+                                            affixId = (ushort)affix_id,
+                                            affixTier = (byte)0,
+                                            affixRoll = (byte)Random.Range(0f, 255f),
+                                            affixType = new_affix_type
+                                        };
+                                        Current.item.affixes.Add(affix);
+
+                                        if ((!already_contain_seal) && (glyph_of_despair))
                                         {
-                                            //remove one glyph of order from character items
-                                        }
-                                        if (glyph_of_despair)
-                                        //if (force_seal) //glyph of despair
-                                        {
-                                            seal_affix.affixTier = Save_Manager.instance.data.modsNotInHud.Craft_Seal_Tier;
-                                            Current.item.SealAffix(seal_affix);
+                                            affix.affixTier = Save_Manager.instance.data.modsNotInHud.Craft_Seal_Tier;
+                                            Current.item.SealAffix(affix);
                                             //remove one glyph of despair from character items
                                         }
-                                        if (force_upgrade)
+                                        if (!legendary)
                                         {
-                                            Current.item.RefreshIDAndValues();
-                                            result = false;
+                                            int count = Current.item.affixes.Count;
+                                            if (count > 6) { count = 6; }
+                                            Current.item.rarity = (byte)count;
                                         }
-                                        else { Main.logger_instance.Error("Error when upgrading item"); }
+                                        Current.item.RefreshIDAndValues();
+                                        result = false;
                                     }
-                                }
-                                else //Add Affix
-                                {
-                                    int nb_prefix = 0;
-                                    int nb_suffix = 0;
-                                    bool already_contain_affix = false;
-                                    bool already_contain_seal = false;
-                                    foreach (ItemAffix item_affix in Current.item.affixes)
-                                    {
-                                        if (item_affix.affixId == affix_id) { already_contain_affix = true; break; }
-                                        if ((item_affix.affixType == AffixList.AffixType.PREFIX) && (!item_affix.isSealedAffix)) { nb_prefix++; }
-                                        else if ((item_affix.affixType == AffixList.AffixType.SUFFIX) && (!item_affix.isSealedAffix)) { nb_suffix++; }
-                                        else if (item_affix.isSealedAffix) { already_contain_seal = true; }
-                                    }
-                                    if (!already_contain_affix)
-                                    {
-                                        AffixList.AffixType new_affix_type = AffixList.instance.GetAffixType(affix_id);
-                                        if (((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
-                                            ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
-                                        {
-                                            ItemAffix affix = new ItemAffix
-                                            {
-                                                affixId = (ushort)affix_id,
-                                                affixTier = (byte)0,
-                                                affixRoll = (byte)Random.Range(0f, 255f),
-                                                affixType = new_affix_type
-                                            };
-                                            Current.item.affixes.Add(affix);
-
-                                            if ((!already_contain_seal) && (glyph_of_despair))
-                                            {
-                                                affix.affixTier = Save_Manager.instance.data.modsNotInHud.Craft_Seal_Tier;
-                                                Current.item.SealAffix(affix);
-                                                //remove one glyph of despair from character items
-                                            }
-                                            if (!legendary)
-                                            {
-                                                int count = Current.item.affixes.Count;
-                                                if (count > 6) { count = 6; }
-                                                Current.item.rarity = (byte)count;
-                                            }
-                                            Current.item.RefreshIDAndValues();
-                                            result = false;
-                                        }
-                                        else { Main.logger_instance.Error("No space for affix"); }
-                                    }
+                                    else { Main.logger_instance.Error("No space for affix"); }
                                 }
                             }
                         }
-                        /*else if (Crafting_Manager.latest_string == Crafting_Manager.seal_string) //Should be use to force seal
-                        {
-                            ItemAffix affix = null;
-                            foreach (ItemAffix item_affix in Current.item.affixes)
-                            {
-                                if (item_affix.affixId == affix_id) { affix = item_affix; break; }
-                            }
-                            if (!affix.IsNullOrDestroyed()) { Current.item.SealAffix(affix); }                        
-                        }*/
-                        else if (Crafting_Manager.latest_string == Crafting_Manager.rune_of_discovery_string) //shoud be use for rune of discovery
-                        {
-                            //Default = Add 4 affix maximum                        
-                        }
-                        __instance.forgeButton.gameObject.active = true;
-                        forgin = false;
-
                     }
+                    /*else if (Crafting_Manager.latest_string == Crafting_Manager.seal_string) //Should be use to force seal
+                    {
+                        ItemAffix affix = null;
+                        foreach (ItemAffix item_affix in Current.item.affixes)
+                        {
+                            if (item_affix.affixId == affix_id) { affix = item_affix; break; }
+                        }
+                        if (!affix.IsNullOrDestroyed()) { Current.item.SealAffix(affix); }                        
+                    }*/
+                    else if (Crafting_Manager.latest_string == Crafting_Manager.rune_of_discovery_string) //shoud be use for rune of discovery
+                    {
+                        //Default = Add 4 affix maximum                        
+                    }
+                    __instance.forgeButton.gameObject.active = true;
+                    forgin = false;
+
+                    //}
 
                     return result;
                 }
