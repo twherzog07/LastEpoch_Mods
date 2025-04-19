@@ -18,6 +18,7 @@ namespace LastEpoch_Hud.Scripts
         public static EternityCachePanelUI EternityCachePanelUI = null;
         public static GameObject BlessingsPanel = null;
         public static Actor player_actor = null;
+        public static ActorVisuals player_visuals = null;
         public static Il2CppLE.Data.CharacterData player_data = null;
         public static CharacterDataTracker player_data_tracker = null;
         public static PlayerHealth player_health = null;
@@ -64,7 +65,7 @@ namespace LastEpoch_Hud.Scripts
             if ((character_select.IsNullOrDestroyed()) && (!CharacterSelect.instance.IsNullOrDestroyed())) { character_select = CharacterSelect.instance; }
             if ((!character_select.IsNullOrDestroyed()) && (character_select.OnOnlineTabChange.IsNullOrDestroyed())) { character_select.OnOnlineTabChange = Action_SetOnline; }
             if ((craft_slot_manager.IsNullOrDestroyed()) && (!CraftingSlotManager.instance.IsNullOrDestroyed())) { craft_slot_manager = CraftingSlotManager.instance; }
-
+            
             if (Scenes.IsGameScene())
             {
                 if (!game_uibase.IsNullOrDestroyed())
@@ -99,6 +100,7 @@ namespace LastEpoch_Hud.Scripts
                 if ((ground_item_manager.IsNullOrDestroyed()) && (!GroundItemManager.instance.IsNullOrDestroyed())) { ground_item_manager = GroundItemManager.instance; }
                 if ((item_containers_manager.IsNullOrDestroyed()) && (!ItemContainersManager.Instance.IsNullOrDestroyed())) { item_containers_manager = ItemContainersManager.Instance; }
                 if (player_actor.IsNullOrDestroyed()) { player_actor = PlayerFinder.getPlayerActor(); }
+                if (player_visuals.IsNullOrDestroyed()) { player_visuals = PlayerFinder.getPlayerVisuals(); }
                 if (player_data.IsNullOrDestroyed()) { player_data = PlayerFinder.getPlayerData(); }
                 if (player_data_tracker.IsNullOrDestroyed()) { player_data_tracker = PlayerFinder.getPlayerDataTracker(); }
                 if (player_health.IsNullOrDestroyed()) { player_health = PlayerFinder.getLocalPlayerHealth(); }

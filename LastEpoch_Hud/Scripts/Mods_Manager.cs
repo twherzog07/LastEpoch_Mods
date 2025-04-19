@@ -8,6 +8,7 @@ namespace LastEpoch_Hud.Scripts
     {
         public Mods_Manager(System.IntPtr ptr) : base(ptr) { }
         public static Mods_Manager instance { get; private set; }
+        GameObject cosmetics_skins_obj = null;
         GameObject character_autopotion_obj = null;
         GameObject character_potionreplenishment_obj = null;
         GameObject character_blessings_obj = null;
@@ -32,7 +33,12 @@ namespace LastEpoch_Hud.Scripts
             instance = this;
             Main.logger_instance.Msg("Mods Manager : Initialize");
             Il2CppSystem.Collections.Generic.List<GameObject> Mods_Objects = new Il2CppSystem.Collections.Generic.List<GameObject>();
-            
+
+            cosmetics_skins_obj = Object.Instantiate(new GameObject { name = "Mod_Cosmetics_Skins" }, Vector3.zero, Quaternion.identity);
+            cosmetics_skins_obj.active = false;
+            cosmetics_skins_obj.AddComponent<Mods.Cosmetics.Skins>();
+            Mods_Objects.Add(cosmetics_skins_obj);
+
             character_autopotion_obj = Object.Instantiate(new GameObject { name = "Mod_Character_AutoPotion" }, Vector3.zero, Quaternion.identity);
             character_autopotion_obj.active = false;
             character_autopotion_obj.AddComponent<Mods.Character.Character_AutoPotions>();
@@ -123,6 +129,7 @@ namespace LastEpoch_Hud.Scripts
         {
             if (initialized)
             {
+                cosmetics_skins_obj.active = true;
                 character_godmode_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_GodMode;
                 character_lowlife_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
                 //character_blessings_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_CanChooseBlessing;
@@ -148,6 +155,7 @@ namespace LastEpoch_Hud.Scripts
             if (initialized)
             {
                 if (Main.debug) { Main.logger_instance.Msg("Mods Manager : Disable all mods"); }
+                cosmetics_skins_obj.active = false;
                 character_godmode_obj.active = false;
                 character_lowlife_obj.active = false;
                 character_blessings_obj.active = false;

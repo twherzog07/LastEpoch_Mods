@@ -177,7 +177,8 @@ namespace LastEpoch_Hud
                         break;
                     }
                 }
-                if (!found) { Main.logger_instance.Error("Functions.GetChild, Child : " + name + " not Found"); }
+                string[] no_bug = { "skin", "Modifier Button", "legendary_icon" };
+                if ((!found) && (!no_bug.Contains(name))) { Main.logger_instance.Error("Functions.GetChild, Child : " + name + " not Found"); }
             }
             else { Main.logger_instance.Error("Obj is null "); }
             

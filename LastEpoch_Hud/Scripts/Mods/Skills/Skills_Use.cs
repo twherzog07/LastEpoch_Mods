@@ -228,7 +228,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             }
                         }
                         else if (il2cpp_type.ToString() == "SummonMageMutator")
-                        //else if (type == typeof(SummonMageMutator))
                         {
                             //remove in LastEpoch 1.2
                             /*if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems)
@@ -373,8 +372,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
 
             [HarmonyPostfix]
             static void PostFix(CharacterMutator __instance, AbilityInfo __0, ref AbilityMutator __1, float __2, UnityEngine.Vector3 __3, bool __4)
-            {                
-
+            {
                 if ((CanRun()) && (!__1.IsNullOrDestroyed()))
                 {
                     if (Save_Manager.instance.data.Skills.Enable_RemoveCooldown) { __1.RemoveCooldown(); }
