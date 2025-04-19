@@ -1,10 +1,9 @@
 ﻿// https://github.com/RolandSolymosi/LastEpoch_Mods/blob/master/LastEpoch_Hud/Scripts/Mods/Items/Items_Crafting_Eternity_Anywhere.cs
 
 using HarmonyLib;
+using Il2Cpp;
 using MelonLoader;
 using UnityEngine;
-using Il2Cpp;
-using UnityEngine.UI;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
@@ -14,11 +13,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public static Items_Crafting_Eternity_Anywhere instance { get; private set; }
         public Items_Crafting_Eternity_Anywhere(System.IntPtr ptr) : base(ptr) { }
 
-        private static bool isRunning = false;
-        private static EternityCachePanelUI panel = null;
-        private static Button close_btn = null;
-        private static Button.ButtonClickedEvent backup_event = null;
-        private static readonly System.Action OpenCloseAction = new System.Action(OpenClose);
+        private static bool IsOpen = false;
+        private static bool IsFuture = false;
 
         void Awake()
         {
@@ -26,43 +22,100 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         void Update()
         {
-            if (Scenes.IsGameScene() && !Refs_Manager.EternityCachePanelUI.IsNullOrDestroyed())
-            {
-                if (panel.IsNullOrDestroyed() || close_btn.IsNullOrDestroyed())
+            if (Scenes.IsGameScene())
+            {                
+                if (!Refs_Manager.EternityCachePanelUI.IsNullOrDestroyed())
                 {
-                    panel = Refs_Manager.EternityCachePanelUI;
-                    GameObject CloseBtnGameObject = Functions.GetChild(panel.gameObject, "Close_Button");
-                    if (!CloseBtnGameObject.IsNullOrDestroyed())
-                    {
-                        close_btn = CloseBtnGameObject.GetComponent<Button>();
-                        backup_event = close_btn.onClick;
-                    }                    
+                    if (Refs_Manager.EternityCachePanelUI.pastHolder.active) { IsFuture = false; }
+                    if (Refs_Manager.EternityCachePanelUI.futureHolder.active) { IsFuture = true; }
                 }
-                else if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache)) { OpenClose(); }
-            }
-            else
-            {
-                isRunning = false;
-                panel = null;
-                close_btn = null;
+                if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Past)) { OpenClose(false); }
+                else if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Future)) { OpenClose(true); }
             }
         }
-        private static void OpenClose()
+
+        void OpenClose(bool future)
         {
-            panel.gameObject.active = !panel.gameObject.active;
-            isRunning = panel.gameObject.active;
-            if (isRunning)
-            {                
-                close_btn.onClick = new Button.ButtonClickedEvent();
-                close_btn.onClick.AddListener(OpenCloseAction);
-                panel.Open();
-            }
-            else
-            {                
-                close_btn.onClick = backup_event;
-                panel.Close();
+            if (!Refs_Manager.EternityCachePanelUI.IsNullOrDestroyed())
+            {
+                //We don't want to hit twice for switching between past and future
+                if ((IsOpen) && (IsFuture != future)) { Refs_Manager.EternityCachePanelUI.Close(); } 
+                
+                if (!IsOpen)
+                {
+                    Refs_Manager.EternityCachePanelUI.Open();
+                    Refs_Manager.EternityCachePanelUI.isFuture = future;
+                    Refs_Manager.EternityCachePanelUI.pastHolder.active = !future;                    
+                    Refs_Manager.EternityCachePanelUI.futureHolder.active = future;
+                    Refs_Manager.EternityCachePanelUI.lockedPastHolder.active = false;
+                    Refs_Manager.EternityCachePanelUI.lockedFutureHolder.active = false;                    
+                }
+                else { Refs_Manager.EternityCachePanelUI.Close(); }
+                Refs_Manager.EternityCachePanelUI.gameObject.active = IsOpen;
             }
         }
+
+        [HarmonyPatch(typeof(EternityCachePanelUI), "Open", new System.Type[] { })]
+        public class EternityCachePanelUI_Open
+        {
+            [HarmonyPostfix]
+            static void Postfix(ref EternityCachePanelUI __instance)
+            {
+                IsOpen = true;
+            }
+        }
+
+        /*[HarmonyPatch(typeof(EternityCachePanelUI), "Open", new System.Type[] { typeof(bool) })]
+        public class EternityCachePanelUI_Open2
+        {
+            [HarmonyPrefix]
+            static void Prefix(ref bool __0)
+            {
+                Main.logger_instance.Msg("EternityCachePanelUI.Open(bool) Prefix");
+                __0 = true; //isFuture
+            }
+            [HarmonyPostfix]
+            static void Postfix(ref EternityCachePanelUI __instance)
+            {
+                Main.logger_instance.Msg("EternityCachePanelUI.Open(bool) Postfix");
+                IsOpen = true;
+            }
+        }*/
+
+        [HarmonyPatch(typeof(EternityCachePanelUI), "Close")]
+        public class EternityCachePanelUI_Close
+        {
+            [HarmonyPostfix]
+            static void Postfix(ref EternityCachePanelUI __instance)
+            {
+                IsOpen = false;
+            }
+        }
+
+        //We don't need this for Past
+        [HarmonyPatch(typeof(EternityCachePanelUI), "updateSelectedAffixLabelText")]
+        public class EternityCachePanelUI_updateSelectedAffixLabelText
+        {
+            [HarmonyPrefix]
+            static bool Prefix(ref EternityCachePanelUI __instance)
+            {
+                if (IsFuture) { return true; }
+                else { return false; }
+            }
+        }
+
+        //In case, you want unlock slots
+        /*[HarmonyPatch(typeof(EternityCachePanelUI), "canSeal")]
+        public class EternityCachePanelUI_canSeal
+        {
+            [HarmonyPrefix]
+            static bool Prefix(ref bool __result)
+            {
+                __result = true;
+                return false;
+            }
+        }*/
+
 
         [HarmonyPatch(typeof(EternityCachePanelUI), "seal")]
         public class EternityCachePanelUI_seal
@@ -70,25 +123,36 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPrefix]
             static bool Prefix(ref EternityCachePanelUI __instance)
             {
-                bool result = false;
-                if (isRunning)
-                {                    
-                    if (!__instance.beforeMain.IsNullOrDestroyed() && !__instance.beforeOther.IsNullOrDestroyed())
+                bool result = true;
+                if (!__instance.beforeMain.IsNullOrDestroyed() && !__instance.beforeOther.IsNullOrDestroyed())
+                {
+                    if (!__instance.beforeMain.Container.IsNullOrDestroyed() && !__instance.beforeOther.Container.IsNullOrDestroyed())
                     {
-                        if (!__instance.beforeMain.Container.IsNullOrDestroyed() && !__instance.beforeOther.Container.IsNullOrDestroyed())
+                        if (__instance.beforeMain.Container.GetContent().Count > 0 && __instance.beforeOther.Container.GetContent().Count > 0)
                         {
-                            if (__instance.beforeMain.Container.GetContent().Count > 0 && __instance.beforeOther.Container.GetContent().Count > 0)
+                            ItemData unique = __instance.beforeMain.Container.GetContent()[0].data;
+                            ItemData exalted = __instance.beforeOther.Container.GetContent()[0].data;
+                            if (!unique.IsNullOrDestroyed() && !exalted.IsNullOrDestroyed())
                             {
-                                var unique = __instance.beforeMain.Container.GetContent()[0].data;
-                                var exalted = __instance.beforeOther.Container.GetContent()[0].data;
-                                if (!unique.IsNullOrDestroyed() && !exalted.IsNullOrDestroyed())
+                                if (IsFuture)
                                 {
-                                    unique.absorb4ModExaltedItemToBecomeLegendary(exalted, null);
-                                    result = true;
+                                    
+                                }
+                                else //Past
+                                {
+                                    //Add affixes into uniue
+                                    unique.affixes = exalted.affixes;
+                                    unique.rarity = 9;
+                                    unique.RefreshIDAndValues();
+
+                                    //Delete item from exalted slot
+                                    __instance.beforeOther.Container.GetContent().Clear();
+
+                                    result = false;
                                 }
                             }
                         }
-                    }               
+                    }
                 }
                 return result;
             }

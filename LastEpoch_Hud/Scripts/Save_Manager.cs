@@ -63,7 +63,8 @@ namespace LastEpoch_Hud.Scripts
                 {
                     BankStashs = KeyCode.F3,
                     HeadhunterBuffs = KeyCode.F2,
-                    EternityCache = KeyCode.F4                      //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
+                    EternityCache_Past = KeyCode.F4,                      //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
+                    EternityCache_Future = KeyCode.F5
                 },
                 modsNotInHud =
                 {
@@ -473,7 +474,8 @@ namespace LastEpoch_Hud.Scripts
             if (data.ModVersion != Main.mod_version)
             {
                 //Update save when mod update here
-                data.KeyBinds.EternityCache = KeyCode.F4;
+                data.KeyBinds.EternityCache_Past = KeyCode.F4;
+                data.KeyBinds.EternityCache_Future = KeyCode.F5;
                 if (Main.mod_version == "4.2.3") { data.Items.Drop.IdolAffixCount_Max = 2; }
 
                 data.ModVersion = Main.mod_version;
@@ -517,7 +519,8 @@ namespace LastEpoch_Hud.Scripts
             {
                 public UnityEngine.KeyCode BankStashs;
                 public UnityEngine.KeyCode HeadhunterBuffs;
-                public UnityEngine.KeyCode EternityCache;
+                public UnityEngine.KeyCode EternityCache_Past;
+                public UnityEngine.KeyCode EternityCache_Future;
             }
             //Options not in hud (you have to set in defaultconfig before build)
             public struct ModsNotInHud
