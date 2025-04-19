@@ -32,7 +32,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     }
                 }
             }
-
         }
     }
 }
