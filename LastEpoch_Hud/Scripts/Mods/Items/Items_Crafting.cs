@@ -26,8 +26,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             else { NewSlots.Initialized = false; }
         }
 
-        public static bool ForgeModIsEnabled = false; // => !Save_Manager.instance.IsNullOrDestroyed() && Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod;
-        //public static bool BypassReq = Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq; //Allow craft unique, idols, T6, T7
+        public static bool ForgeModIsEnabled = false; //Add all affixs in list
+        public static bool CanCraftToT7 = true;
 
         public class Current
         {
@@ -270,7 +270,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public static string rune_of_discovery_string = "Discovery";
             public static string latest_string = "";
 
-            //Select Item
+            //Select Item //CraftingSlot
             [HarmonyPatch(typeof(CraftingManager), "OnMainItemChange")]
             public class CraftingManager_OnMainItemChange
             {
@@ -286,138 +286,136 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             if (!container.content.IsNullOrDestroyed()) { Current.item = container.content.data; }
                         }
                     }
-                    if ((Scenes.IsGameScene()) && (!EditingItem) && (!Crafting_Slot_Manager.forgin))
+                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()) &&
+                        (!Save_Manager.instance.IsNullOrDestroyed()) &&
+                        (!EditingItem) && (!Crafting_Slot_Manager.forgin))
                     {
-                        if ((!Current.item.IsNullOrDestroyed()) && (first_time) &&
-                            (!Save_Manager.instance.IsNullOrDestroyed()))
+                        first_time = false;
+                        EditingItem = true;
+                        if (!Save_Manager.instance.data.IsNullOrDestroyed())
                         {
-                            first_time = false;
-                            EditingItem = true;
-                            if (!Save_Manager.instance.data.IsNullOrDestroyed())
+                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod)
                             {
-                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod)
+                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_ForginPotencial)
                                 {
-                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_ForginPotencial)
-                                    {
-                                        Current.item.forgingPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.ForginPotencial;
-                                    }
-
-                                    System.Collections.Generic.List<bool> implicits_enables = new System.Collections.Generic.List<bool>();
-                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_0);
-                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_1);
-                                    implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2);
-                                    System.Collections.Generic.List<float> implicits_values = new System.Collections.Generic.List<float>();
-                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_0);
-                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_1);
-                                    implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_2);
-
-                                    for (int z = 0; z < Current.item.implicitRolls.Count; z++)
-                                    {
-                                        if (implicits_enables[z]) { Current.item.implicitRolls[z] = (byte)implicits_values[z]; }
-                                    }
-                                    implicits_enables.Clear();
-                                    implicits_values.Clear();
-
-                                    System.Collections.Generic.List<bool> affix_tier_enables = new System.Collections.Generic.List<bool>();
-                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Tier);
-                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Tier);
-                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Tier);
-                                    affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Tier);
-                                    System.Collections.Generic.List<float> affix_tier_values = new System.Collections.Generic.List<float>();
-                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier);
-                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier);
-                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier);
-                                    affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Tier);
-                                    System.Collections.Generic.List<bool> affix_value_enables = new System.Collections.Generic.List<bool>();
-                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Value);
-                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Value);
-                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Value);
-                                    affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Value);
-                                    System.Collections.Generic.List<float> affix_value_values = new System.Collections.Generic.List<float>();
-                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value);
-                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value);
-                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value);
-                                    affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value);
-
-                                    int nb_prefix = 0;
-                                    int nb_suffix = 0;
-                                    foreach (ItemAffix affix in Current.item.affixes)
-                                    {
-                                        if (affix.isSealedAffix)
-                                        {
-                                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier) { affix.affixTier = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier; }
-                                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Value) { affix.affixRoll = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Value; }
-                                        }
-                                        else
-                                        {
-                                            int result = -1;
-                                            if ((affix.affixType == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs))
-                                            {
-                                                result = 0 + nb_prefix;
-                                                nb_prefix++;
-                                            }
-                                            else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))
-                                            {
-                                                result = 2 + nb_suffix;
-                                                nb_suffix++;
-                                            }
-
-                                            if ((result > -1) && (result < (Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
-                                            {
-                                                if ((result < affix_tier_enables.Count) && (result < affix_tier_values.Count) &&
-                                                    (result < affix_value_enables.Count) && (result < affix_value_values.Count))
-                                                {
-                                                    if (affix_tier_enables[result]) { affix.affixTier = (byte)affix_tier_values[result]; }
-                                                    if (affix_value_enables[result]) { affix.affixRoll = (byte)affix_value_values[result]; }
-
-                                                }
-                                            }
-                                        }
-                                    }
-                                    affix_tier_enables.Clear();
-                                    affix_tier_values.Clear();
-                                    affix_value_enables.Clear();
-                                    affix_value_values.Clear();
-
-                                    if (Current.item.rarity > 6)
-                                    {
-                                        System.Collections.Generic.List<bool> unique_mods_enables = new System.Collections.Generic.List<bool>();
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_0);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_3);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_4);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_5);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_6);
-                                        unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_7);
-                                        System.Collections.Generic.List<float> unique_mods_values = new System.Collections.Generic.List<float>();
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_3);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_4);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_5);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_6);
-                                        unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_7);
-                                        for (int z = 0; z < Current.item.uniqueRolls.Count; z++)
-                                        {
-                                            if (unique_mods_enables[z]) { Current.item.uniqueRolls[z] = (byte)unique_mods_values[z]; }
-                                        }
-                                        unique_mods_enables.Clear();
-                                        unique_mods_values.Clear();
-
-                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_LegendaryPotencial)
-                                        { Current.item.legendaryPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.LegendaryPotencial; }
-
-                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_WeaverWill)
-                                        { Current.item.weaversWill = (byte)Save_Manager.instance.data.Items.CraftingSlot.WeaverWill; }
-                                    }
-
-                                    Current.item.RefreshIDAndValues();
+                                    Current.item.forgingPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.ForginPotencial;
                                 }
+
+                                System.Collections.Generic.List<bool> implicits_enables = new System.Collections.Generic.List<bool>();
+                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_0);
+                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_1);
+                                implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2);
+                                System.Collections.Generic.List<float> implicits_values = new System.Collections.Generic.List<float>();
+                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_0);
+                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_1);
+                                implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_2);
+
+                                for (int z = 0; z < Current.item.implicitRolls.Count; z++)
+                                {
+                                    if (implicits_enables[z]) { Current.item.implicitRolls[z] = (byte)implicits_values[z]; }
+                                }
+                                implicits_enables.Clear();
+                                implicits_values.Clear();
+
+                                System.Collections.Generic.List<bool> affix_tier_enables = new System.Collections.Generic.List<bool>();
+                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Tier);
+                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Tier);
+                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Tier);
+                                affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Tier);
+                                System.Collections.Generic.List<float> affix_tier_values = new System.Collections.Generic.List<float>();
+                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier);
+                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier);
+                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier);
+                                affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Tier);
+                                System.Collections.Generic.List<bool> affix_value_enables = new System.Collections.Generic.List<bool>();
+                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Value);
+                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Value);
+                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Value);
+                                affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Value);
+                                System.Collections.Generic.List<float> affix_value_values = new System.Collections.Generic.List<float>();
+                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value);
+                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value);
+                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value);
+                                affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value);
+
+                                int nb_prefix = 0;
+                                int nb_suffix = 0;
+                                foreach (ItemAffix affix in Current.item.affixes)
+                                {
+                                    if (affix.isSealedAffix)
+                                    {
+                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier) { affix.affixTier = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier; }
+                                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Value) { affix.affixRoll = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Value; }
+                                    }
+                                    else
+                                    {
+                                        int result = -1;
+                                        if ((affix.affixType == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs))
+                                        {
+                                            result = 0 + nb_prefix;
+                                            nb_prefix++;
+                                        }
+                                        else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))
+                                        {
+                                            result = 2 + nb_suffix;
+                                            nb_suffix++;
+                                        }
+
+                                        if ((result > -1) && (result < (Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                                        {
+                                            if ((result < affix_tier_enables.Count) && (result < affix_tier_values.Count) &&
+                                                (result < affix_value_enables.Count) && (result < affix_value_values.Count))
+                                            {
+                                                if (affix_tier_enables[result]) { affix.affixTier = (byte)affix_tier_values[result]; }
+                                                if (affix_value_enables[result]) { affix.affixRoll = (byte)affix_value_values[result]; }
+
+                                            }
+                                        }
+                                    }
+                                }
+                                affix_tier_enables.Clear();
+                                affix_tier_values.Clear();
+                                affix_value_enables.Clear();
+                                affix_value_values.Clear();
+
+                                if (Current.item.rarity > 6)
+                                {
+                                    System.Collections.Generic.List<bool> unique_mods_enables = new System.Collections.Generic.List<bool>();
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_0);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_3);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_4);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_5);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_6);
+                                    unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_7);
+                                    System.Collections.Generic.List<float> unique_mods_values = new System.Collections.Generic.List<float>();
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_3);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_4);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_5);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_6);
+                                    unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_7);
+                                    for (int z = 0; z < Current.item.uniqueRolls.Count; z++)
+                                    {
+                                        if (unique_mods_enables[z]) { Current.item.uniqueRolls[z] = (byte)unique_mods_values[z]; }
+                                    }
+                                    unique_mods_enables.Clear();
+                                    unique_mods_values.Clear();
+
+                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_LegendaryPotencial)
+                                    { Current.item.legendaryPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.LegendaryPotencial; }
+
+                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_WeaverWill)
+                                    { Current.item.weaversWill = (byte)Save_Manager.instance.data.Items.CraftingSlot.WeaverWill; }
+                                }
+
+                                Current.item.RefreshIDAndValues();
                             }
-                            EditingItem = false;
                         }
+                        EditingItem = false;
                     }
                 }
             }
@@ -436,7 +434,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
 
-            //Unlock Craft
+            //Unlock Craft //BypassReq
             [HarmonyPatch(typeof(CraftingManager), "CheckForgeCapability")]
             public class CheckForgeCapability
             {
@@ -446,83 +444,83 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; };
                     int affix_id = __instance.appliedAffixID;
                     int affix_tier = Get.Tier(Current.item, affix_id);
-                    if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq))
+                    if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                     {
-                        if (__0 == Locales.cant_craft_unique)
+                        if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
                         {
-                            if ((affix_id > -1) && (affix_tier < 6))
+                            if (__0 == Locales.cant_craft_unique)
                             {
-                                Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
-                                Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
+                                if ((affix_id > -1) && (affix_tier < 6))
+                                {
+                                    Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
+                                    Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
 
-                                Refs_Manager.craft_slot_manager.canForge = true;
-                                __0 = forge_string;
-                                __1 = false;
-                                __result = true;
+                                    Refs_Manager.craft_slot_manager.canForge = true;
+                                    __0 = forge_string;
+                                    __1 = false;
+                                    __result = true;
+                                }
+                                else if (affix_id == -1) { __0 = "Select an affix"; }
+                                else if (affix_tier > 5) { __0 = "Maxed"; } //Tier = 0-6
                             }
-                            else if (affix_id == -1) { __0 = "Select an affix"; }
-                            else if (affix_tier > 5) { __0 = "Maxed"; }
-                        }
-                        else if (__0 == Locales.no_space_affix)
-                        {
-                            bool full = Get.IsAffixFull(Current.item);
-                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                            if (!full)
+                            else if (__0 == Locales.no_space_affix)
                             {
-                                __0 = forge_string;
-                                __1 = false;
-                                __result = true;
+                                bool full = Get.IsAffixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                                if (!full)
+                                {
+                                    __0 = forge_string;
+                                    __1 = false;
+                                    __result = true;
+                                }
                             }
-                        }
-                        else if (__0 == Locales.no_space_prefix)
-                        {
-                            bool full = Get.IsPrefixFull(Current.item);
-                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                            if (!full)
+                            else if (__0 == Locales.no_space_prefix)
                             {
-                                __0 = forge_string;
-                                __1 = false;
-                                __result = true;
+                                bool full = Get.IsPrefixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                                if (!full)
+                                {
+                                    __0 = forge_string;
+                                    __1 = false;
+                                    __result = true;
+                                }
                             }
-                        }
-                        else if (__0 == Locales.no_space_suffix)
-                        {
-                            bool full = Get.IsSuffixFull(Current.item);
-                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                            if (!full)
+                            else if (__0 == Locales.no_space_suffix)
                             {
-                                __0 = forge_string;
-                                __1 = false;
-                                __result = true;
+                                bool full = Get.IsSuffixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                                if (!full)
+                                {
+                                    __0 = forge_string;
+                                    __1 = false;
+                                    __result = true;
+                                }
                             }
-                        }
-                        else if (__0 == Locales.affix_is_maxed)
-                        {
-                            if ((affix_tier == 4) || (affix_tier == 5)) { __0 = forge_string; }
+                            else if (__0 == Locales.affix_is_maxed)
+                            {
+                                if ((affix_tier == 4) || (affix_tier == 5)) { __0 = forge_string; }
 
-                            if ((affix_tier > 3) && (affix_tier < 6))
+                                if ((affix_tier > 3) && (affix_tier < 6))
+                                {
+                                    Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
+                                    Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
+                                    __1 = false;
+                                    __result = true;
+                                }
+                                else if (affix_tier > 5) { __0 = "Maxed"; }
+                                else { __0 = "Use Upgrade Button"; }
+                            }
+                            /*else if (__0 == "Cannot Add Affixes") //should be use soon to allow 6 affix for rune of discovery //need to make locale, use en game languague until done
                             {
-                                Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
-                                Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
+                                __0 = rune_of_discovery_string;
                                 __1 = false;
                                 __result = true;
-                            }
-                            else if (affix_tier > 5) { __0 = "Maxed"; }
-                            else { __0 = "Use Upgrade Button"; }
+                            }*/
+                            else if (__0 == Locales.add_affix) { __0 = forge_string; } //Don't use default forge function when add affix
+                            else if (__0 == Locales.upgrade_affix) { __0 = forge_string; } //Don't use default forge function when upgrade affix < T5
                         }
-                        /*else if (__0 == "Cannot Add Affixes") //should be use soon to allow 6 affix for rune of discovery //need to make locale, use en game languague until done
-                        {
-                            __0 = rune_of_discovery_string;
-                            __1 = false;
-                            __result = true;
-                        }*/
-                        else if (__0 == Locales.add_affix) { __0 = forge_string; } //Don't use default forge function when add affix
-                        else if (__0 == Locales.upgrade_affix) { __0 = forge_string; } //Don't use default forge function when upgrade affix < T5
                     }
-                    else
-                    {
-                        __0 = forge_string;
-                    }
+                    else { __0 = forge_string; }
 
                     latest_string = __0;
                     //Main.logger_instance.Msg("CraftingManager.CheckForgeCapability  string = " + __0);
@@ -588,40 +586,46 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
 
-            //Idols can be added to slot
+            //Idols can be added to slot //BypassReq
             [HarmonyPatch(typeof(CraftingMainItemContainer), "CanReceiveItem")]
             public class CraftingMainItemContainer_CanReceiveItem
             {
                 [HarmonyPostfix]
                 static void Postifx(ref CraftingMainItemContainer __instance, ref bool __result, ItemData __0, int __1)
                 {
-                    if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
+                    if (!Save_Manager.instance.IsNullOrDestroyed())
                     {
-                        main_item_container = __instance;
-                        if (Get.IsCraftable(__0)) { __result = true; } //Allow all item type < 34
+                        if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
+                        {
+                            main_item_container = __instance;
+                            if (Get.IsCraftable(__0)) { __result = true; } //Allow all item type < 34
+                        }
                     }
                 }
             }
         }
         public class Crafting_Upgrade_Button
         {
-            //Unlock Craft Button when tier < T7
+            //Unlock Craft Button when tier < T7 //CanCraftToT7
             [HarmonyPatch(typeof(CraftingUpgradeButton), "UpdateButton")]
             public class CraftingUpgradeButton_UpdateButton
             {
                 [HarmonyPrefix]
                 static void Prefix(ref CraftingUpgradeButton __instance, int __0, ref bool __1)
                 {
-                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()) && Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
+                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                     {
-                        AffixSlotForge temp = __instance.gameObject.GetComponentInParent<AffixSlotForge>();
-                        if (!temp.IsNullOrDestroyed())
+                        if (CanCraftToT7)
                         {
-                            int affix_id = temp.affixID;
-                            int tier = Get.Tier(Current.item, affix_id);
+                            AffixSlotForge temp = __instance.gameObject.GetComponentInParent<AffixSlotForge>();
+                            if (!temp.IsNullOrDestroyed())
+                            {
+                                int affix_id = temp.affixID;
+                                int tier = Get.Tier(Current.item, affix_id);
 
-                            if (Get.IsIdol(Current.item)) { __1 = false; }
-                            else if ((tier > -1) && (tier < 6)) { __1 = true; }
+                                if (Get.IsIdol(Current.item)) { __1 = false; }
+                                else if ((tier > -1) && (tier < 6)) { __1 = true; }
+                            }
                         }
                     }
                 }
@@ -689,7 +693,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(CraftingMaterialsPanelUI __instance, ref Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> __0)
                 {
-                    if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : AddShardsFromList : Postfix"); }
                     if (!Refs_Manager.item_list.IsNullOrDestroyed() && ForgeModIsEnabled)
                     {
                         //int count = Refs_Manager.item_list.affixList.singleAffixes.Count + Refs_Manager.item_list.affixList.multiAffixes.Count;
