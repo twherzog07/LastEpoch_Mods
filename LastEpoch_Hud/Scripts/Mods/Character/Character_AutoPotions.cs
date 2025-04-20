@@ -12,7 +12,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         void Awake()
         {
             instance = this;
-            if (Main.debug) { Main.logger_instance.Msg("Character_AutoPotions : Awake"); }
+            //if (Main.debug) { Main.logger_instance.Msg("Character_AutoPotions : Awake"); }
         }
         bool CanRun()
         {

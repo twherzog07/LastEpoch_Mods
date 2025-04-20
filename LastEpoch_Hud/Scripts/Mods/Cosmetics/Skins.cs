@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using JetBrains.Annotations;
 using MelonLoader;
 using Newtonsoft.Json;
 using System.IO;
@@ -66,8 +65,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             {
                 if (scene_name != Scenes.SceneName) //scene changed
                 {
+                    Main.logger_instance.Msg("Skins : Scene change to " + Scenes.SceneName);
                     scene_name = Scenes.SceneName;
-                    Visuals.Update();
+                    Visuals.NeedUpdate = true;
                     Panel.Slots.need_update = true;
                     Panel.initialized = false;
                 }
@@ -80,6 +80,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             {                
                 Panel.Slots.need_update = false;
                 Panel.Slots.Update();
+            }
+            if ((!Refs_Manager.player_visuals.IsNullOrDestroyed()) && (Visuals.NeedUpdate))
+            {
+                Visuals.Update();
             }
         }
 
@@ -149,7 +153,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 {
                     if ((!initialized) && (!initializing))
                     {
-                        Main.logger_instance.Msg("Intialize CosmeticPanelUI");
+                        //Main.logger_instance.Msg("Intialize CosmeticPanelUI");
                         initializing = true;
                         instance = __instance.cosmeticPanel;
                         if (!instance.IsNullOrDestroyed())
@@ -226,6 +230,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
                 public static void Update()
                 {
+                    Main.logger_instance.Msg("Skins : Panel.Slots.Update()");
                     System.Collections.Generic.List<Save.Data.Structures.saved_skin> saved_skins = new System.Collections.Generic.List<Save.Data.Structures.saved_skin>
                     {
                         Save.Data.UserData.helmet,
@@ -252,6 +257,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             }));
                         }
                     }
+                    need_update = false;
                 }
                 public static void AddSkin(int slot, Sprite s)
                 {
@@ -581,14 +587,15 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
         {
             public static bool NeedUpdate = false;
             public static void Update()
-            {
-                //Main.logger_instance.Msg("Visuals.Update()");
+            {                
                 if (Scenes.IsCharacterSelection())
                 {
-
+                    //
+                    NeedUpdate = false;
                 }
                 else if (Scenes.IsGameScene())
                 {
+                    Main.logger_instance.Msg("Skins : Visuals.Update()");
                     if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                     {
                         Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.HELMET, 0, false, (ushort)0);
@@ -881,7 +888,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Load()
                 {
-                    Main.logger_instance.Msg("Load : " + Data.path + Data.Character.Character_Name);
+                    Main.logger_instance.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
                     bool error = false;
                     if (Data.Character.Character_Name != "")
                     {
@@ -890,12 +897,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             try
                             {
                                 Data.UserData = JsonConvert.DeserializeObject<Structures.UserSkin>(File.ReadAllText(Data.path + Data.Character.Character_Name));
-                                Main.logger_instance.Msg("User Skins Loaded");
+                                Main.logger_instance.Msg("Skins : Loaded");
                             }
                             catch
                             {
                                 error = true;
-                                Main.logger_instance.Error("Error loading file : " + Data.Character.Character_Name);
+                                Main.logger_instance.Error("Skins : Error loading file : " + Data.Character.Character_Name);
                             }
                         }
                         if ((error) || (!File.Exists(Data.path + Data.Character.Character_Name))) { Default.DefaultConfig(); }
