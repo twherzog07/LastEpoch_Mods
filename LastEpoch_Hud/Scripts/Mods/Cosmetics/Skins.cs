@@ -271,6 +271,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 public static void RemoveSkin(int slot)
                 {
                     AddSkin(slot, null);
+                    Save.Data.Update(slot, -1, -1, -1, -1);
                 }
                 public static void SetImage(GameObject g, Sprite s)
                 {
