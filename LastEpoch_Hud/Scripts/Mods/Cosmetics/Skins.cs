@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppLE.Data;
 using MelonLoader;
 using Newtonsoft.Json;
 using System.IO;
@@ -419,7 +420,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             public static void Clear_btn()
             {
                 Panel.Slots.RemoveSkin(selected_slot);
-                Visuals.RemoveSkin();
+                Visuals.RemoveSkin(selected_slot);
                 Close();
             }
             private static readonly System.Action ClearAction = new System.Action(Clear_btn);
@@ -599,12 +600,30 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     Main.logger_instance.Msg("Skins : Visuals.Update()");
                     if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                     {
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.HELMET, 0, false, (ushort)0);
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.BODY_ARMOR, 0, false, (ushort)0);
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.GLOVES, 0, false, (ushort)0);
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.BOOTS, 0, false, (ushort)0);
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipWeapon(0, 0, 0, (ushort)0, IMSlotType.MainHand, WeaponEffect.None);
-                        Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipWeapon(0, 0, 0, (ushort)0, IMSlotType.OffHand, WeaponEffect.None);
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.helmet))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.HELMET, 0, false, (ushort)0);
+                        }
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.body))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.BODY_ARMOR, 0, false, (ushort)0);
+                        }
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.gloves))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.GLOVES, 0, false, (ushort)0);
+                        }
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.boots))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipGear(EquipmentType.BOOTS, 0, false, (ushort)0);
+                        }
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.weapon))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipWeapon(0, 0, 0, (ushort)0, IMSlotType.MainHand, WeaponEffect.None);
+                        }
+                        if (!Save.Data.IsEmpty(Save.Data.UserData.offhand))
+                        {
+                            Refs_Manager.player_visuals.GetComponent<EquipmentVisualsManager>().EquipWeapon(0, 0, 0, (ushort)0, IMSlotType.OffHand, WeaponEffect.None);
+                        }
                         NeedUpdate = false;
                     }
                     else { Main.logger_instance.Error("Refs_Manager.player_visuals is null"); }
@@ -745,9 +764,38 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     PlayerFinder.getPlayerVisuals().GetComponent<EquipmentVisualsManager>().EquipGear((EquipmentType)Flyout.selected_type, Flyout.selected_subtype, isUnique, (ushort)Flyout.selected_unique);
                 }
             }
-            public static void RemoveSkin()
+            public static void RemoveSkin(int slot)
             {
-                PlayerFinder.getPlayerVisuals().GetComponent<EquipmentVisualsManager>().RemoveGear((byte)Flyout.selected_type);
+                ItemLocationPair item_found = null;
+                foreach (ItemLocationPair item in Refs_Manager.player_data.SavedItems)
+                {
+                    if (((slot == 0) && (item.ContainerID == 2)) || //helm
+                        ((slot == 1) && (item.ContainerID == 3)) || //body
+                        ((slot == 50) && (item.ContainerID == 4)) || //weapon
+                        ((slot == 99) && (item.ContainerID == 5)) || //offhand
+                        ((slot == 4) && (item.ContainerID == 6)) ||//gloves
+                        ((slot == 3) && (item.ContainerID == 8))) //boots
+                    {
+                        item_found = item;
+                        break;
+                    }
+                }
+                if (!item_found.IsNullOrDestroyed())
+                {
+                    try
+                    {
+                        Flyout.selected_type = item_found.Data[3];
+                        Flyout.selected_subtype = item_found.Data[4];
+                        Flyout.selected_rarity = item_found.Data[5];
+                        Flyout.selected_unique = (item_found.Data[10] * 255) + item_found.Data[11];
+                        EquipSkin();
+                    }
+                    catch { Main.logger_instance.Error("Skin.RemoveSkin() Error ItemLocationPair Data"); }
+                }
+                else
+                {
+                    PlayerFinder.getPlayerVisuals().GetComponent<EquipmentVisualsManager>().RemoveGear((byte)Flyout.selected_type);
+                }
             }
         }
         public class Save
@@ -814,6 +862,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     }
                 }
                 
+                public static bool IsEmpty(Skins.Save.Data.Structures.saved_skin skin)
+                {
+                    bool result = true;
+                    if ((skin.type > -1) && (skin.subtype > -1) && (skin.rarity > -1)) { result = false; }
+
+                    return result;
+                }
                 public static void Update(int slot, int type, int subtype, int rarity, int unique_id)
                 {
                     Save.Data.Structures.saved_skin skin = Default.Skin();
