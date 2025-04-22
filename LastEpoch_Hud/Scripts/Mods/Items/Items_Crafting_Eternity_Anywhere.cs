@@ -15,6 +15,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
         private static bool IsOpen = false;
         private static bool IsFuture = false;
+        private static bool IsOpenByMod = false;
 
         void Awake()
         {
@@ -48,7 +49,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     Refs_Manager.EternityCachePanelUI.pastHolder.active = !future;                    
                     Refs_Manager.EternityCachePanelUI.futureHolder.active = future;
                     Refs_Manager.EternityCachePanelUI.lockedPastHolder.active = false;
-                    Refs_Manager.EternityCachePanelUI.lockedFutureHolder.active = false;                    
+                    Refs_Manager.EternityCachePanelUI.lockedFutureHolder.active = false;
+                    IsOpenByMod = true;
                 }
                 else { Refs_Manager.EternityCachePanelUI.Close(); }
                 Refs_Manager.EternityCachePanelUI.gameObject.active = IsOpen;
@@ -89,6 +91,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             static void Postfix(ref EternityCachePanelUI __instance)
             {
                 IsOpen = false;
+                IsOpenByMod = false;
             }
         }
 
@@ -97,10 +100,79 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public class EternityCachePanelUI_updateSelectedAffixLabelText
         {
             [HarmonyPrefix]
-            static bool Prefix(ref EternityCachePanelUI __instance)
+            static bool Prefix(ref EternityCachePanelUI __instance, ref ItemData __0)
             {
-                if (IsFuture) { return true; }
-                else { return false; }
+                Main.logger_instance.Msg("EternityCachePanelUI.updateSelectedAffixLabelText() Prefix");
+                bool r = true;
+
+                try
+                {
+                    if (__instance.IsNullOrDestroyed())
+                    {
+                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() instance is null");
+                        r = false;
+                    }                        
+                }
+                catch
+                {
+                    Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Catch Instance");
+                    r = false;
+                }
+
+                try
+                {
+                    if (__0.IsNullOrDestroyed())
+                    {
+                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() ItemData is null");
+                        r = false;
+                    }
+                }
+                catch
+                {
+                    Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Catch ItemData");
+                    r = false;
+                }
+
+                if (r)
+                {
+                    if ((IsFuture) || (!IsOpenByMod)) { return true; }
+                    else { return false; }  //Disable on Past with mod enable
+                }
+
+                return r;
+
+                /*try
+                {
+                    if (!__instance.IsNullOrDestroyed())
+                    {
+                        if (__0.IsNullOrDestroyed())
+                        {
+                            Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Itemdata is null");
+                        }
+                        if (!__instance.beforeMain.IsNullOrDestroyed() && !__instance.beforeOther.IsNullOrDestroyed())
+                        {
+                            if (!__instance.beforeMain.Container.IsNullOrDestroyed() && !__instance.beforeOther.Container.IsNullOrDestroyed())
+                            {
+                                if (__instance.beforeMain.Container.GetContent().Count > 0 && __instance.beforeOther.Container.GetContent().Count > 0)
+                                {
+                                    ItemData unique = __instance.beforeMain.Container.GetContent()[0].data;
+                                    ItemData exalted = __instance.beforeOther.Container.GetContent()[0].data;
+                                    __0 = exalted;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() instance is null");
+                        return false;
+                    }
+                }
+                catch { return false; }*/
+
+                /*if (IsFuture) { return true; }
+                else { return false; }*/
             }
         }
 
@@ -134,19 +206,19 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             ItemData exalted = __instance.beforeOther.Container.GetContent()[0].data;
                             if (!unique.IsNullOrDestroyed() && !exalted.IsNullOrDestroyed())
                             {
-                                if (IsFuture)
+                                if ((IsFuture) || (!IsOpenByMod)) //isable when Future or mod disable
                                 {
                                     
                                 }
                                 else //Past
                                 {
-                                    //Add affixes into uniue
+                                    //Add affixes into unique
                                     unique.affixes = exalted.affixes;
                                     unique.rarity = 9;
                                     unique.RefreshIDAndValues();
 
-                                    //Delete item from exalted slot
-                                    __instance.beforeOther.Container.GetContent().Clear();
+                                    //Delete item from exalted slot ?
+                                    //__instance.beforeOther.Container.GetContent().Clear();
 
                                     result = false;
                                 }

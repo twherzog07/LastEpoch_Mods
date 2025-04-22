@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
-using MelonLoader;
-using UnityEngine;
 using Il2Cpp;
 using Il2CppTMPro;
+using MelonLoader;
+using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
@@ -12,7 +12,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public static Items_Crafting instance { get; private set; }
         public Items_Crafting(System.IntPtr ptr) : base(ptr) { }
 
-        public static bool ShowDebug = false; //Debug log
+        public static bool ShowDebug = true; //Debug log
 
         public static bool AddAllAffixes = false; //Should be true, to craft on idol //need to debug
         public static bool ShowAllAffixes = true; //Move incompatible affixs
@@ -86,7 +86,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if (!affix.isSealedAffix) { count++; }
                 }
                 if (count > 3) { result = true; }
-                Debug(false, "Get.IsFourSocketOrMore(), result = " + result);
+                //Debug(false, "Get.IsFourSocketOrMore(), result = " + result);
 
                 return result;
             }
@@ -96,22 +96,24 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 if ((item.itemType < 34) && (CanCraftIdols)) { result = true; }
                 else if ((item.rarity > 6) && (CanCraftUniqueSet)) { result = true; }
                 else if (item.itemType < 25) { result = true; }
-                Debug(false, "Get.IsCraftable(), result = " + result);
+                //Debug(false, "Get.IsCraftable(), result = " + result);
 
                 return result;
             }
             public static bool IsAffixFull(ItemData item)
             {
                 bool result = false;
-                int nb_max = 0;
+                int nb_max = item.affixes.Count;
                 bool idol = IsIdol(item);
                 int max = Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs;
-                if ((idol) && (CanCraftIdols)) { max = Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
-                else { max = 0; }
-
+                if (idol)
+                {
+                    if (CanCraftIdols) { max = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs + Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
+                    else { max = 0; }
+                }
+                if (max > 6) { max = 6; }
                 if (nb_max > (max - 1)) { result = true; }
-                //else { result = false; }
-                Debug(false, "Get.IsAffixFull(), result = " + result);
+                //Debug(false, "Get.IsAffixFull(), result = " + result);
 
                 return result;
             }
@@ -121,8 +123,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 int count = 0;
                 bool idol = IsIdol(item);
                 int max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs;
-                if ((idol) && (CanCraftIdols)) { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs; }
-                else { max_prefix = 0; }
+                if (idol)
+                {
+                    if (CanCraftIdols) { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs; }
+                    else { max_prefix = 0; }
+                }
                 foreach (ItemAffix affix in item.affixes)
                 {
                     if ((affix.affixType == AffixList.AffixType.PREFIX) && ((idol)) ||
@@ -133,8 +138,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     }
                 }
                 if (count > (max_prefix - 1)) { result = true; }
-                //else { result = false; }
-                Debug(false, "Get.IsPrefixFull(), result = " + result);
+                //Debug(false, "Get.IsPrefixFull(), result = " + result);
 
                 return result;
             }
@@ -144,8 +148,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 int nb_max = 0;
                 bool idol = IsIdol(item);
                 int max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs;
-                if ((idol) && (CanCraftIdols)) { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
-                else { max_prefix = 0; }
+                if (idol)
+                {
+                    if (CanCraftIdols) { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
+                    else { max_prefix = 0; }
+                }
                 foreach (ItemAffix affix in item.affixes)
                 {
                     if ((affix.affixType == AffixList.AffixType.SUFFIX) && ((idol)) ||
@@ -156,18 +163,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     }
                 }
                 if (nb_max > (max_prefix - 1)) { result = true; }
-                //else { result = false; }
-                Debug(false, "Get.IsSuffixFull(), result = " + result);
+                //Debug(false, "Get.IsSuffixFull(), result = " + result);
 
                 return result;
             }
         }
-        public class Add
+        public class Create
         {
-            public static void Affix(ref CraftingMaterialsPanelUI craft_mat_panel, AffixList.Affix affix, BaseStats.ModType affix_modifier)
+            public static ShardAffixListElement AffixElement(GameObject shardAffixPrefab, AffixList.Affix affix, BaseStats.ModType affix_modifier)
             {
-                Debug(false, "Add.Affix()");
-                GameObject obj = Object.Instantiate(craft_mat_panel.shardAffixPrefab, Vector3.zero, Quaternion.identity);
+                //Debug(false, "Create.ShardAffixListElement(), Name = " + affix.affixName );
+                GameObject obj = Object.Instantiate(shardAffixPrefab, Vector3.zero, Quaternion.identity);
+                obj.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 ShardAffixListElement element = obj.GetComponent<ShardAffixListElement>();
                 if (!element.IsNullOrDestroyed())
                 {
@@ -196,9 +203,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     element.shardName = affix.affixDisplayName;
                     element.shardType = affix.affixId;
                     element.improvementTMP.text = affix_modifier.ToString();
-                    element.init = true;
-                    craft_mat_panel.shardAffixList.Add(element);
+                    element.init = true;                    
                 }
+                else { Debug(true, "element is null"); }
+
+                return element;
             }
         }
         public class Locales
@@ -213,6 +222,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public static string affix_is_maxed = "maxed_craft";
             public static string cant_craft_unique_key = "Crafting_ForgeButton_Title_Uniques";
             public static string cant_craft_unique = "unique_craft";
+            public static string cant_craft_idol_key = "Crafting_ForgeButton_Title_Idols";
+            public static string cant_craft_idol = "idol_craft";
             public static string no_forgin_potencial_key = "Crafting_ForgeButton_Title_NoPotential";
             public static string no_forgin_potencial = "no_forgin_potencial_craft";
             //public static string cannot_add_affix_key = "";
@@ -230,7 +241,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     //Main.logger_instance.Msg("Localization:TryGetText key = " + __0);
                     bool result = true;
-                    if ((__0 == affix_is_maxed_key) || (__0 == cant_craft_unique_key) ||
+                    if ((__0 == affix_is_maxed_key) || (__0 == cant_craft_unique_key) || (__0 == cant_craft_idol_key) ||
                         (__0 == no_forgin_potencial_key) || (__0 == no_space_prefix_key) ||
                         (__0 == no_space_suffix_key) || (__0 == no_space_affix_key) ||
                         /*(__0 == cannot_add_affix_key) ||*/ (__0 == add_affix_key) || (__0 == upgrade_affix_key))
@@ -276,6 +287,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         __result = cant_craft_unique;
                         result = false;
                     }
+                    else if (__0 == cant_craft_idol_key)
+                    {
+                        __result = cant_craft_idol;
+                        result = false;
+                    }
                     else if (__0 == no_forgin_potencial_key)
                     {
                         __result = no_forgin_potencial;
@@ -309,6 +325,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public static string forge_string = "Forge Mod";
             public static string rune_of_discovery_string = "Discovery";
             public static string latest_string = "";
+            public static OneItemContainer item_container = null;
 
             //Select Item //CraftingSlot
             [HarmonyPatch(typeof(CraftingManager), "OnMainItemChange")]
@@ -317,19 +334,19 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingManager __instance, ref Il2CppSystem.Object __0, ref ItemContainerEntryHandler __1)
                 {
-                    Debug(false, "CraftingManager.OnMainItemChange()");
                     if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; };
                     if (!__0.IsNullOrDestroyed())
                     {
-                        OneItemContainer container = __0.TryCast<OneItemContainer>();
-                        if (!container.IsNullOrDestroyed())
-                        {
-                            if (!container.content.IsNullOrDestroyed()) { Current.item = container.content.data; }
+                        item_container = __0.TryCast<OneItemContainer>();
+                        if (!item_container.IsNullOrDestroyed())
+                        {                            
+                            if (!item_container.content.IsNullOrDestroyed()) { Current.item = item_container.content.data; }
                         }
                     }
-                    if (/*(Scenes.IsGameScene()) &&*/ (!Current.item.IsNullOrDestroyed()) &&
+                    if ((!Current.item.IsNullOrDestroyed()) &&
                         (!Save_Manager.instance.IsNullOrDestroyed()) &&
-                        (!EditingItem) && (!Crafting_Slot_Manager.forgin))
+                        (!EditingItem) &&
+                        (!Crafting_Slot_Manager.forgin))
                     {
                         first_time = false;
                         EditingItem = true;
@@ -467,7 +484,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(CraftingManager __instance, Il2CppSystem.Object __0, ItemContainerEntryHandler __1)
                 {
-                    Debug(false, "CraftingManager.OnMainItemRemoved()");
                     if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; };
                     Current.item = null;
                     Current.slot = null;
@@ -483,92 +499,136 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingManager __instance, ref bool __result, ref System.String __0, ref System.Boolean __1)
                 {
-                    Debug(false, "CraftingManager.CheckForgeCapability(), result = " + __result + ", str = " + __0);
-                    if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; };
+                    if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; }
+                    ;
                     int affix_id = __instance.appliedAffixID;
                     int affix_tier = Get.Tier(Current.item, affix_id);
                     if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                     {
-                        //if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
-                        //{
-                            if ((__0 == Locales.cant_craft_unique) && (CanCraftUniqueSet))
+                        if ((__0 == Locales.cant_craft_unique) && (CanCraftUniqueSet))
+                        {
+                            if ((affix_id > -1) && (affix_tier < 6))
                             {
-                                if ((affix_id > -1) && (affix_tier < 6))
-                                {
-                                    Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
-                                    Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
 
-                                    Refs_Manager.craft_slot_manager.canForge = true;
-                                    __0 = forge_string;
-                                    __1 = false;
-                                    __result = true;
-                                }
-                                else if (affix_id == -1) { __0 = "Select an affix"; }
-                                else if (affix_tier > 5) { __0 = "Maxed"; } //Tier = 0-6
-                            }
-                            else if (__0 == Locales.no_space_affix)
-                            {
-                                bool full = Get.IsAffixFull(Current.item);
-                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                                if (!full)
-                                {
-                                    __0 = forge_string;
-                                    __1 = false;
-                                    __result = true;
-                                }
-                            }
-                            else if (__0 == Locales.no_space_prefix)
-                            {
-                                bool full = Get.IsPrefixFull(Current.item);
-                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                                if (!full)
-                                {
-                                    __0 = forge_string;
-                                    __1 = false;
-                                    __result = true;
-                                }
-                            }
-                            else if (__0 == Locales.no_space_suffix)
-                            {
-                                bool full = Get.IsSuffixFull(Current.item);
-                                Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
-                                if (!full)
-                                {
-                                    __0 = forge_string;
-                                    __1 = false;
-                                    __result = true;
-                                }
-                            }
-                            else if (__0 == Locales.affix_is_maxed)
-                            {
-                                //if ((affix_tier == 4) || (affix_tier == 5)) { __0 = forge_string; }
-
-                                if ((affix_tier > 3) && (affix_tier < 6) && (CanCraftToT7))
-                                {
-                                    Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
-                                    Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
-                                    __0 = forge_string;
-                                    __1 = false;
-                                    __result = true;
-                                }
-                                else if ((affix_tier > 5) && (CanCraftToT7)) { __0 = "Maxed"; }
-                                //else { __0 = "Use Upgrade Button"; }
-                            }
-                            /*else if (__0 == "Cannot Add Affixes") //should be use soon to allow 6 affix for rune of discovery //need to make locale, use en game languague until done
-                            {
-                                __0 = rune_of_discovery_string;
+                                Refs_Manager.craft_slot_manager.canForge = true;
+                                __0 = forge_string;
                                 __1 = false;
                                 __result = true;
-                            }*/
-                            //else if (__0 == Locales.add_affix) { __0 = forge_string; } //Don't use default forge function when add affix
-                            //else if (__0 == Locales.upgrade_affix) { __0 = forge_string; } //Don't use default forge function when upgrade affix < T5
-                        //}
-                    }
-                    //else { __0 = forge_string; }
-                    Debug(false, "CraftingManager.CheckForgeCapability(), new_result = " + __result + ", new_str = " + __0);
+                            }
+                            else if (affix_id == -1) { __0 = "Select an affix"; }
+                            else if (affix_tier > 5) { __0 = "Maxed"; } //Tier = 0-6
+                        }
+                        else if ((__0 == Locales.cant_craft_idol) && (CanCraftIdols))
+                        {
+                            if ((affix_id > -1) && (affix_tier < 1)) //Tier max = 1 for idols
+                            {
+                                Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
 
+                                Refs_Manager.craft_slot_manager.canForge = true;
+                                __0 = forge_string;
+                                __1 = false;
+                                __result = true;
+                            }
+                            else if (affix_id == -1)
+                            {
+                                AffixSlotForge[] prefixs = { Refs_Manager.craft_slot_manager.affixSlots[0], Refs_Manager.craft_slot_manager.affixSlots[1] };
+                                AffixSlotForge[] suffixs = { Refs_Manager.craft_slot_manager.affixSlots[2], Refs_Manager.craft_slot_manager.affixSlots[3] };
+
+                                int p = 0;
+                                int s = 0;                                
+
+                                int max_prefix = 1; //default idol prefix
+                                if (Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs > 2) { max_prefix = 2; } //Set to 3 after adding slot 5
+                                else { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs; }
+
+                                int max_suffix = 1; //default idol suffix
+                                if (Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs > 2) { max_suffix = 2; } //Set to 3 after adding slot 6
+                                else { max_suffix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
+                                foreach (ItemAffix affix in Current.item.affixes)
+                                {
+                                    if ((affix.affixType == AffixList.AffixType.PREFIX) && (p < max_prefix))
+                                    {
+                                        prefixs[p].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
+                                        p++;
+                                    }
+                                    else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (s < max_suffix))
+                                    {
+                                        suffixs[s].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
+                                        s++;
+                                    }
+                                }
+                                
+                                if (p < max_prefix)
+                                {
+                                    prefixs[p].gameObject.active = true;
+                                    prefixs[p].addAffixButton.gameObject.active = true;
+                                    prefixs[s].upgradeButton.gameObject.active = false; //Upgrade button
+                                    prefixs[s].background.active = false; //name
+                                    prefixs[s].shardCountHolder.active = false; //Count
+                                }
+                                
+                                if (s < max_suffix)
+                                {
+                                    suffixs[s].gameObject.active = true;                                    
+                                    suffixs[s].addAffixButton.gameObject.active = true;
+                                    suffixs[s].upgradeButton.gameObject.active = false; //Upgrade button
+                                    suffixs[s].background.active = false; //name
+                                    suffixs[s].shardCountHolder.active = false; //Count
+                                }
+                                __0 = "Select an affix";
+                            }
+                            else if (affix_tier > 0) { __0 = "Maxed"; }
+                        }
+                        else if (__0 == Locales.no_space_affix)
+                        {
+                            bool full = Get.IsAffixFull(Current.item);
+                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                            if (!full)
+                            {
+                                __0 = forge_string;
+                                __1 = false;
+                                __result = true;
+                            }
+                        }
+                        else if (__0 == Locales.no_space_prefix)
+                        {
+                            bool full = Get.IsPrefixFull(Current.item);
+                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                            if (!full)
+                            {
+                                __0 = forge_string;
+                                __1 = false;
+                                __result = true;
+                            }
+                        }
+                        else if (__0 == Locales.no_space_suffix)
+                        {
+                            bool full = Get.IsSuffixFull(Current.item);
+                            Refs_Manager.craft_slot_manager.suffixFullOfMax = full;
+                            if (!full)
+                            {
+                                __0 = forge_string;
+                                __1 = false;
+                                __result = true;
+                            }
+                        }
+                        else if (__0 == Locales.affix_is_maxed)
+                        {
+                            if ((affix_tier > 3) && (affix_tier < 6) && (CanCraftToT7))
+                            {
+                                Refs_Manager.craft_slot_manager.prefixFullOfMax = Get.IsPrefixFull(Current.item);
+                                Refs_Manager.craft_slot_manager.suffixFullOfMax = Get.IsSuffixFull(Current.item);
+                                __0 = forge_string;
+                                __1 = false;
+                                __result = true;
+                            }
+                            else if ((affix_tier > 5) && (CanCraftToT7)) { __0 = "Maxed"; }
+                        }
+                    }
                     latest_string = __0;
-                    //Main.logger_instance.Msg("CraftingManager.CheckForgeCapability  string = " + __0);
                 }
             }
         }
@@ -580,7 +640,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postifx(ref CraftingMainUI __instance, ref bool __result)
                 {
-                    Debug(false, "CraftingMainUI.Initialize()");
                     Crafting_Main_Item_Container.rect_transform = __instance.gameObject.GetComponent<RectTransform>();
                 }
             }
@@ -601,7 +660,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static void Prefix(ref OneSlotItemContainer __instance, bool __result, ItemData __0)
                 {
-                    //Debug(false, "OneSlotItemContainer.TryAddItem() Prefix");
                     if ((Scenes.IsGameScene()) && (!__0.IsNullOrDestroyed()))
                     {
                         if ((__instance.ToString() == "CraftingMainItemContainer") && (!rect_transform.IsNullOrDestroyed()))
@@ -633,25 +691,15 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
 
-            //Idols can be added to slot //BypassReq
+            //Idols can be added to slot
             [HarmonyPatch(typeof(CraftingMainItemContainer), "CanReceiveItem")]
             public class CraftingMainItemContainer_CanReceiveItem
             {
                 [HarmonyPostfix]
                 static void Postifx(ref CraftingMainItemContainer __instance, ref bool __result, ItemData __0, int __1)
                 {
-                    Debug(false, "CraftingMainItemContainer.CanReceiveItem(), result = " + __result);
                     main_item_container = __instance;
                     if (Get.IsCraftable(__0)) { __result = true; }
-                    Debug(false, "CraftingMainItemContainer.CanReceiveItem(), new_result = " + __result);
-
-                    //if (!Save_Manager.instance.IsNullOrDestroyed())
-                    //{
-                    //if (Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
-                    //{                            
-                    //if (Get.IsCraftable(__0)) { __result = true; }
-                    //}
-                    //}
                 }
             }
         }
@@ -718,6 +766,30 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
         }
+        public class Affix_list
+        {            
+            [HarmonyPatch(typeof(AffixList.Affix), "CanRollOnItemType", new System.Type[] { typeof(int), typeof(ItemList.ClassRequirement) })]
+            public class AffixList_Affix_CanRollOnItemType
+            {
+                [HarmonyPrefix]
+                static bool Prefix(AffixList.Affix __instance, ref bool __result, int __0, Il2Cpp.ItemList.ClassRequirement __1)
+                {
+                    bool r = true;
+                    bool IsIdol = false;
+                    if ((__0 > 24) && (__0 < 34)) { IsIdol = true; } // __0 = itemtype
+                    if ((!__result) && (IsIdol))
+                    {
+                        if (__instance.affixName.ToLower().Contains("idol"))
+                        {
+                            __result = true;
+                            r = false;
+                        }
+                    }
+                    
+                    return r;
+                }
+            }
+        }
         public class Crafting_Materials_Panel_UI
         {
             public static bool ShowAffixs(CraftingMaterialsPanelUI.AffixFilterType filter, ShardAffixListElement element, int nb_prefix, int nb_suffix, bool idol)
@@ -737,326 +809,336 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 else { return false; }
             }
 
-            //Add all affixs in list //ShowAllAffixes
+            //Add missing ShardAffixListElement (idol affix)
+            [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "OnOpen")]
+            public class CraftingMaterialsPanelUI_OnOpen
+            {
+                [HarmonyPrefix]
+                static void Prefix(CraftingMaterialsPanelUI __instance)
+                {
+                    System.Collections.Generic.List<int> already = new System.Collections.Generic.List<int>();
+                    foreach (ShardAffixListElement affix_element in __instance.shardAffixList)
+                    {
+                        already.Add(affix_element.affix.affixId);
+                    }
+                    GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
+                    SimpleLayoutGroup unused_layout = unused_holder.GetComponent<SimpleLayoutGroup>();
+
+                    if (!Refs_Manager.item_list.IsNullOrDestroyed())
+                    {
+                        if (!Refs_Manager.item_list.affixList.IsNullOrDestroyed() && (!__instance.shardAffixPrefab.IsNullOrDestroyed()))
+                        {
+                            foreach (AffixList.SingleAffix affix in Refs_Manager.item_list.affixList.singleAffixes)
+                            {
+                                if (!already.Contains(affix.affixId))
+                                {
+                                    ShardAffixListElement affix_element = Create.AffixElement(__instance.shardAffixPrefab, affix, affix.modifierType);
+                                    __instance.shardAffixList.Add(affix_element);
+                                    affix_element.transform.SetParent(unused_holder.transform);
+                                    unused_layout.AddElement(affix_element.gameObject);
+                                }
+                            }
+                            foreach (AffixList.MultiAffix affix in Refs_Manager.item_list.affixList.multiAffixes)
+                            {
+                                if (!already.Contains(affix.affixId))
+                                {
+                                    ShardAffixListElement affix_element = Create.AffixElement(__instance.shardAffixPrefab, affix, affix.affixProperties[0].modifierType);
+                                    __instance.shardAffixList.Add(affix_element);
+                                    affix_element.transform.SetParent(unused_holder.transform);
+                                    unused_layout.AddElement(affix_element.gameObject);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //Add all affixs in list
             [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "AddShardsFromList")]
             public class CraftingMaterialsPanelUI_AddShardsFromList
             {
-                [HarmonyPostfix]
-                static void Postfix(CraftingMaterialsPanelUI __instance, ref Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> __0)
-                {                    
-                    if (!Refs_Manager.item_list.IsNullOrDestroyed() && AddAllAffixes)
+                [HarmonyPrefix] //Add all affixs in list
+                static void Prefix(CraftingMaterialsPanelUI __instance, ref Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> __0)
+                {
+                    if (!Refs_Manager.item_list.IsNullOrDestroyed())
                     {
-                        Debug(false, "CraftingMaterialsPanelUI.AddShardsFromList()");
-                        //int count = Refs_Manager.item_list.affixList.singleAffixes.Count + Refs_Manager.item_list.affixList.multiAffixes.Count;
-                        //UnhollowerBaseLib.Il2CppReferenceArray<AffixList.Affix> new_list = new UnhollowerBaseLib.Il2CppReferenceArray<AffixList.Affix>(count);
-                        Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> new_list = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix>(1);
-                        Refs_Manager.item_list.affixList.isIdolAffix = AffixList.Filter.Either;
-                        foreach (AffixList.Affix affix in __0)
-                        {
-                            new_list.AddItem(affix);
-                        }
+                        Il2CppSystem.Collections.Generic.List<AffixList.Affix> affix_list = new Il2CppSystem.Collections.Generic.List<AffixList.Affix>();
+                        foreach (AffixList.Affix affix in __0) { affix_list.Add(affix); }
                         foreach (AffixList.SingleAffix single_affix in Refs_Manager.item_list.affixList.singleAffixes)
                         {
                             AffixList.Affix affix = single_affix.TryCast<AffixList.Affix>();
-                            if (!new_list.Contains(affix)) { new_list.AddItem(affix); }
+                            if (!affix_list.Contains(affix)) { affix_list.Add(affix); }
                         }
                         foreach (AffixList.MultiAffix multi_affix in Refs_Manager.item_list.affixList.multiAffixes)
                         {
                             AffixList.Affix affix = multi_affix.TryCast<AffixList.Affix>();
-                            if (!new_list.Contains(affix)) { new_list.AddItem(affix); }
+                            if (!affix_list.Contains(affix)) { affix_list.Add(affix); }
+                        }
+                        Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> new_list = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix>(affix_list.Count);
+                        int i = 0;
+                        foreach (AffixList.Affix affix in affix_list)
+                        {
+                            new_list[i] = affix;
+                            i++;
                         }
                         __0 = new_list;
                     }
                 }
             }
 
-            //All Affix in materials panel (fix idols) //ShowAllAffixes
-            [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "PopulateShardList")]
-            public class CraftingMaterialsPanelUI_PopulateShardList
+            //Fix shards for Unique Set Legendary and Idols //Have to be edited to fix req (ex : warpath)
+            [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "RefreshAffixList")]
+            public class CraftingMaterialsPanelUI_RefreshAffixList
             {
-                [HarmonyPostfix]
-                static void Postfix(CraftingMaterialsPanelUI __instance)
-                {                    
-                    //if (Main.debug) { Main.logger_instance.Msg("CraftingMaterialsPanelUI : PopulateShardList : Postfix"); }
-                    if (AddAllAffixes)
+                [HarmonyPrefix]
+                static void Prefix(ref CraftingMaterialsPanelUI __instance)
+                {
+                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
                     {
-                        Debug(false, "CraftingMaterialsPanelUI.PopulateShardList()");
-                        System.Collections.Generic.List<int> already = new System.Collections.Generic.List<int>();
-                        foreach (ShardAffixListElement affix_element in __instance.shardAffixList)
+                        if (Get.IsIdol(Current.item))
                         {
-                            already.Add(affix_element.affix.affixId);
-                        }
-                        if (!Refs_Manager.item_list.IsNullOrDestroyed())
-                        {
-                            if (!Refs_Manager.item_list.affixList.IsNullOrDestroyed())
+                            GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
+                            SimpleLayoutGroup unused_content = unused_holder.GetComponent<SimpleLayoutGroup>();
+                            GameObject applied_holder = __instance.appliedAffixesHolder.gameObject;
+                            SimpleLayoutGroup applied_content = applied_holder.GetComponent<SimpleLayoutGroup>();
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
                             {
-                                foreach (AffixList.SingleAffix affix in Refs_Manager.item_list.affixList.singleAffixes)
-                                {
-                                    if ((!already.Contains(affix.affixId)) && (!__instance.shardAffixPrefab.IsNullOrDestroyed()))
-                                    {
-                                        Add.Affix(ref __instance, affix, affix.modifierType);
-                                    }
-                                }
-                                foreach (AffixList.MultiAffix affix in Refs_Manager.item_list.affixList.multiAffixes)
-                                {
-                                    if (!already.Contains(affix.affixId))
-                                    {
-                                        Add.Affix(ref __instance, affix, affix.affixProperties[0].modifierType);
-                                    }
-                                }
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                shard_affix_element.transform.SetParent(unused_holder.transform);
+                            }
+                            GameObject incompatible_holder = __instance.incompatibleAffixesHolder.gameObject;
+                            SimpleLayoutGroup incompatible_content = incompatible_holder.GetComponent<SimpleLayoutGroup>();
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
+                            {
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                shard_affix_element.transform.SetParent(unused_holder.transform);
                             }
                         }
                     }
                 }
-            }
-
-            //Fix shards for Unique Set Legendary and Idols //Have to be edited to fix req (ex : warpath) //ShowAllAffixes
-            [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "RefreshAffixList")]
-            public class CraftingMaterialsPanelUI_RefreshAffixList
-            {
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingMaterialsPanelUI __instance)
                 {
                     if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
                     {
+                        GameObject applied_header = __instance.appliedAffixesHeader.gameObject;
+                        GameObject applied_holder = __instance.appliedAffixesHolder.gameObject;
+                        SimpleLayoutGroup applied_content = applied_holder.GetComponent<SimpleLayoutGroup>();
+
                         GameObject incompatible_header = __instance.incompatibleAffixesHeader.gameObject;
                         GameObject incompatible_holder = __instance.incompatibleAffixesHolder.gameObject;
+                        SimpleLayoutGroup incompatible_content = incompatible_holder.GetComponent<SimpleLayoutGroup>();
+
                         GameObject unused_header = __instance.unusedAffixesHeader.gameObject;
                         GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
-                        if (Current.item.isUniqueSetOrLegendary())
+                        SimpleLayoutGroup unused_content = unused_holder.GetComponent<SimpleLayoutGroup>();
+
+                        GameObject hidden_holder = __instance.hiddenAffixHolder.gameObject;
+
+                        CraftingMaterialsPanelUI.AffixFilterType filter_type = __instance.affixFilterType;
+                        if ((Get.IsIdol(Current.item)) || (Current.item.isUniqueSetOrLegendary()))
                         {
-                            Debug(false, "Unused section contain " + unused_holder.transform.childCount + " affix(s)");
-                            Debug(false, "Incompatible section contain " + incompatible_holder.transform.childCount + " affix(s)");
-                            
-                            /*Debug(false, "Move all affixs from incompatible to unused section");
-                            for (int i = 0; i < incompatible_holder.transform.childCount; i++)
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
                             {
-                                incompatible_holder.transform.GetChild(i).gameObject.transform.SetParent(unused_holder.transform);
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                shard_affix_element.transform.SetParent(unused_holder.transform);
                             }
-                            Debug(false, "Unused section contain " + unused_holder.transform.childCount + " affix(s)");
-                            Debug(false, "Incompatible section contain " + incompatible_holder.transform.childCount + " affix(s)");
-                            */
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
+                            {
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                shard_affix_element.transform.SetParent(unused_holder.transform);
+                            }
+                            int count = 0;
+                            Il2CppSystem.Collections.Generic.List<int> applied_affixs = new Il2CppSystem.Collections.Generic.List<int>();
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.Elements)
+                            {
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                AffixList.Affix aff = shard_affix_element.affix;
+                                if (((aff.type == AffixList.AffixType.PREFIX) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.PREFIX)) ||
+                                    ((aff.type == AffixList.AffixType.SUFFIX) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.SUFFIX)) ||
+                                    (filter_type == CraftingMaterialsPanelUI.AffixFilterType.ANY))
+                                {
+                                    bool already = false;
+                                    foreach (ItemAffix affix in Current.item.affixes)
+                                    {
+                                        if (affix.affixId == aff.affixId)
+                                        {
+                                            if (!applied_affixs.Contains(affix.affixId))
+                                            {
+                                                applied_affixs.Add(affix.affixId);
+                                                shard_affix_element.transform.SetParent(applied_holder.transform);
+                                                already = true;
+                                            }
+                                            else
+                                            {
+                                                shard_affix_element.transform.SetParent(incompatible_holder.transform);
+                                                already = true;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    if (!already)
+                                    {
+                                        if (aff.CanRollOnItemType(Current.item.itemType, ItemList.ClassRequirement.None))
+                                        {
+                                            element.Ignored = false;
+                                            count++;
+                                        }
+                                        else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
+                                    }
+                                }
+                                else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
+                            }
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
+                            {
+                                element.Ignored = false;
+                            }
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
+                            {
+                                element.Ignored = true;
+                            }
+                                /*Il2CppSystem.Collections.Generic.List<int> affixs = new Il2CppSystem.Collections.Generic.List<int>();
+                                foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
+                                {
+                                    ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                    if (!affixs.Contains(shard_affix_element.affix.affixId)) { affixs.Add(shard_affix_element.affix.affixId); count++; }
+                                    else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
+                                }*/
 
-                            Debug(false, "Hide incompatible header");
+                                //Buttons
+                            for (int i = 0; i < applied_holder.transform.childCount; i++)
+                            {
+                                if (!Get.IsIdol(Current.item))
+                                {
+                                    Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = true;
+                                }
+                                applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                            }
+                            for (int i = 0; i < unused_holder.transform.childCount; i++)
+                            {
+                                Functions.GetChild(unused_holder.transform.GetChild(i).gameObject, "Button").active = true;
+                                unused_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1); //Fix Scale
+                            }
+
+                            if (applied_holder.transform.childCount > 0) { applied_header.active = true; }
+                            else { applied_header.active = false; }
+                            applied_content.UpdateLayout();
+                            if (unused_holder.transform.childCount > 0) { unused_header.active = true; }
+                            else { unused_header.active = false; }
+                            unused_content.UpdateLayout();                            
                             incompatible_header.active = false;
-                            //incompatible_holder.active = false;
+                            incompatible_content.UpdateLayout();
 
-                            Debug(false, "Show unused header");
-                            unused_header.active = true;
-                            //unused_holder.active = true;
+                            __instance.commonLayoutGroup.UpdateLayout();
+                            /*count = 0;
+                            
+                            if (count > 0) //Update applied content
+                            {
+                                applied_header.active = true;
+                                
+                            }
+                            else { applied_header.active = false; }
 
-                            Debug(false, "Unlock all Affix(s) in incompatible section");
+                            incompatible_header.active = false;
+                            incompatible_content.gameObject.active = false;*/
+                        }
+                        else if (Current.item.isUniqueSetOrLegendary())
+                        {
+                            /*Il2CppSystem.Collections.Generic.List<int> affixs = new Il2CppSystem.Collections.Generic.List<int>();
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
+                            {
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                if (!affixs.Contains(shard_affix_element.affix.affixId))
+                                {
+                                    affixs.Add(shard_affix_element.affix.affixId);
+                                }
+                                else { shard_affix_element.transform.SetParent(hidden_holder.transform); }
+                            }*/
+                            for (int i = 0; i < applied_holder.transform.childCount; i++)
+                            {
+                                applied_holder.transform.GetChild(i).gameObject.active = true;
+                                Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = true;
+                                applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                            }
+
+                            int count = 0;
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
+                            {
+                                element.Ignored = false;
+                                count++;
+                            }
                             for (int i = 0; i < incompatible_holder.transform.childCount; i++)
                             {
                                 incompatible_holder.transform.GetChild(i).gameObject.active = true;
                                 Functions.GetChild(incompatible_holder.transform.GetChild(i).gameObject, "Button").active = true;
                                 incompatible_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                             }
+
+                            applied_content.UpdateLayout();
+                            unused_content.UpdateLayout();
+                            incompatible_content.UpdateLayout();
+
+                            unused_header.active = true;
+                            incompatible_header.active = false;
                         }
-                        else if ((Get.IsIdol(Current.item)) && (1 == 0)) //Disable Debug
+                        /*else if (Get.IsIdol(Current.item))
                         {
-                            Debug(false, "CraftingMaterialsPanelUI.RefreshAffixList()");                            
-                            GameObject applied_holder = __instance.appliedAffixesHolder.gameObject;
-                            //GameObject unused_header = __instance.unusedAffixesHeader.gameObject;
-                            //GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
-                            //GameObject incompatible_header = __instance.incompatibleAffixesHeader.gameObject;
-                            //GameObject incompatible_holder = __instance.incompatibleAffixesHolder.gameObject;
-                            GameObject hidden_holder = __instance.hiddenAffixHolder.gameObject;
-
-                            bool type_found = false;
-                            EquipmentType equip_type = EquipmentType.HELMET;
-                            string item_base_name = "";
-                            ItemList.ClassRequirement item_class_req = ItemList.ClassRequirement.None;
-                            foreach (ItemList.BaseEquipmentItem item in Scripts.Refs_Manager.item_list.EquippableItems)
+                            int count = 0;
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.Elements)
                             {
-                                if (item.baseTypeID == Current.item.itemType)
+                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
+                                if (shard_affix_element.shardItemName.ToLower().Contains("idol"))
                                 {
-                                    equip_type = item.type;
-                                    item_base_name = item.BaseTypeName;
-                                    type_found = true;
-                                    Debug(false, "Item type found : " + Current.item.itemType);
-                                    foreach (ItemList.EquipmentItem eq_item in item.subItems)
+                                    string affix_type = shard_affix_element.gameObject.GetComponent<ShardAffixListElement>().affixType;
+                                    if (((affix_type == "Prefix") && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.PREFIX)) ||
+                                        ((affix_type == "Suffix") && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.SUFFIX)) ||
+                                        (filter_type == CraftingMaterialsPanelUI.AffixFilterType.ANY))
                                     {
-                                        if (eq_item.subTypeID == Current.item.subType)
+                                        bool already = false;
+                                        foreach (ItemAffix affix in Current.item.affixes)
                                         {
-                                            Debug(false, "Item subtype found : " + Current.item.subType);
-                                            item_class_req = eq_item.classRequirement;
-                                            break;
+                                            if (affix.affixId == shard_affix_element.affix.affixId)
+                                            {
+                                                shard_affix_element.transform.SetParent(applied_holder.transform);
+                                                already = true;
+                                                break;
+                                            }
                                         }
-                                    }
-                                    break;
+                                        if (already) { element.Ignored = true; }
+                                        else
+                                        {
+                                            element.Ignored = false;
+                                            count++;
+                                        }                                        
+                                    }                                    
                                 }
                             }
-
-                            System.Collections.Generic.List<GameObject> unused_list = new System.Collections.Generic.List<GameObject>();
-                            System.Collections.Generic.List<GameObject> uncompatible_list = new System.Collections.Generic.List<GameObject>();
-                            System.Collections.Generic.List<GameObject> hidden_list = new System.Collections.Generic.List<GameObject>();
-
-                            int nb_prefix = 0;
-                            int nb_suffix = 0;
-                            foreach (ItemAffix aff in Current.item.affixes)
+                            if (count > 0)
                             {
-                                if (aff.affixType == AffixList.AffixType.PREFIX) { nb_prefix++; }
-                                else if (aff.affixType == AffixList.AffixType.SUFFIX) { nb_suffix++; }
-                            }
-                            Debug(false, "Item contain " + nb_prefix + " prefix(s) and " + nb_suffix + " suffix(s)");
-
-                            bool idol = Get.IsIdol(Current.item);
-                            if (type_found)
-                            {
-                                Debug(false, "Unused section contain " + unused_holder.transform.childCount + " affixs");
-                                Debug(false, "Incompatible section contain " + incompatible_holder.transform.childCount + " affixs");
-                                Debug(false, "Hidden section contain " + hidden_holder.transform.childCount + " affixs");
-
-                                Debug(false, "Move affix(s) from unused section into list");
-                                for (int i = 0; i < unused_holder.transform.childCount; i++)
-                                {
-                                    GameObject affix_obj = unused_holder.transform.GetChild(i).gameObject;
-                                    ShardAffixListElement element = affix_obj.GetComponent<ShardAffixListElement>();
-
-                                    if (ShowAffixs(__instance.affixFilterType, element, nb_prefix, nb_suffix, idol))
-                                    {
-                                        if ((element.affix.CanRollOnItemType(Current.item.itemType, item_class_req)) ||
-                                            (ShowAllAffixes))
-                                        {
-                                            unused_list.Add(affix_obj);
-                                        }
-                                        else { uncompatible_list.Add(affix_obj); }
-                                    }
-                                    else { hidden_list.Add(affix_obj); }
-                                }
-                                Debug(false, "Unused list contain " + unused_list.Count + " affixs");
-                                Debug(false, "Incompatible list contain " + uncompatible_list.Count + " affixs");
-                                Debug(false, "Hidden list contain " + hidden_list.Count + " affixs");
-
-                                Debug(false, "Move affix(s) from incompatible section into list");
-                                for (int i = 0; i < incompatible_holder.transform.childCount; i++)
-                                {
-                                    GameObject affix_obj = incompatible_holder.transform.GetChild(i).gameObject;
-                                    ShardAffixListElement element = affix_obj.GetComponent<ShardAffixListElement>();
-                                    if (ShowAffixs(__instance.affixFilterType, element, nb_prefix, nb_suffix, idol))
-                                    {
-                                        if ((element.affix.CanRollOnItemType(Current.item.itemType, item_class_req)) ||
-                                            (ShowAllAffixes))
-                                        {
-                                            unused_list.Add(affix_obj);
-                                        }
-                                        else { uncompatible_list.Add(affix_obj); }
-                                    }
-                                    else { hidden_list.Add(affix_obj); }
-                                }
-                                Debug(false, "Unused list contain " + unused_list.Count + " affixs");
-                                Debug(false, "Incompatible list contain " + uncompatible_list.Count + " affixs");
-                                Debug(false, "Hidden list contain " + hidden_list.Count + " affixs");
-
-                                Debug(false, "Move affix(s) from hidden section into list");
-                                for (int i = 0; i < hidden_holder.transform.childCount; i++)
-                                {
-                                    GameObject affix_obj = hidden_holder.transform.GetChild(i).gameObject;
-                                    ShardAffixListElement element = affix_obj.GetComponent<ShardAffixListElement>();
-                                    if (ShowAffixs(__instance.affixFilterType, element, nb_prefix, nb_suffix, idol))
-                                    {
-                                        if ((element.affix.CanRollOnItemType(Current.item.itemType, item_class_req)) ||
-                                            (ShowAllAffixes))
-                                        {
-                                            unused_list.Add(affix_obj);
-                                        }
-                                        else { uncompatible_list.Add(affix_obj); }
-                                    }
-                                    else { hidden_list.Add(affix_obj); }
-                                }
-                                Debug(false, "Unused list contain " + unused_list.Count + " affixs");
-                                Debug(false, "Incompatible list contain " + uncompatible_list.Count + " affixs");
-                                Debug(false, "Hidden list contain " + hidden_list.Count + " affixs");
-                            }
-
-                            //Applied
-                            Debug(false, "Unlock some affix in applied section");
-                            for (int i = 0; i < applied_holder.transform.childCount; i++)
-                            {
-                                if (idol) { Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = false; }
-                                else if (Current.item.rarity > 6)
-                                {
-                                    int affix_id = applied_holder.transform.GetChild(i).gameObject.GetComponent<ShardAffixListElement>().affix.affixId;
-                                    bool can_select = false;
-                                    foreach (ItemAffix affix in Current.item.affixes)
-                                    {
-                                        if (affix.affixId == affix_id)
-                                        {
-                                            if (affix.affixTier < 6) { can_select = true; }
-                                            break;
-                                        }
-                                    }
-                                    Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = can_select;
-                                }
-                                applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                            }
-
-                            //Unused
-                            Debug(false, "Add " + unused_list.Count + " Affix(s) in unused section");
-                            foreach (GameObject item in unused_list)
-                            {
-                                item.transform.SetParent(unused_holder.transform);
-                            }
-                            unused_list.Clear();
-
-                            if (unused_holder.transform.childCount > 0)
-                            {
-                                Debug(false, "Show unused header (" + unused_holder.transform.childCount + ")");
                                 __instance.noShardNotice.gameObject.active = false;
-                                unused_header.active = true;
-
-                                Debug(false, "Unlock all Affix(s) in unused section");
+                                __instance.unusedAffixesHeader.gameObject.active = true;
                                 for (int i = 0; i < unused_holder.transform.childCount; i++)
                                 {
-                                    unused_holder.transform.GetChild(i).gameObject.active = true;
-                                    Functions.GetChild(unused_holder.transform.GetChild(i).gameObject, "Button").active = true;
                                     unused_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                                }
+                                }                                
+                                unused_content.UpdateLayout();
                             }
-                            else
+                            count = 0;
+                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
                             {
-                                Debug(false, "Hide unused header (" + unused_holder.transform.childCount + ")");
-                                unused_header.active = false;
+                                element.Ignored = false;
+                                count++;
                             }
-
-                            //Incompatible
-                            Debug(false, "Add " + uncompatible_list.Count + " Affix(s) in incompatible section");
-                            foreach (GameObject item in uncompatible_list) { item.transform.SetParent(incompatible_holder.transform); }
-                            uncompatible_list.Clear();
-                            
-                            if (((Save_Manager.instance.data.modsNotInHud.Enable_Craft_IncompatibleAffixs) || (idol)) &&
-                                (incompatible_holder.transform.childCount > 0))
+                            if (count > 0)
                             {
-                                Debug(false, "Show incompatible section");
-                                incompatible_header.active = true;
-
-                                Debug(false, "Unlock all Affix(s) in incompatible section");
-                                for (int i = 0; i < incompatible_holder.transform.childCount; i++)
+                                for (int i = 0; i < applied_holder.transform.childCount; i++)
                                 {
-                                    incompatible_holder.transform.GetChild(i).gameObject.active = true;
-                                    Functions.GetChild(incompatible_holder.transform.GetChild(i).gameObject, "Button").active = true;
-                                    incompatible_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                                    applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                                 }
+                                applied_content.UpdateLayout();
+                                __instance.appliedAffixesHeader.gameObject.active = true;
                             }
-                            else
-                            {
-                                Debug(false, "Hide incompatible section");
-                                incompatible_header.active = false;
-                                incompatible_holder.active = false;
-                            }
-
-                            //Hidden
-                            Debug(false, "Add " + hidden_list.Count + " Affix(s) in hidden section");
-                            foreach (GameObject item in hidden_list) { item.transform.SetParent(hidden_holder.transform); }
-                            hidden_list.Clear();
-
-                            //Use to Debug
-                            //Debug(false, "Unused section contain " + unused_holder.transform.childCount + " affixs");
-                            //Debug(false, "Incompatible section contain " + incompatible_holder.transform.childCount + " affixs");
-                            //Debug(false, "Hidden section contain " + hidden_holder.transform.childCount + " affixs");
-
-                        }
+                        }*/                        
                     }
                 }
             }
@@ -1068,15 +1150,14 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public class ShardAffixListElement_setQuantityAndUpdateText
             {
                 [HarmonyPrefix]
-                static void Prefix(/*ShardAffixListElement __instance,*/ ref int __0)
+                static void Prefix(ref int __0)
                 {
-                    if ((Current.item != null) && (__0 == 0)) // && Save_Manager.instance.data.modsNotInHud.Enable_Craft_BypassReq)
+                    if ((Current.item != null) && (__0 == 0))
                     {
                         if (((Get.IsIdol(Current.item)) && (CanCraftIdols)) ||
                             ((Current.item.isUniqueSetOrLegendary()) && (CanCraftUniqueSet)))
                         {                            
                             __0 = 1;
-                            //Debug(false, "ShardAffixListElement.setQuantityAndUpdateText() Prefix, ShardCount from 0 to " + __0);
                         }
                     }                    
                 }
@@ -1119,7 +1200,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static bool Prefix(ref CraftingSlotManager __instance)
                 {
-                    Debug(false, "CraftingSlotManager.Forge() Prefix : str = " + Crafting_Manager.forge_string);
+                    //Debug(false, "CraftingSlotManager.Forge() Prefix : str = " + Crafting_Manager.forge_string);
                     bool result = true;
                     forgin = true;
                     __instance.forgeButton.gameObject.active = false;
@@ -1257,9 +1338,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                     if (!already_contain_affix)
                                     {
                                         AffixList.AffixType new_affix_type = AffixList.instance.GetAffixType(affix_id);
+
+                                        if (((idol) && ((((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs)) ||
+                                            ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs))))) ||
+                                            ((!idol) && ((((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
+                                            ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))))))
+                                        {
+
+                                        /*}
+
                                         if (((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
                                             ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
-                                        {
+                                        {*/
                                             ItemAffix affix = new ItemAffix
                                             {
                                                 affixId = (ushort)affix_id,
@@ -1282,6 +1372,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                                 Current.item.rarity = (byte)count;
                                             }
                                             Current.item.RefreshIDAndValues();
+                                            //Refresh slot for idol
+                                            if (idol)
+                                            {
+                                                //ItemContainerEntry container_entry = Crafting_Manager.item_container.content;
+                                                ItemData item_data = Crafting_Manager.item_container.content.data;
+                                                Crafting_Manager.item_container.Clear();
+                                                Crafting_Manager.item_container.TryAddItem(item_data, 1, Context.DEFAULT);
+
+                                                //Crafting_Manager.item_container.MoveItemTo(container_entry, Crafting_Manager.item_container.content, null, Context.DEFAULT);
+                                            }
                                             result = false;
                                         }
                                         else { Main.logger_instance.Error("No space for affix"); }
@@ -1307,7 +1407,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     forgin = false;
 
                     //}
-                    Debug(false, "Use Default forge = " + result);
+                    //Debug(false, "Use Default forge = " + result);
 
                     return result;
                 }
