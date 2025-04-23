@@ -149,7 +149,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             public static bool AddedToUniqueList = false;
             public static Sprite Icon = null;
-            public static readonly ushort unique_id = 500;
+            public static readonly ushort unique_id = 420;
             public static UniqueList.Entry Item()
             {
                 UniqueList.Entry item = new UniqueList.Entry
@@ -187,6 +187,20 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     Refs_Manager.unique_list.uniques.Add(Item());
                     AddedToUniqueList = true;
+
+                    UniqueList.Entry item = null;
+                    foreach (UniqueList.Entry unique in Refs_Manager.unique_list.uniques)
+                    {
+                        if ((unique.uniqueID == unique_id) && (unique.name == Get_Unique_Name()))
+                        {
+                            item = unique;
+                            break;
+                        }
+                    }
+                    if (!item.IsNullOrDestroyed())
+                    {
+                        Refs_Manager.unique_list.entryDictionary.Add(unique_id, item);
+                    }
                 }
             }                        
             public static string Get_Unique_Name()
