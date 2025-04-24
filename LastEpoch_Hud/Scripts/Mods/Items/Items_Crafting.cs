@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppLE.Data;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
+using static Il2Cpp.AffixList;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
@@ -28,10 +30,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if (Scenes.IsGameScene())
             {
-                if ((!NewSlots.Initialized) && (!NewSlots.Initializing)) { NewSlots.Init(); }
-                if (NewSlots.Initialized) { NewSlots.UpdateSlots(); }
+                if (Ui.initialized) { Ui.Update(); }
             }
-            else { NewSlots.Initialized = false; }
+            else { Ui.initialized = false; }
         }
         public static void Debug(bool error, string msg)
         {
@@ -44,7 +45,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         
         public class Current
-        {
+        {            
             public static ItemData item = null;
             public static AffixSlotForge slot = null;
             public static CraftingUpgradeButton btn = null;
@@ -317,6 +318,451 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
         }
+        public class Ui
+        {
+            public struct Slot_refs
+            {
+                public GameObject Slot_obj;
+                public GameObject shards;
+                public GameObject add_shard_btn;
+                public GameObject shard_icon;
+                public GameObject glass_lense;
+                public GameObject available_shards;
+                public GameObject available_shards_count;
+                public GameObject active_pathing;
+                public GameObject upgrade_available;
+                public GameObject upgrade_available_indicator;
+                public GameObject affix_desc_holder;
+                public GameObject drop_shadow;
+                public GameObject tier_level;
+                public GameObject separator;
+                public GameObject affix_name;
+            }
+            public static Slot_refs slot_0_refs;    //prefix_0
+            public static Slot_refs slot_1_refs;    //prefix_1
+            public static Slot_refs slot_2_refs;    //suffix_0
+            public static Slot_refs slot_3_refs;    //suffix_1
+            public static Slot_refs slot_4_refs;    //prefix_2
+            public static Slot_refs slot_5_refs;    //suffix_2
+            public static bool initialized = false;
+            public static Il2CppSystem.Collections.Generic.List<ItemAffix> backup_affixs = null;
+            public static bool updating = false;
+            public static bool already_reset = false;
+            public static string shards_text_filter = "";
+
+            public static void Init()
+            {                
+                if (!Refs_Manager.crafting_panel_ui.IsNullOrDestroyed())
+                {
+                    GameObject __instance = Functions.GetChild(Refs_Manager.crafting_panel_ui.gameObject, "MainContent");
+                    if (!__instance.IsNullOrDestroyed())
+                    {
+                        slot_0_refs = Get_SlotRefs(0);    //prefix_0
+                        slot_1_refs = Get_SlotRefs(1);    //prefix_1
+                        GameObject slot_4 = Object.Instantiate(slot_1_refs.Slot_obj, Vector3.zero, Quaternion.identity);
+                        slot_4.name = "ModSlot (4)";
+                        slot_4.transform.SetParent(__instance.transform);
+                        slot_4_refs = Get_SlotRefs(4);
+                        Set_SlotPositions(4);
+                        slot_2_refs = Get_SlotRefs(2);    //suffix_0
+                        slot_3_refs = Get_SlotRefs(3);    //suffix_1
+                        GameObject slot_5 = Object.Instantiate(slot_3_refs.Slot_obj, Vector3.zero, Quaternion.identity);
+                        slot_5.name = "ModSlot (5)";
+                        slot_5.transform.SetParent(__instance.transform);
+                        slot_5_refs = Get_SlotRefs(5);
+                        Set_SlotPositions(5);
+                        initialized = true;
+                    }
+                }
+            }
+            public static Slot_refs Get_SlotRefs(int slot)
+            {
+                GameObject Slot_obj = null;
+                GameObject shards = null;
+                GameObject add_shard_btn = null;
+                GameObject shard_icon = null;
+                GameObject glass_lense = null;
+                GameObject available_shards = null;
+                GameObject available_shards_count = null;
+                GameObject active_pathing = null;
+                GameObject upgrade_available = null;
+                GameObject upgrade_available_indicator = null;
+                GameObject affix_desc_holder = null;
+                GameObject drop_shadow = null;
+                GameObject tier_level = null;
+                GameObject separator = null;
+                GameObject affix_name = null;
+
+                string slot_name = "ModSlot";
+                if (slot == 1) { slot_name = "ModSlot (1)"; }  //prefix_1
+                else if (slot == 2) { slot_name = "ModSlot (2)"; }  //suffix_0
+                else if (slot == 3) { slot_name = "ModSlot (3)"; }  //suffix_1
+                else if (slot == 4) { slot_name = "ModSlot (4)"; }  //prefix_2
+                else if (slot == 5) { slot_name = "ModSlot (5)"; }  //suffix_2
+
+                if (!Refs_Manager.crafting_panel_ui.IsNullOrDestroyed())
+                {
+                    GameObject __instance = Functions.GetChild(Refs_Manager.crafting_panel_ui.gameObject, "MainContent");
+                    if (!__instance.IsNullOrDestroyed())
+                    {
+                        Slot_obj = Functions.GetChild(__instance, slot_name);
+                        if (!Slot_obj.IsNullOrDestroyed())
+                        {
+                            shards = Functions.GetChild(Slot_obj, "Shard");
+                            if (!shards.IsNullOrDestroyed())
+                            {
+                                add_shard_btn = Functions.GetChild(shards, "addShardButton");
+                                shard_icon = Functions.GetChild(shards, "ShardIcon");
+                                glass_lense = Functions.GetChild(shards, "GlassLense");
+                            }
+                            available_shards = Functions.GetChild(Slot_obj, "AvailableShardsofSlottedType");
+                            if (!available_shards.IsNullOrDestroyed())
+                            {
+                                available_shards_count = Functions.GetChild(available_shards, "Available Shard Count TMP");
+                            }
+                            active_pathing = Functions.GetChild(Slot_obj, "activePathing");
+                            upgrade_available = Functions.GetChild(Slot_obj, "upgradeAvailable");
+                            if (!upgrade_available.IsNullOrDestroyed())
+                            {
+                                upgrade_available_indicator = Functions.GetChild(upgrade_available, "Upgrade Available Indicator");
+                            }
+                            affix_desc_holder = Functions.GetChild(Slot_obj, "affixDescHolder");
+                            if (!affix_desc_holder.IsNullOrDestroyed())
+                            {
+                                drop_shadow = Functions.GetChild(affix_desc_holder, "dropshadow");
+                                tier_level = Functions.GetChild(affix_desc_holder, "tierLevel");
+                                separator = Functions.GetChild(affix_desc_holder, "separator");
+                                affix_name = Functions.GetChild(affix_desc_holder, "AffixName");
+                            }
+                        }
+                    }
+                }
+                Slot_refs refs = new Slot_refs
+                {
+                    Slot_obj = Slot_obj,
+                    shards = shards,
+                    add_shard_btn = add_shard_btn,
+                    shard_icon = shard_icon,
+                    glass_lense = glass_lense,
+                    available_shards = available_shards,
+                    available_shards_count = available_shards_count,
+                    active_pathing = active_pathing,
+                    upgrade_available = upgrade_available,
+                    upgrade_available_indicator = upgrade_available_indicator,
+                    affix_desc_holder = affix_desc_holder,
+                    drop_shadow = drop_shadow,
+                    tier_level = tier_level,
+                    separator = separator,
+                    affix_name = affix_name
+                };
+
+                return refs;
+            }            
+            public static int Get_PlayerShardCount(int affix_id)
+            {
+                int count = 0;
+                if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                {
+                    foreach (ItemLocationPair item in Refs_Manager.player_data.SavedItems)
+                    {
+                        if ((item.Data[3] == 101) && (item.Data[5] == affix_id)) { count++; }
+                    }
+                }
+
+                return count;
+            }
+            public static void Set_SlotPositions(int slot)
+            {
+                if ((!Refs_Manager.crafting_panel_ui.IsNullOrDestroyed()) && ((slot == 4) || (slot == 5)))
+                {
+                    string slot_name = "ModSlot (4)";
+                    Slot_refs refs_0 = slot_0_refs;
+                    Slot_refs refs_1 = slot_1_refs;
+                    if (slot == 5) { slot_name = "ModSlot (5)"; refs_0 = slot_2_refs; refs_1 = slot_3_refs; }
+                    GameObject __instance = Functions.GetChild(Refs_Manager.crafting_panel_ui.gameObject, "MainContent");
+                    if (!__instance.IsNullOrDestroyed())
+                    {
+                        GameObject Slot_obj = Functions.GetChild(__instance, slot_name);
+                        if (!Slot_obj.IsNullOrDestroyed())
+                        {
+                            Slot_obj.transform.position = refs_1.Slot_obj.transform.position - (refs_0.Slot_obj.transform.position - refs_1.Slot_obj.transform.position);
+                            GameObject shards = Functions.GetChild(Slot_obj, "Shard");
+                            if (!shards.IsNullOrDestroyed())
+                            {
+                                shards.transform.position = refs_1.shards.transform.position - (refs_0.shards.transform.position - refs_1.shards.transform.position);
+                                GameObject add_shard_btn = Functions.GetChild(shards, "addShardButton");
+                                if ((!add_shard_btn.IsNullOrDestroyed()) && (!refs_0.add_shard_btn.IsNullOrDestroyed()) && (!refs_1.add_shard_btn.IsNullOrDestroyed()))
+                                {
+                                    add_shard_btn.transform.position = refs_1.add_shard_btn.transform.position - (refs_0.add_shard_btn.transform.position - refs_1.add_shard_btn.transform.position);
+                                }
+                                else { Debug(true, "Error : AddShard"); }
+                                GameObject shard_icon = Functions.GetChild(shards, "ShardIcon");
+                                if ((!shard_icon.IsNullOrDestroyed()) && (!refs_0.shard_icon.IsNullOrDestroyed()) && (!refs_1.shard_icon.IsNullOrDestroyed()))
+                                {
+                                    shard_icon.transform.position = refs_1.shard_icon.transform.position - (refs_0.shard_icon.transform.position - refs_1.shard_icon.transform.position);
+                                }
+                                else { Debug(true, "Error : ShardIcon"); }
+                                GameObject glass_lense = Functions.GetChild(shards, "GlassLense");
+                                if ((!glass_lense.IsNullOrDestroyed()) && (!refs_0.glass_lense.IsNullOrDestroyed()) && (!refs_1.glass_lense.IsNullOrDestroyed()))
+                                {
+                                    glass_lense.transform.position = refs_1.glass_lense.transform.position - (refs_0.glass_lense.transform.position - refs_1.glass_lense.transform.position);
+                                }
+                                else { Debug(true, "Error : glass_lense"); }
+                            }
+                            else { Debug(true, "Error : Shard"); }
+                            GameObject available_shard = Functions.GetChild(Slot_obj, "AvailableShardsofSlottedType");
+                            if ((!available_shard.IsNullOrDestroyed()) && (!refs_0.available_shards.IsNullOrDestroyed()) && (!refs_1.available_shards.IsNullOrDestroyed()))
+                            {
+                                available_shard.transform.position = refs_1.available_shards.transform.position - (refs_0.available_shards.transform.position - refs_1.available_shards.transform.position);
+                                GameObject available_shard_count = Functions.GetChild(available_shard, "Available Shard Count TMP");
+                                if ((!available_shard_count.IsNullOrDestroyed()) && (!refs_0.available_shards_count.IsNullOrDestroyed()) && (!refs_1.available_shards_count.IsNullOrDestroyed()))
+                                {
+                                    available_shard_count.transform.position = refs_1.available_shards_count.transform.position - (refs_0.available_shards_count.transform.position - refs_1.available_shards_count.transform.position);
+                                }
+                                else { Debug(true, "Error : available_shard_count"); }
+                            }
+                            else { Debug(true, "Error : available_shard"); }
+                            GameObject active_pathing = Functions.GetChild(Slot_obj, "activePathing");
+                            if ((!active_pathing.IsNullOrDestroyed()) && (!refs_0.active_pathing.IsNullOrDestroyed()) && (!refs_1.active_pathing.IsNullOrDestroyed()))
+                            {
+                                active_pathing.transform.position = refs_1.active_pathing.transform.position - (refs_0.active_pathing.transform.position - refs_1.active_pathing.transform.position);                                
+                            }
+                            else { Debug(true, "Error : active_pathing"); }
+                            GameObject upgrade_available = Functions.GetChild(Slot_obj, "upgradeAvailable");
+                            if ((!upgrade_available.IsNullOrDestroyed()) && (!refs_0.upgrade_available.IsNullOrDestroyed()) && (!refs_1.upgrade_available.IsNullOrDestroyed()))
+                            {
+                                upgrade_available.transform.position = refs_1.upgrade_available.transform.position - (refs_0.upgrade_available.transform.position - refs_1.upgrade_available.transform.position);
+                                GameObject upgrade_available_indicator = Functions.GetChild(upgrade_available, "Upgrade Available Indicator");
+                                if ((!upgrade_available_indicator.IsNullOrDestroyed()) && (!refs_0.upgrade_available_indicator.IsNullOrDestroyed()) && (!refs_1.upgrade_available_indicator.IsNullOrDestroyed()))
+                                {
+                                    upgrade_available_indicator.transform.position = refs_1.upgrade_available_indicator.transform.position - (refs_0.upgrade_available_indicator.transform.position - refs_1.upgrade_available_indicator.transform.position);
+                                }
+                                else { Debug(true, "Error : upgrade_available_indicator"); }
+
+                                if (upgrade_available_indicator.IsNullOrDestroyed()) { Debug(true, "Error : upgrade_available_indicator"); }
+                                if (refs_0.upgrade_available_indicator.IsNullOrDestroyed()) { Debug(true, "Error : refs_0.upgrade_available_indicator"); }
+                                if (refs_1.upgrade_available_indicator.IsNullOrDestroyed()) { Debug(true, "Error : refs_1.upgrade_available_indicator"); }
+                            }
+                            else { Debug(true, "Error : upgradeAvailable"); }
+                            GameObject affix_desc_holder = Functions.GetChild(Slot_obj, "affixDescHolder");
+                            if ((!affix_desc_holder.IsNullOrDestroyed()) && (!refs_0.affix_desc_holder.IsNullOrDestroyed()) && (!refs_1.affix_desc_holder.IsNullOrDestroyed()))
+                            {
+                                affix_desc_holder.transform.position = refs_1.affix_desc_holder.transform.position - (refs_0.affix_desc_holder.transform.position - refs_1.affix_desc_holder.transform.position);
+                                GameObject drop_shadow = Functions.GetChild(affix_desc_holder, "dropshadow");
+                                if ((!drop_shadow.IsNullOrDestroyed()) && (!refs_0.drop_shadow.IsNullOrDestroyed()) && (!refs_1.drop_shadow.IsNullOrDestroyed()))
+                                {
+                                    drop_shadow.transform.position = refs_1.drop_shadow.transform.position - (refs_0.drop_shadow.transform.position - refs_1.drop_shadow.transform.position);
+                                }
+                                else { Debug(true, "Error : dropshadow"); }
+                                GameObject tier_level = Functions.GetChild(affix_desc_holder, "tierLevel");
+                                if ((!tier_level.IsNullOrDestroyed()) && (!refs_0.tier_level.IsNullOrDestroyed()) && (!refs_1.tier_level.IsNullOrDestroyed()))
+                                {
+                                    tier_level.transform.position = refs_1.tier_level.transform.position - (refs_0.tier_level.transform.position - refs_1.tier_level.transform.position);
+                                }
+                                else { Debug(true, "Error : tierLevel"); }
+                                GameObject separator = Functions.GetChild(affix_desc_holder, "separator");
+                                if ((!separator.IsNullOrDestroyed()) && (!refs_0.separator.IsNullOrDestroyed()) && (!refs_1.separator.IsNullOrDestroyed()))
+                                {
+                                    separator.transform.position = refs_1.separator.transform.position - (refs_0.separator.transform.position - refs_1.separator.transform.position);
+                                }
+                                else { Debug(true, "Error : separator"); }
+                                GameObject affix_name = Functions.GetChild(affix_desc_holder, "AffixName");
+                                if ((!affix_name.IsNullOrDestroyed()) && (!refs_0.affix_name.IsNullOrDestroyed()) && (!refs_1.affix_name.IsNullOrDestroyed()))
+                                {
+                                    affix_name.transform.position = refs_1.affix_name.transform.position - (refs_0.affix_name.transform.position - refs_1.affix_name.transform.position);
+                                }
+                                else { Debug(true, "Error : AffixName"); }
+                            }
+                            else { Debug(true, "Error : affixDescHolder"); }
+                        }
+                    }
+                }
+            }
+            public static void Set_SlotValues(Slot_refs slot_refs, ushort id, byte tier)
+            {
+                slot_refs.Slot_obj.active = true;
+                slot_refs.shards.active = true;
+                slot_refs.add_shard_btn.active = false;
+                slot_refs.shard_icon.active = true;
+                slot_refs.shard_icon.GetComponent<UnityEngine.UI.Image>().sprite = AffixList.instance.GetAffix(id).GetShardSprite();
+                slot_refs.glass_lense.active = true;
+                slot_refs.available_shards.active = true;
+                slot_refs.available_shards_count.active = true;
+                slot_refs.available_shards_count.GetComponent<TextMeshProUGUI>().text = Get_PlayerShardCount(id).ToString();
+
+                /*GameObject add_shards_btn_obj = new GameObject { name = "addShardButton" };
+                add_shards_btn_obj.AddComponent<UnityEngine.UI.Image>();
+                add_shards_btn_obj.AddComponent<UnityEngine.UI.Button>();
+                add_shards_btn_obj.AddComponent<Il2CppLE.Audio.ButtonSounds>();
+                add_shards_btn_obj.transform.position = position - shards_btn_diff;
+                add_shards_btn_obj.transform.SetParent(shards_obj.transform);
+                UnityEngine.UI.Button add_shards_btn = add_shards_btn_obj.GetComponent<UnityEngine.UI.Button>();
+                add_shards_btn.onClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+                add_shards_btn.onClick.AddListener(Slot_OnClick_Action);
+                add_shards_btn_obj.GetComponent<UnityEngine.UI.Image>().sprite = add_shard_btn_image;
+                add_shards_btn_obj.GetComponent<RectTransform>().offsetMax = shards_btn_offset_max;
+                add_shards_btn_obj.GetComponent<RectTransform>().offsetMax = shards_btn_offset_min;
+                add_shards_btn_obj.GetComponent<RectTransform>().anchoredPosition = shards_btn_anchored_position;
+                add_shards_btn_obj.GetComponent<RectTransform>().sizeDelta = shards_btn_size_delta;*/
+
+                if ((Get.IsIdol(Current.item)) || (tier > 5))
+                {
+                    slot_refs.upgrade_available.active = false;
+                    slot_refs.upgrade_available_indicator.active = false;
+                }
+                else
+                {
+                    slot_refs.upgrade_available.active = true;
+                    slot_refs.upgrade_available_indicator.active = true;
+                }
+                slot_refs.affix_desc_holder.active = true;
+                slot_refs.drop_shadow.active = true;
+                slot_refs.tier_level.active = true;
+                slot_refs.tier_level.GetComponent<TextMeshProUGUI>().text = "T" + (tier + 1);
+                slot_refs.separator.active = true;
+                slot_refs.affix_name.active = true;
+                slot_refs.affix_name.GetComponent<TextMeshProUGUI>().text = AffixList.instance.GetAffix(id).affixName;
+            }
+            public static void Set_SlotNoAffix(Slot_refs slot_refs, bool enable)
+            {
+                if (enable)
+                {
+                    slot_refs.Slot_obj.active = true;
+                    slot_refs.shards.active = true;
+                    slot_refs.add_shard_btn.active = true;
+                    slot_refs.add_shard_btn.GetComponent<UnityEngine.UI.Button>().interactable = true;
+                    slot_refs.shard_icon.active = false;
+                    slot_refs.glass_lense.active = false;
+                    slot_refs.available_shards.active = false;
+                    slot_refs.active_pathing.active = false;
+                    slot_refs.upgrade_available.active = false;
+                    slot_refs.affix_desc_holder.active = false;
+                }
+                else
+                {
+                    slot_refs.Slot_obj.active = false;
+                    slot_refs.shards.active = false;
+                    slot_refs.available_shards.active = false;
+                    slot_refs.active_pathing.active = false;
+                    slot_refs.upgrade_available.active = false;
+                    slot_refs.affix_desc_holder.active = false;
+                }
+            }
+            
+            private static readonly System.Action Slot_OnClick_Action = new System.Action(Slot_Click);
+            private static void Slot_Click()
+            {
+                /*Debug(false, "ModSlots.Slot_Click()");
+                if (!modifier_button.IsNullOrDestroyed())
+                {
+                    modifier_button.onClick.Invoke();
+                }
+                else { Debug(true, "modifier_button is null"); }*/
+            }
+            
+            public static void Update()
+            {
+                if (!updating)
+                {
+                    updating = true;
+                    Slot_refs[] prefixs = { slot_0_refs, slot_1_refs, slot_4_refs };
+                    bool[] contain_prefix = { false, false, false };
+                    Slot_refs[] suffixs = { slot_2_refs, slot_3_refs, slot_5_refs };
+                    bool[] contain_suffix = { false, false, false };
+                    if (!Crafting_Materials_Panel_UI.instance.IsNullOrDestroyed()) //Update text filter
+                    {
+                        if (shards_text_filter != Crafting_Materials_Panel_UI.instance.searchText)
+                        {
+                            shards_text_filter = Crafting_Materials_Panel_UI.instance.searchText;
+                            Crafting_Materials_Panel_UI.instance.RefreshAffixList();
+                        }
+                    }
+                    if (!Current.item.IsNullOrDestroyed()) //Update slot values
+                    {                        
+                        if (Current.item.affixes != backup_affixs)
+                        {
+                            backup_affixs = Current.item.affixes;                          
+                            already_reset = false;
+                            int p = 0;
+                            int s = 0;
+                            int i = 0;
+                            foreach (ItemAffix affix in Current.item.affixes)
+                            {
+                                if (affix.affixType == AffixList.AffixType.PREFIX)
+                                {
+                                    if (p < prefixs.Length)
+                                    {
+                                        Set_SlotValues(prefixs[p], affix.affixId, affix.affixTier);
+                                        contain_prefix[p] = true;
+                                    }
+                                    p++;
+                                }
+                                else if (affix.affixType == AffixList.AffixType.SUFFIX)
+                                {
+                                    if (s < suffixs.Length)
+                                    {
+                                        Set_SlotValues(suffixs[s], affix.affixId, affix.affixTier);
+                                        contain_suffix[s] = true;
+                                    }
+                                    s++;
+                                }
+                                i++;
+                            }
+                            i = 0;
+                            bool first = true;
+                            foreach (bool r in contain_prefix)
+                            {
+                                if ((r == false) && (i < prefixs.Length)) { Set_SlotNoAffix(prefixs[i], first); first = false; }
+                                i++;
+                            }
+                            i = 0;
+                            first = true;
+                            foreach (bool r in contain_suffix)
+                            {
+                                if ((r == false) && (i < suffixs.Length)) { Set_SlotNoAffix(suffixs[i], first); first = false; }
+                                i++;
+                            }
+                        }                        
+                    }
+                    else if (!already_reset)
+                    {
+                        already_reset = true;
+                        backup_affixs = null;
+                        int i = 0;
+                        bool first = true;
+                        foreach (bool r in contain_prefix)
+                        {
+                            if ((r == false) && (i < prefixs.Length)) { Set_SlotNoAffix(prefixs[i], first); first = false; }
+                            i++;
+                        }
+                        i = 0;
+                        first = true;
+                        foreach (bool r in contain_suffix)
+                        {
+                            if ((r == false) && (i < suffixs.Length)) { Set_SlotNoAffix(suffixs[i], first); first = false; }
+                            i++;
+                        }
+                    }
+                    updating = false;
+                }
+            }
+        }
+        public class Ui_Base
+        {
+            [HarmonyPatch(typeof(UIBase), "openCraftingPanel")]
+            public class UIBase_openCraftingPanel
+            {
+                [HarmonyPostfix]
+                static void Postifx()
+                {
+                    //if ((!NewSlots.Initialized) && (!NewSlots.Initializing)) { NewSlots.Init(); }
+                    if (!Ui.initialized)
+                    {
+                        Ui.Init();
+                    }
+                }
+            }
+        }
         public class Crafting_Manager
         {
             public static CraftingManager crafting_manager = null;
@@ -499,8 +945,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingManager __instance, ref bool __result, ref System.String __0, ref System.Boolean __1)
                 {
+                    //Debug(false, "CraftingManager.CheckForgeCapability() str = " + __0);
                     if (crafting_manager.IsNullOrDestroyed()) { crafting_manager = __instance; }
-                    ;
                     int affix_id = __instance.appliedAffixID;
                     int affix_tier = Get.Tier(Current.item, affix_id);
                     if ((!Refs_Manager.craft_slot_manager.IsNullOrDestroyed()) && (!Current.item.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
@@ -534,50 +980,68 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             }
                             else if (affix_id == -1)
                             {
-                                AffixSlotForge[] prefixs = { Refs_Manager.craft_slot_manager.affixSlots[0], Refs_Manager.craft_slot_manager.affixSlots[1] };
+                                /*AffixSlotForge[] prefixs = { Refs_Manager.craft_slot_manager.affixSlots[0], Refs_Manager.craft_slot_manager.affixSlots[1] };
                                 AffixSlotForge[] suffixs = { Refs_Manager.craft_slot_manager.affixSlots[2], Refs_Manager.craft_slot_manager.affixSlots[3] };
 
                                 int p = 0;
-                                int s = 0;                                
-
-                                int max_prefix = 1; //default idol prefix
-                                if (Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs > 2) { max_prefix = 2; } //Set to 3 after adding slot 5
-                                else { max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs; }
-
-                                int max_suffix = 1; //default idol suffix
-                                if (Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs > 2) { max_suffix = 2; } //Set to 3 after adding slot 6
-                                else { max_suffix = Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs; }
+                                int s = 0;
                                 foreach (ItemAffix affix in Current.item.affixes)
                                 {
-                                    if ((affix.affixType == AffixList.AffixType.PREFIX) && (p < max_prefix))
+                                    if (affix.affixType == AffixList.AffixType.PREFIX)
                                     {
-                                        prefixs[p].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
-                                        p++;
+                                        Debug(false, "Show Prefix[" + p + "]");
+                                        if (p < prefixs.Length)
+                                        {
+                                            prefixs[p].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
+                                            prefixs[p].gameObject.active = true;
+                                            p++;
+                                        }
+                                        else
+                                        {
+                                            Debug(true, "Item contain more prefix(" + p + ") than forge prefix slots(" + prefixs.Length + ")");
+                                            p++;
+                                        }
                                     }
-                                    else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (s < max_suffix))
+                                    else if (affix.affixType == AffixList.AffixType.SUFFIX)
                                     {
-                                        suffixs[s].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
-                                        s++;
+                                        Debug(false, "Show Suffix[" + s + "]");
+                                        if (s < suffixs.Length)
+                                        {
+                                            suffixs[s].SetVisuals(affix, AffixList.instance.GetAffix(affix.affixId), false, Color.white);
+                                            suffixs[s].gameObject.active = true;
+                                            s++;
+                                        }
+                                        else
+                                        {
+                                            Debug(true, "Item contain more suffix(" + s + ") than forge suffix slots(" + suffixs.Length + ")");
+                                            s++;
+                                        }
                                     }
                                 }
-                                
-                                if (p < max_prefix)
+
+                                if (Refs_Manager.craft_slot_manager.affixSlots.Count > 3)
                                 {
-                                    prefixs[p].gameObject.active = true;
-                                    prefixs[p].addAffixButton.gameObject.active = true;
-                                    prefixs[s].upgradeButton.gameObject.active = false; //Upgrade button
-                                    prefixs[s].background.active = false; //name
-                                    prefixs[s].shardCountHolder.active = false; //Count
+                                    if (p < prefixs.Length)
+                                    {
+                                        //Debug(true, "Enable slot : prefixs[" + p + "], length = " + prefixs.Length);
+                                        prefixs[p].gameObject.active = true;
+                                        prefixs[p].addAffixButton.gameObject.active = true;
+                                        prefixs[p].upgradeButton.gameObject.active = false; //Upgrade button
+                                        prefixs[p].background.active = false; //name
+                                        prefixs[p].shardCountHolder.active = false; //Count
+                                    }
+
+                                    if (s < suffixs.Length)
+                                    {
+                                        //Debug(true, "Enable slot : suffixs[" + s + "], length = " + suffixs.Length);
+                                        suffixs[s].gameObject.active = true;
+                                        suffixs[s].addAffixButton.gameObject.active = true;
+                                        suffixs[s].upgradeButton.gameObject.active = false; //Upgrade button
+                                        suffixs[s].background.active = false; //name
+                                        suffixs[s].shardCountHolder.active = false; //Count
+                                    }
                                 }
-                                
-                                if (s < max_suffix)
-                                {
-                                    suffixs[s].gameObject.active = true;                                    
-                                    suffixs[s].addAffixButton.gameObject.active = true;
-                                    suffixs[s].upgradeButton.gameObject.active = false; //Upgrade button
-                                    suffixs[s].background.active = false; //name
-                                    suffixs[s].shardCountHolder.active = false; //Count
-                                }
+                                else { Debug(true, "CraftingSlotManager.affixSlots array isn't loaded"); }*/
                                 __0 = "Select an affix";
                             }
                             else if (affix_tier > 0) { __0 = "Maxed"; }
@@ -628,6 +1092,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             else if ((affix_tier > 5) && (CanCraftToT7)) { __0 = "Maxed"; }
                         }
                     }
+                    //Debug(false, "New str = " + __0);
                     latest_string = __0;
                 }
             }
@@ -792,6 +1257,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         public class Crafting_Materials_Panel_UI
         {
+            public static CraftingMaterialsPanelUI instance = null;
             public static bool ShowAffixs(CraftingMaterialsPanelUI.AffixFilterType filter, ShardAffixListElement element, int nb_prefix, int nb_suffix, bool idol)
             {
                 int max_prefix = Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs;
@@ -890,255 +1356,186 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPatch(typeof(CraftingMaterialsPanelUI), "RefreshAffixList")]
             public class CraftingMaterialsPanelUI_RefreshAffixList
             {
-                [HarmonyPrefix]
-                static void Prefix(ref CraftingMaterialsPanelUI __instance)
-                {
-                    if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
-                    {
-                        if (Get.IsIdol(Current.item))
-                        {
-                            GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
-                            SimpleLayoutGroup unused_content = unused_holder.GetComponent<SimpleLayoutGroup>();
-                            GameObject applied_holder = __instance.appliedAffixesHolder.gameObject;
-                            SimpleLayoutGroup applied_content = applied_holder.GetComponent<SimpleLayoutGroup>();
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                shard_affix_element.transform.SetParent(unused_holder.transform);
-                            }
-                            GameObject incompatible_holder = __instance.incompatibleAffixesHolder.gameObject;
-                            SimpleLayoutGroup incompatible_content = incompatible_holder.GetComponent<SimpleLayoutGroup>();
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                shard_affix_element.transform.SetParent(unused_holder.transform);
-                            }
-                        }
-                    }
-                }
                 [HarmonyPostfix]
                 static void Postfix(ref CraftingMaterialsPanelUI __instance)
                 {
+                    Debug(false, "Refresh aff list");
+                    instance = __instance;
                     if ((Scenes.IsGameScene()) && (!Current.item.IsNullOrDestroyed()))
                     {
-                        GameObject applied_header = __instance.appliedAffixesHeader.gameObject;
+                        bool idol = Get.IsIdol(Current.item);
+                        int p = 0;
+                        int s = 0;
+                        foreach (ItemAffix affix in Current.item.affixes)
+                        {
+                            if (affix.affixType == AffixType.PREFIX) { p++; }
+                            else if (affix.affixType == AffixType.SUFFIX) { s++; }
+                        }
+                        bool prefix_full = false;
+                        if (((idol) && (p >= Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Prefixs)) ||
+                            ((!idol) && (p >= Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)))
+                        { prefix_full = true; }
+
+                        bool prefix_full_t7 = false;
+                        if (prefix_full)
+                        {
+                            bool result = true;
+                            foreach (ItemAffix affix in Current.item.affixes)
+                            {
+                                if ((affix.affixType == AffixType.PREFIX) && (affix.affixTier < 6)) { result = false; break; }
+                            }
+                            prefix_full_t7 = result;
+                        }
+
+                        bool suffix_full = false;
+                        if (((idol) && (s >= Save_Manager.instance.data.modsNotInHud.Craft_Idols_Nb_Suffixs)) ||
+                            ((!idol) && (s >= Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                        { suffix_full = true; }
+
+                        bool suffix_full_t7 = false;
+                        if (suffix_full)
+                        {
+                            bool result = true;
+                            foreach (ItemAffix affix in Current.item.affixes)
+                            {
+                                if ((affix.affixType == AffixType.SUFFIX) && (affix.affixTier < 6)) { result = false; break; }
+                            }
+                            suffix_full_t7 = result;
+                        }
+
+                        SimpleLayoutGroup main_content = __instance.commonLayoutGroup;
+                        main_content._updateMode = SimpleLayoutGroup.UpdateMode.Manual;
+
+                        GameObject applied_header = __instance.appliedAffixesHeader.gameObject;                        
                         GameObject applied_holder = __instance.appliedAffixesHolder.gameObject;
                         SimpleLayoutGroup applied_content = applied_holder.GetComponent<SimpleLayoutGroup>();
+                        applied_content._updateMode = SimpleLayoutGroup.UpdateMode.Manual;
 
                         GameObject incompatible_header = __instance.incompatibleAffixesHeader.gameObject;
                         GameObject incompatible_holder = __instance.incompatibleAffixesHolder.gameObject;
                         SimpleLayoutGroup incompatible_content = incompatible_holder.GetComponent<SimpleLayoutGroup>();
+                        incompatible_content._updateMode = SimpleLayoutGroup.UpdateMode.Manual;
 
                         GameObject unused_header = __instance.unusedAffixesHeader.gameObject;
                         GameObject unused_holder = __instance.unusedAffixesHolder.gameObject;
                         SimpleLayoutGroup unused_content = unused_holder.GetComponent<SimpleLayoutGroup>();
+                        unused_content._updateMode = SimpleLayoutGroup.UpdateMode.Manual;
 
                         GameObject hidden_holder = __instance.hiddenAffixHolder.gameObject;
 
                         CraftingMaterialsPanelUI.AffixFilterType filter_type = __instance.affixFilterType;
-                        if ((Get.IsIdol(Current.item)) || (Current.item.isUniqueSetOrLegendary()))
+                        Il2CppSystem.Collections.Generic.List<SimpleLayoutGroup.SimpleLayoutElement> elements = new Il2CppSystem.Collections.Generic.List<SimpleLayoutGroup.SimpleLayoutElement>();
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.GetComponent<SimpleLayoutGroup>().Elements)
                         {
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                shard_affix_element.transform.SetParent(unused_holder.transform);
-                            }
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                shard_affix_element.transform.SetParent(unused_holder.transform);
-                            }
-                            int count = 0;
-                            Il2CppSystem.Collections.Generic.List<int> applied_affixs = new Il2CppSystem.Collections.Generic.List<int>();
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                AffixList.Affix aff = shard_affix_element.affix;
-                                if (((aff.type == AffixList.AffixType.PREFIX) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.PREFIX)) ||
-                                    ((aff.type == AffixList.AffixType.SUFFIX) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.SUFFIX)) ||
-                                    (filter_type == CraftingMaterialsPanelUI.AffixFilterType.ANY))
-                                {
-                                    bool already = false;
-                                    foreach (ItemAffix affix in Current.item.affixes)
-                                    {
-                                        if (affix.affixId == aff.affixId)
-                                        {
-                                            if (!applied_affixs.Contains(affix.affixId))
-                                            {
-                                                applied_affixs.Add(affix.affixId);
-                                                shard_affix_element.transform.SetParent(applied_holder.transform);
-                                                already = true;
-                                            }
-                                            else
-                                            {
-                                                shard_affix_element.transform.SetParent(incompatible_holder.transform);
-                                                already = true;
-                                            }
-                                            break;
-                                        }
-                                    }
-                                    if (!already)
-                                    {
-                                        if (aff.CanRollOnItemType(Current.item.itemType, ItemList.ClassRequirement.None))
-                                        {
-                                            element.Ignored = false;
-                                            count++;
-                                        }
-                                        else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
-                                    }
-                                }
-                                else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
-                            }
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                            {
-                                element.Ignored = false;
-                            }
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
-                            {
-                                element.Ignored = true;
-                            }
-                                /*Il2CppSystem.Collections.Generic.List<int> affixs = new Il2CppSystem.Collections.Generic.List<int>();
-                                foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                                {
-                                    ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                    if (!affixs.Contains(shard_affix_element.affix.affixId)) { affixs.Add(shard_affix_element.affix.affixId); count++; }
-                                    else { shard_affix_element.transform.SetParent(incompatible_holder.transform); }
-                                }*/
-
-                                //Buttons
-                            for (int i = 0; i < applied_holder.transform.childCount; i++)
-                            {
-                                if (!Get.IsIdol(Current.item))
-                                {
-                                    Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = true;
-                                }
-                                applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                            }
-                            for (int i = 0; i < unused_holder.transform.childCount; i++)
-                            {
-                                Functions.GetChild(unused_holder.transform.GetChild(i).gameObject, "Button").active = true;
-                                unused_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1); //Fix Scale
-                            }
-
-                            if (applied_holder.transform.childCount > 0) { applied_header.active = true; }
-                            else { applied_header.active = false; }
-                            applied_content.UpdateLayout();
-                            if (unused_holder.transform.childCount > 0) { unused_header.active = true; }
-                            else { unused_header.active = false; }
-                            unused_content.UpdateLayout();                            
-                            incompatible_header.active = false;
-                            incompatible_content.UpdateLayout();
-
-                            __instance.commonLayoutGroup.UpdateLayout();
-                            /*count = 0;
-                            
-                            if (count > 0) //Update applied content
-                            {
-                                applied_header.active = true;
-                                
-                            }
-                            else { applied_header.active = false; }
-
-                            incompatible_header.active = false;
-                            incompatible_content.gameObject.active = false;*/
+                            elements.Add(element);
                         }
-                        else if (Current.item.isUniqueSetOrLegendary())
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in elements) { applied_content.RemoveElement(element); }
+                        foreach (GameObject child in Functions.GetAllChild(applied_holder)) { child.transform.SetParent(hidden_holder.transform); }                        
+
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.GetComponent<SimpleLayoutGroup>().Elements)
                         {
-                            /*Il2CppSystem.Collections.Generic.List<int> affixs = new Il2CppSystem.Collections.Generic.List<int>();
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                            {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                if (!affixs.Contains(shard_affix_element.affix.affixId))
-                                {
-                                    affixs.Add(shard_affix_element.affix.affixId);
-                                }
-                                else { shard_affix_element.transform.SetParent(hidden_holder.transform); }
-                            }*/
-                            for (int i = 0; i < applied_holder.transform.childCount; i++)
-                            {
-                                applied_holder.transform.GetChild(i).gameObject.active = true;
-                                Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = true;
-                                applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                            }
-
-                            int count = 0;
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
-                            {
-                                element.Ignored = false;
-                                count++;
-                            }
-                            for (int i = 0; i < incompatible_holder.transform.childCount; i++)
-                            {
-                                incompatible_holder.transform.GetChild(i).gameObject.active = true;
-                                Functions.GetChild(incompatible_holder.transform.GetChild(i).gameObject, "Button").active = true;
-                                incompatible_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                            }
-
-                            applied_content.UpdateLayout();
-                            unused_content.UpdateLayout();
-                            incompatible_content.UpdateLayout();
-
-                            unused_header.active = true;
-                            incompatible_header.active = false;
+                            elements.Add(element);
                         }
-                        /*else if (Get.IsIdol(Current.item))
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in elements) { unused_content.RemoveElement(element); }
+                        foreach (GameObject child in Functions.GetAllChild(unused_holder)) { child.transform.SetParent(hidden_holder.transform); }
+                        
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.GetComponent<SimpleLayoutGroup>().Elements)
                         {
-                            int count = 0;
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.Elements)
+                            elements.Add(element);
+                        }
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in elements) { incompatible_content.RemoveElement(element); }
+                        foreach (GameObject child in Functions.GetAllChild(incompatible_holder)) { child.transform.SetParent(hidden_holder.transform); }
+
+                        string filter = __instance.searchText;
+                        Il2CppSystem.Collections.Generic.List<int> duplicated_affixs = new Il2CppSystem.Collections.Generic.List<int>();
+                        foreach (ShardAffixListElement shard_affix_element in __instance.shardAffixList)
+                        {
+                            AffixList.Affix aff = shard_affix_element.affix;                            
+                            if (!duplicated_affixs.Contains(aff.affixId))
                             {
-                                ShardAffixListElement shard_affix_element = element.GameObject.GetComponent<ShardAffixListElement>();
-                                if (shard_affix_element.shardItemName.ToLower().Contains("idol"))
+                                duplicated_affixs.Add(aff.affixId);
+                                if (((aff.type == AffixList.AffixType.PREFIX) && ((!prefix_full) || (!prefix_full_t7)) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.PREFIX)) ||
+                                ((aff.type == AffixList.AffixType.SUFFIX) && ((!suffix_full) || (!suffix_full_t7)) && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.SUFFIX)) ||
+                                (filter_type == CraftingMaterialsPanelUI.AffixFilterType.ANY) &&
+                                (((aff.type == AffixList.AffixType.PREFIX) && ((!prefix_full)) || (!prefix_full_t7)) ||
+                                ((aff.type == AffixList.AffixType.SUFFIX) && ((!suffix_full) || (!suffix_full_t7)))))
                                 {
-                                    string affix_type = shard_affix_element.gameObject.GetComponent<ShardAffixListElement>().affixType;
-                                    if (((affix_type == "Prefix") && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.PREFIX)) ||
-                                        ((affix_type == "Suffix") && (filter_type == CraftingMaterialsPanelUI.AffixFilterType.SUFFIX)) ||
-                                        (filter_type == CraftingMaterialsPanelUI.AffixFilterType.ANY))
+                                    if (aff.affixName.Contains(filter))
                                     {
                                         bool already = false;
-                                        foreach (ItemAffix affix in Current.item.affixes)
+                                        foreach (ItemAffix item_affix in Current.item.affixes)
                                         {
-                                            if (affix.affixId == shard_affix_element.affix.affixId)
+                                            if (item_affix.affixId == aff.affixId)
                                             {
-                                                shard_affix_element.transform.SetParent(applied_holder.transform);
+                                                applied_content.AddElement(shard_affix_element.gameObject);
+                                                shard_affix_element.gameObject.transform.SetParent(applied_holder.transform);
                                                 already = true;
                                                 break;
                                             }
                                         }
-                                        if (already) { element.Ignored = true; }
-                                        else
+                                        if ((!already) && (((aff.type == AffixList.AffixType.PREFIX) && (!prefix_full)) ||
+                                            ((aff.type == AffixList.AffixType.SUFFIX) && (!suffix_full))))
                                         {
-                                            element.Ignored = false;
-                                            count++;
-                                        }                                        
-                                    }                                    
+                                            if (aff.CanRollOnItemType(Current.item.itemType, ItemList.ClassRequirement.None))
+                                            {
+                                                unused_content.AddElement(shard_affix_element.gameObject);
+                                                shard_affix_element.gameObject.transform.SetParent(unused_holder.transform);
+                                            }
+                                            else
+                                            {
+                                                incompatible_content.AddElement(shard_affix_element.gameObject);
+                                                shard_affix_element.gameObject.transform.SetParent(incompatible_holder.transform);
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            if (count > 0)
+                        }
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
+                        {
+                            element.Ignored = false;
+                        }
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in unused_content.Elements)
+                        {
+                            element.Ignored = false;
+                        }
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in incompatible_content.Elements)
+                        {
+                            element.Ignored = true;
+                        }
+                        if (applied_holder.transform.childCount > 0) { applied_header.active = true; }
+                        else { applied_header.active = false; }
+                        for (int i = 0; i < applied_holder.transform.childCount; i++)
+                        {
+                            if (!Get.IsIdol(Current.item))
                             {
-                                __instance.noShardNotice.gameObject.active = false;
-                                __instance.unusedAffixesHeader.gameObject.active = true;
-                                for (int i = 0; i < unused_holder.transform.childCount; i++)
-                                {
-                                    unused_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                                }                                
-                                unused_content.UpdateLayout();
+                                Functions.GetChild(applied_holder.transform.GetChild(i).gameObject, "Button").active = true;
                             }
-                            count = 0;
-                            foreach (SimpleLayoutGroup.SimpleLayoutElement element in applied_content.Elements)
-                            {
-                                element.Ignored = false;
-                                count++;
-                            }
-                            if (count > 0)
-                            {
-                                for (int i = 0; i < applied_holder.transform.childCount; i++)
-                                {
-                                    applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                                }
-                                applied_content.UpdateLayout();
-                                __instance.appliedAffixesHeader.gameObject.active = true;
-                            }
-                        }*/                        
+                            applied_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1); //Fix Scale
+                        }
+
+                        if (unused_holder.transform.childCount > 0) { unused_header.active = true; }
+                        else { unused_header.active = false; }
+                        for (int i = 0; i < unused_holder.transform.childCount; i++)
+                        {
+                            Functions.GetChild(unused_holder.transform.GetChild(i).gameObject, "Button").active = true;
+                            unused_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1); //Fix Scale
+                        }
+
+                        if (incompatible_holder.transform.childCount > 0) { incompatible_header.active = true; }
+                        else { incompatible_header.active = false; }
+                        for (int i = 0; i < incompatible_holder.transform.childCount; i++)
+                        {
+                            incompatible_holder.transform.GetChild(i).gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1); //Fix Scale
+                        }
+                        applied_content.UpdateLayout();
+                        unused_content.UpdateLayout();
+                        incompatible_content.UpdateLayout();
+                        foreach (SimpleLayoutGroup.SimpleLayoutElement element in main_content.Elements)
+                        {
+                            element.Ignored = !element.GameObject.active;
+                        }
+                        __instance.commonLayoutGroup.UpdateLayout();
                     }
                 }
             }
@@ -1200,7 +1597,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static bool Prefix(ref CraftingSlotManager __instance)
                 {
-                    //Debug(false, "CraftingSlotManager.Forge() Prefix : str = " + Crafting_Manager.forge_string);
+                    Debug(false, "CraftingSlotManager.Forge() Prefix : str = " + Crafting_Manager.forge_string);
                     bool result = true;
                     forgin = true;
                     __instance.forgeButton.gameObject.active = false;
@@ -1345,11 +1742,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                             ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs))))))
                                         {
 
-                                        /*}
+                                            /*}
 
-                                        if (((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
-                                            ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
-                                        {*/
+                                            if (((new_affix_type == AffixList.AffixType.PREFIX) && (nb_prefix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Prefixs)) ||
+                                                ((new_affix_type == AffixList.AffixType.SUFFIX) && (nb_suffix < Save_Manager.instance.data.modsNotInHud.Craft_Items_Nb_Suffixs)))
+                                            {*/
                                             ItemAffix affix = new ItemAffix
                                             {
                                                 affixId = (ushort)affix_id,
@@ -1373,7 +1770,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                             }
                                             Current.item.RefreshIDAndValues();
                                             //Refresh slot for idol
-                                            if (idol)
+                                            /*if (idol)
                                             {
                                                 //ItemContainerEntry container_entry = Crafting_Manager.item_container.content;
                                                 ItemData item_data = Crafting_Manager.item_container.content.data;
@@ -1381,7 +1778,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                                 Crafting_Manager.item_container.TryAddItem(item_data, 1, Context.DEFAULT);
 
                                                 //Crafting_Manager.item_container.MoveItemTo(container_entry, Crafting_Manager.item_container.content, null, Context.DEFAULT);
-                                            }
+                                            */
                                             result = false;
                                         }
                                         else { Main.logger_instance.Error("No space for affix"); }
@@ -1411,607 +1808,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                     return result;
                 }
-            }
-        }
-        public class NewSlots
-        {
-            public static bool Initializing = false;
-            public static bool Initialized = false;
-
-            public static void Init()
-            {
-                Initializing = true;
-                if (!Refs_Manager.crafting_panel_ui.IsNullOrDestroyed())
+                
+                [HarmonyPostfix]
+                static void Postfix()
                 {
-                    GameObject __instance = Functions.GetChild(Refs_Manager.crafting_panel_ui.gameObject, "MainContent");
-                    if (!__instance.IsNullOrDestroyed())
-                    {
-                        GameObject prefix_0 = Functions.GetChild(__instance, "ModSlot");
-                        Vector3 prefix_0_position = new Vector3();
-                        float position_x = 0f;
-                        float position_y = 0f;
-                        if (!prefix_0.IsNullOrDestroyed())
-                        {
-                            prefix_0_position = prefix_0.transform.position;
-                            GameObject shards = Functions.GetChild(prefix_0, "Shard");
-                            if (!shards.IsNullOrDestroyed())
-                            {
-                                shards_diff = shards.transform.position - prefix_0_position;
-                                GameObject add_shard_btn = Functions.GetChild(shards, "addShardButton");
-                                if (!add_shard_btn.IsNullOrDestroyed())
-                                {
-                                    shards_btn_diff = add_shard_btn.transform.position - prefix_0_position;
-                                    add_shard_btn_image = add_shard_btn.GetComponent<UnityEngine.UI.Image>().sprite;
-                                    shards_btn_offset_min = add_shard_btn.GetComponent<RectTransform>().offsetMin;
-                                    shards_btn_offset_max = add_shard_btn.GetComponent<RectTransform>().offsetMax;
-                                    //lossy_scale = add_shard_btn.GetComponent<RectTransform>().lossyScale;
-                                }
-                                GameObject shard_icon = Functions.GetChild(shards, "ShardIcon");
-                                if (!shard_icon.IsNullOrDestroyed())
-                                {
-                                    UnityEngine.UI.Image icon = shard_icon.GetComponent<UnityEngine.UI.Image>();
-                                    shard_ico_material = icon.material;
-                                    shard_ico_offset_min = shard_icon.GetComponent<RectTransform>().offsetMin;
-                                    shard_ico_offset_max = shard_icon.GetComponent<RectTransform>().offsetMax;
-                                }
-                                GameObject glass_lense = Functions.GetChild(shards, "GlassLense");
-                                if (!glass_lense.IsNullOrDestroyed())
-                                {
-                                    glass_lense_image = glass_lense.GetComponent<UnityEngine.UI.Image>().sprite;
-                                    glass_lense_offset_min = glass_lense.GetComponent<RectTransform>().offsetMin;
-                                    glass_lense_offset_max = glass_lense.GetComponent<RectTransform>().offsetMax;
-                                }
-                            }
-                            GameObject upgrade_available = Functions.GetChild(prefix_0, "upgradeAvailable");
-                            if (!upgrade_available.IsNullOrDestroyed())
-                            {
-                                UnityEngine.UI.Image upg_img = upgrade_available.GetComponent<UnityEngine.UI.Image>();
-                                if (!upg_img.IsNullOrDestroyed())
-                                {
-                                    upgrade_button_image = upg_img.sprite;
-                                }
-                                GameObject upgrade_available_indicator = Functions.GetChild(upgrade_available, "Upgrade Available Indicator");
-                                if (!upgrade_available_indicator.IsNullOrDestroyed())
-                                {
-                                    UnityEngine.UI.Image upg_ind_img = upgrade_available_indicator.GetComponent<UnityEngine.UI.Image>();
-                                    if (!upg_ind_img.IsNullOrDestroyed())
-                                    {
-                                        upgrade_button_indicator_image = upg_ind_img.sprite;
-                                    }
-                                }
-                            }
-                        }
-                        else { Main.logger_instance.Error("prefix_0 is null"); }
-
-                        GameObject prefix_1 = Functions.GetChild(__instance, "ModSlot (1)");
-                        Vector3 prefix_1_position = new Vector3();
-                        if (!prefix_1.IsNullOrDestroyed()) { prefix_1_position = prefix_1.transform.position; }
-                        else { Main.logger_instance.Error("prefix_1 is null"); }
-
-                        if ((!prefix_0.IsNullOrDestroyed()) && (!prefix_1.IsNullOrDestroyed()))
-                        {
-                            Vector3 diff = prefix_0_position - prefix_1_position;
-                            Vector3 prefix_2_position = prefix_1_position - diff; //new Vector3(prefix_0_position.x, prefix_1_position.y - (prefix_0_position.y - prefix_1_position.y), prefix_0_position.z);
-                            position_x = prefix_2_position.x;
-                            position_y = prefix_2_position.y;
-                            AddSlot(__instance, 4, position_x, position_y);
-
-                            GameObject seal = Functions.GetChild(__instance, "SealedAffixInfoHolder");
-                            if (!seal.IsNullOrDestroyed())
-                            {
-                                seal.transform.position = seal.transform.position - (prefix_1_position - seal.transform.position);
-                            }
-
-                        }
-                        else { Main.logger_instance.Error("prefix_2"); }
-
-                        GameObject suffix_0 = Functions.GetChild(__instance, "ModSlot (2)");
-                        Vector3 suffix_0_position = new Vector3();
-                        if (!suffix_0.IsNullOrDestroyed()) { suffix_0_position = suffix_0.transform.position; }
-                        else { Main.logger_instance.Error("suffix_0 is null"); }
-
-                        GameObject suffix_1 = Functions.GetChild(__instance, "ModSlot (3)");
-                        Vector3 suffix_1_position = new Vector3();
-                        if (!suffix_1.IsNullOrDestroyed()) { suffix_1_position = suffix_1.transform.position; }
-                        else { Main.logger_instance.Error("suffix_1 is null"); }
-
-                        if ((!suffix_0.IsNullOrDestroyed()) && (!suffix_1.IsNullOrDestroyed()))
-                        {
-                            Vector3 diff = suffix_0_position - suffix_1_position;
-                            Vector3 Suffix_2_position = suffix_1_position - diff;
-                            position_x = Suffix_2_position.x;
-                            AddSlot(__instance, 5, position_x, position_y);
-                        }
-                        else { Main.logger_instance.Error("Suffix_2"); }
-
-                        GameObject modifier_item = Functions.GetChild(__instance, "Modifier Item");
-                        if (!modifier_item.IsNullOrDestroyed())
-                        {
-                            GameObject mask = Functions.GetChild(modifier_item, "Mask");
-                            if (!mask.IsNullOrDestroyed())
-                            {
-                                GameObject mod_button = Functions.GetChild(modifier_item, "Modifier Button");
-                                if (!mod_button.IsNullOrDestroyed())
-                                {
-                                    modifier_button = mod_button.GetComponent<UnityEngine.UI.Button>();
-                                }
-                            }
-                        }
-
-                        Initialized = true;
-                    }
-                }
-                Initializing = false;
-            }
-            public static void UpdateSlots()
-            {
-                int nb_prefix = 0;
-                int nb_suffix = 0;
-                if (!Current.item.IsNullOrDestroyed())
-                {
-                    foreach (ItemAffix affix in Current.item.affixes)
-                    {
-                        if (!affix.isSealedAffix)
-                        {
-                            if (affix.affixType == AffixList.AffixType.PREFIX)
-                            {
-                                nb_prefix++;
-                                if (nb_prefix == 3)
-                                {
-                                    Slot5_Id = affix.affixId;
-                                    Slot5_Tier = affix.affixTier;
-                                    Slot5_Name = affix.affixName;
-                                }
-                            }
-                            else if (affix.affixType == AffixList.AffixType.SUFFIX)
-                            {
-                                nb_suffix++;
-                                if (nb_suffix == 3)
-                                {
-                                    Slot6_Id = affix.affixId;
-                                    Slot6_Tier = affix.affixTier;
-                                    Slot6_Name = affix.affixName;
-                                }
-                            }
-                        }
-                    }
-                    if (nb_prefix < 2) { ShowSlot(4, false); }
-                    else
-                    {
-                        if (nb_prefix == 2)
-                        {
-                            Get_ButtonFromSlot(4).gameObject.active = true;                     //Show Slot 5
-                            Get_ButtonFromSlot(4).enabled = true;                               //Enable btn (add affix)
-                            Get_AffixHolder(4).active = false;                                  //Hide Name, Text
-                            Get_ImageFromSlot(4).gameObject.active = false;                     //Hide affix icon
-                            Get_GlassLenseFromSlot(4).active = false;                           //Hide glass lense
-                            Get_UpgradeAvailable(4).active = false;                             //Hide upgrade button
-                            Get_UpgradeAvailableIndicator(4).active = false;                     //Hide upgrade indicator
-                        }
-                        else if (nb_prefix > 2)
-                        {
-                            Get_ButtonFromSlot(4).gameObject.active = true;                     //Show Slot 5
-                            Get_ButtonFromSlot(4).enabled = false;                              //Disable btn
-                            Get_UpgradeAvailable(4).active = true;                             //Show upgrade button
-                            Get_UpgradeAvailableIndicator(4).active = true;                     //Show upgrade indicator
-
-                            slot5_Name_Text.text = Slot5_Name;                                  //Set Name
-                            slot5_Tier_Text.text = "T" + (Slot5_Tier + 1);                      //Set Tier
-                            Get_AffixHolder(4).active = true;                                   //Show Text
-
-                            UnityEngine.UI.Image img = Get_ImageFromSlot(4);
-                            img.sprite = Get_AffixImgFromAffixList(Slot5_Id);                   //Set Affix icon
-                            img.gameObject.active = true;                                       //Enable Affix icon
-
-                            Get_GlassLenseFromSlot(4).active = true;                            //Show Glass Lense
-                        }
-                        ShowSlot(4, true);                                                      //Show Slot 5
-                    }
-
-                    if (nb_suffix < 2) { ShowSlot(5, false); }
-                    else
-                    {
-                        if (nb_suffix == 2)
-                        {
-                            Get_ButtonFromSlot(5).gameObject.active = true;                     //Show Shard
-                            Get_ButtonFromSlot(5).enabled = true;                               //Enable btn (add affix)
-                            Get_AffixHolder(5).active = false;                                  //Hide Name, Text
-                            Get_ImageFromSlot(5).gameObject.active = false;                     //Hide affix icon
-                            Get_GlassLenseFromSlot(5).active = false;                           //Hide glass lense
-                            Get_UpgradeAvailable(5).active = false;                             //Hide upgrade button
-                            Get_UpgradeAvailableIndicator(5).active = false;                     //Hide upgrade indicator
-                        }
-                        else if (nb_suffix > 2)
-                        {
-                            Get_ButtonFromSlot(5).gameObject.active = true;                     //Show Shard
-                            Get_ButtonFromSlot(5).enabled = false;                              //Disable btn
-                            Get_UpgradeAvailable(5).active = true;                             //Show upgrade button
-                            Get_UpgradeAvailableIndicator(5).active = true;                     //Show upgrade indicator
-
-                            slot5_Name_Text.text = Slot6_Name;                                  //Set Name
-                            slot5_Tier_Text.text = "T" + (Slot6_Tier + 1);                      //Set Tier
-                            Get_AffixHolder(5).active = true;                                   //Show Text
-
-                            UnityEngine.UI.Image img = Get_ImageFromSlot(5);
-                            img.sprite = Get_AffixImgFromAffixList(Slot5_Id);                   //Set Affix icon
-                            img.gameObject.active = true;                                       //Enable Affix icon
-
-                            Get_GlassLenseFromSlot(5).active = true;                            //Show Glass Lense
-                        }
-                        ShowSlot(5, true);                                                      //Show Slot 6
-                    }
-                }
-                else
-                {
-                    ShowSlot(4, false);
-                    ShowSlot(5, false);
-
-                    Slot5_Id = -1;
-                    Slot5_Tier = -1;
-                    Slot5_Name = "";
-                    Slot6_Id = -1;
-                    Slot6_Tier = -1;
-                    Slot6_Name = "";
-                }
-            }
-
-            private static UnityEngine.UI.Button modifier_button;
-
-            private static Vector3 shards_diff;
-            private static Vector3 shards_btn_diff;
-            private static Vector2 shards_btn_offset_min;
-            private static Vector2 shards_btn_offset_max;
-
-            private static Sprite add_shard_btn_image;
-            private static Sprite upgrade_button_image;
-            private static Sprite upgrade_button_indicator_image;
-
-            private static Material shard_ico_material;
-            private static Vector2 shard_ico_offset_min;
-            private static Vector2 shard_ico_offset_max;
-
-            private static Sprite glass_lense_image;
-            private static Vector2 glass_lense_offset_min;
-            private static Vector2 glass_lense_offset_max;
-
-            public static GameObject Slot5;
-            public static int Slot5_Id = -1;
-            public static int Slot5_Tier = -1;
-            private static TextMeshProUGUI slot5_Tier_Text;
-            public static string Slot5_Name = "";
-            private static TextMeshProUGUI slot5_Name_Text;
-
-            public static GameObject Slot6;
-            public static int Slot6_Id = -1;
-            public static int Slot6_Tier = -1;
-            private static TextMeshProUGUI slot6_Tier_Text;
-            public static string Slot6_Name = "";
-            private static TextMeshProUGUI slot6_Name_Text;
-
-            private static void AddSlot(GameObject parent, int slot, float position_x, float position_y)
-            {
-                Vector3 position = new Vector3(position_x, position_y, 0);
-
-                GameObject slot_obj = new GameObject { name = "ModSlot (" + slot + ")" };
-                slot_obj.AddComponent<AffixSlotForge>();
-                slot_obj.transform.SetParent(parent.transform);
-                slot_obj.transform.position = position;
-                slot_obj.active = false;
-                if (slot == 4) { Slot5 = slot_obj; }
-                else if (slot == 5) { Slot6 = slot_obj; }
-
-                GameObject shards_obj = new GameObject { name = "Shard" };
-                shards_obj.transform.position = position - shards_diff;
-                shards_obj.transform.localScale = Vector3.one;
-                shards_obj.transform.SetParent(slot_obj.transform);
-
-                GameObject add_shards_btn_obj = new GameObject { name = "addShardButton" };
-                add_shards_btn_obj.AddComponent<UnityEngine.UI.Image>();
-                add_shards_btn_obj.AddComponent<UnityEngine.UI.Button>();
-                add_shards_btn_obj.AddComponent<Il2CppLE.Audio.ButtonSounds>();
-                add_shards_btn_obj.transform.position = position - shards_btn_diff;
-                add_shards_btn_obj.transform.SetParent(shards_obj.transform);
-                UnityEngine.UI.Button add_shards_btn = add_shards_btn_obj.GetComponent<UnityEngine.UI.Button>();
-                add_shards_btn.onClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-                add_shards_btn.onClick.AddListener(Slot_OnClick_Action);
-                add_shards_btn_obj.GetComponent<UnityEngine.UI.Image>().sprite = add_shard_btn_image;
-                RectTransform shards_btn_recttransform = add_shards_btn_obj.GetComponent<RectTransform>();
-                shards_btn_recttransform.offsetMax = shards_btn_offset_max;
-                shards_btn_recttransform.offsetMin = shards_btn_offset_min;
-                //recttransform.lossyScale = lossy_scale;
-
-                GameObject shards_ico_obj = new GameObject { name = "ShardIcon" };
-                shards_ico_obj.active = false;
-                shards_ico_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                shards_ico_obj.AddComponent<UnityEngine.UI.Image>();
-                shards_ico_obj.transform.SetParent(shards_obj.transform);
-                shards_ico_obj.transform.position = position - shards_btn_diff;
-                shards_ico_obj.GetComponent<UnityEngine.UI.Image>().material = shard_ico_material;
-                RectTransform shards_ico_recttransform = add_shards_btn_obj.GetComponent<RectTransform>();
-                shards_ico_recttransform.offsetMax = shard_ico_offset_max;
-                shards_ico_recttransform.offsetMin = shard_ico_offset_min;
-
-                GameObject glass_lense_obj = new GameObject { name = "GlassLense" };
-                glass_lense_obj.active = false;
-                glass_lense_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                glass_lense_obj.AddComponent<UnityEngine.UI.Image>();
-                glass_lense_obj.transform.SetParent(shards_obj.transform);
-                glass_lense_obj.transform.position = position - shards_btn_diff;
-                glass_lense_obj.GetComponent<UnityEngine.UI.Image>().sprite = glass_lense_image;
-                RectTransform glass_lense_recttransform = glass_lense_obj.GetComponent<RectTransform>();
-                glass_lense_recttransform.offsetMax = glass_lense_offset_max;
-                glass_lense_recttransform.offsetMin = glass_lense_offset_min;
-
-                GameObject slam_obj = new GameObject { name = "SLAM" };
-                slam_obj.active = false;
-                slam_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                slam_obj.AddComponent<UnityEngine.UI.LayoutElement>();
-                slam_obj.AddComponent<DeactivateOnEnable>();
-                slam_obj.transform.SetParent(shards_obj.transform);
-                slam_obj.transform.position = position - shards_btn_diff;
-
-                GameObject availables_obj = new GameObject { name = "AvailableShardsofSlottedType" };
-                availables_obj.active = false;
-                availables_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                availables_obj.AddComponent<UnityEngine.UI.Image>();
-                availables_obj.transform.SetParent(slot_obj.transform);
-                availables_obj.transform.position = position - shards_diff;
-                //availables_obj.transform.localScale = Vector3.one;
-
-                GameObject availables_count_obj = new GameObject { name = "Available Shard Count TMP" };
-                availables_count_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                availables_count_obj.AddComponent<TextMeshProUGUI>();
-                availables_count_obj.transform.SetParent(availables_obj.transform);
-
-                GameObject active_pathing_obj = new GameObject { name = "activePathing" };
-                active_pathing_obj.active = false;
-                active_pathing_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                active_pathing_obj.AddComponent<UnityEngine.UI.Image>();
-                active_pathing_obj.AddComponent<UnityEngine.CanvasGroup>();
-                active_pathing_obj.transform.SetParent(slot_obj.transform);
-
-                GameObject upgrade_obj = new GameObject { name = "upgradeAvailable" };
-                upgrade_obj.active = false;
-                upgrade_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                upgrade_obj.AddComponent<UnityEngine.UI.Image>();
-                upgrade_obj.AddComponent<UnityEngine.UI.Button>();
-                upgrade_obj.AddComponent<CraftingUpgradeButton>();
-                upgrade_obj.transform.SetParent(slot_obj.transform);
-                upgrade_obj.GetComponent<UnityEngine.UI.Image>().sprite = upgrade_button_image;
-
-                GameObject upgrade_indicator_obj = new GameObject { name = "Upgrade Available Indicator" };
-                upgrade_indicator_obj.active = false;
-                upgrade_indicator_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                upgrade_indicator_obj.AddComponent<UnityEngine.UI.Image>();
-                upgrade_indicator_obj.AddComponent<UnityEngine.UI.LayoutElement>();
-                upgrade_indicator_obj.transform.SetParent(upgrade_obj.transform);
-                upgrade_indicator_obj.GetComponent<UnityEngine.UI.Image>().sprite = upgrade_button_indicator_image;
-
-                GameObject affix_desc_obj = new GameObject { name = "affixDescHolder" };
-                affix_desc_obj.active = false;
-                affix_desc_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                affix_desc_obj.AddComponent<UnityEngine.UI.LayoutGroup>();
-                affix_desc_obj.AddComponent<UnityEngine.UI.ContentSizeFitter>();
-                affix_desc_obj.transform.SetParent(slot_obj.transform);
-                affix_desc_obj.transform.position = position - shards_diff;
-                //affix_desc_obj.transform.localScale = Vector3.one;
-
-                GameObject shadow_obj = new GameObject { name = "dropshadow" };
-                shadow_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                shadow_obj.AddComponent<UnityEngine.UI.Image>();
-                shadow_obj.AddComponent<UnityEngine.UI.LayoutElement>();
-                shadow_obj.transform.SetParent(affix_desc_obj.transform);
-
-                GameObject tier_obj = new GameObject { name = "tierLevel" };
-                tier_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                tier_obj.AddComponent<TextMeshProUGUI>();
-                tier_obj.transform.SetParent(affix_desc_obj.transform);
-                TextMeshProUGUI slot_tier_text = tier_obj.GetComponent<TextMeshProUGUI>();
-                if (slot == 4) { slot5_Tier_Text = slot_tier_text; }
-                else if (slot == 5) { slot6_Tier_Text = slot_tier_text; }
-
-                GameObject separator_obj = new GameObject { name = "separator" };
-                separator_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                separator_obj.AddComponent<UnityEngine.UI.Image>();
-                separator_obj.AddComponent<UnityEngine.UI.LayoutElement>();
-                separator_obj.transform.SetParent(affix_desc_obj.transform);
-
-                GameObject affix_name_obj = new GameObject { name = "AffixName" };
-                affix_name_obj.AddComponent<UnityEngine.CanvasRenderer>();
-                affix_name_obj.AddComponent<TextMeshProUGUI>();
-                affix_name_obj.AddComponent<UnityEngine.UI.LayoutElement>();
-                affix_name_obj.transform.SetParent(affix_desc_obj.transform);
-                TextMeshProUGUI slot_name_text = affix_name_obj.GetComponent<TextMeshProUGUI>();
-                if (slot == 4) { slot5_Name_Text = slot_name_text; }
-                else if (slot == 5) { slot6_Name_Text = slot_name_text; }
-
-                //Main.logger_instance.Msg("Init AffixSlotForge");
-                AffixSlotForge asf = slot_obj.GetComponent<AffixSlotForge>();
-                asf.background = affix_desc_obj;
-                asf.countTMP = availables_count_obj.GetComponent<TextMeshProUGUI>();
-                asf.glassLense = glass_lense_obj;
-                asf.glowPath = active_pathing_obj.GetComponent<UnityEngine.UI.Image>();
-                asf.nameTMP = affix_name_obj.GetComponent<TextMeshProUGUI>();
-                asf.shardCountHolder = availables_obj;
-                asf.shardIcon = shards_ico_obj.GetComponent<UnityEngine.UI.Image>();
-                if (slot == 4) { asf.slotID = AffixSlotForge.AffixSlotID.PREFIX_TWO; }
-                else if (slot == 5) { asf.slotID = AffixSlotForge.AffixSlotID.SUFFIX_TWO; }
-                asf.tierTMP = tier_obj.GetComponent<TextMeshProUGUI>();
-                asf.tierVFXObject = slam_obj;
-                asf.upgradeButton = upgrade_obj.GetComponent<CraftingUpgradeButton>();
-            }
-            private static void ShowSlot(int slot, bool show)
-            {
-                if (slot == 4)
-                {
-                    if (!Slot5.IsNullOrDestroyed()) { Slot5.active = show; }
-                    else { Main.logger_instance.Error("Slot5 is null"); }
-                }
-                else if (slot == 5)
-                {
-                    if (!Slot6.IsNullOrDestroyed()) { Slot6.active = show; }
-                    else { Main.logger_instance.Error("Slot6 is null"); }
-                }
-            }
-            private static void ShowMaterialPanel()
-            {
-                try
-                {
-                    if (!Refs_Manager.craft_materials_holder.IsNullOrDestroyed())
-                    {
-                        Refs_Manager.craft_materials_holder.Open(true);
-                        if (!Refs_Manager.craft_materials_holder.instance.IsNullOrDestroyed())
-                        {
-                            CraftingMaterialsPanelUI craft_panel_ui = Refs_Manager.craft_materials_holder.instance.GetComponent<CraftingMaterialsPanelUI>();
-                            if (!craft_panel_ui.IsNullOrDestroyed())
-                            {
-                                craft_panel_ui.Initialize();
-                                craft_panel_ui.isOpened = true;
-                            }
-                        }
-                    }
-                }
-                catch { Main.logger_instance.Error("ShowMaterialPanel"); }
-            }
-            private static UnityEngine.UI.Button Get_ButtonFromSlot(int slot)
-            {
-                UnityEngine.UI.Button btn = new UnityEngine.UI.Button();
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    GameObject Shard = Functions.GetChild(affix_slot, "Shard");
-                    if (!Shard.IsNullOrDestroyed())
-                    {
-                        GameObject ShardIcon = Functions.GetChild(Shard, "addShardButton");
-                        if (!ShardIcon.IsNullOrDestroyed())
-                        {
-                            btn = ShardIcon.GetComponent<UnityEngine.UI.Button>();
-                        }
-                    }
-                }
-
-                return btn;
-            }
-            private static GameObject Get_UpgradeAvailable(int slot)
-            {
-                GameObject result = new GameObject();
-
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    result = Functions.GetChild(affix_slot, "upgradeAvailable");
-                }
-
-                return result;
-            }
-            private static GameObject Get_UpgradeAvailableIndicator(int slot)
-            {
-                GameObject result = new GameObject();
-
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    GameObject upg = Functions.GetChild(affix_slot, "upgradeAvailable");
-                    if (!upg.IsNullOrDestroyed())
-                    {
-                        result = Functions.GetChild(upg, "Upgrade Available Indicator");
-                    }
-                }
-
-                return result;
-            }
-            private static UnityEngine.UI.Image Get_ImageFromSlot(int slot)
-            {
-                UnityEngine.UI.Image img = new UnityEngine.UI.Image();
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    GameObject Shard = Functions.GetChild(affix_slot, "Shard");
-                    if (!Shard.IsNullOrDestroyed())
-                    {
-                        GameObject ShardIcon = Functions.GetChild(Shard, "ShardIcon");
-                        if (!ShardIcon.IsNullOrDestroyed())
-                        {
-                            img = ShardIcon.GetComponent<UnityEngine.UI.Image>();
-                        }
-                    }
-                }
-
-                return img;
-            }
-            private static GameObject Get_GlassLenseFromSlot(int slot)
-            {
-                GameObject result = new GameObject();
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    GameObject Shard = Functions.GetChild(affix_slot, "Shard");
-                    if (!Shard.IsNullOrDestroyed())
-                    {
-                        GameObject glass_lense = Functions.GetChild(Shard, "GlassLense");
-                        if (!glass_lense.IsNullOrDestroyed()) { result = glass_lense; }
-                    }
-                }
-
-                return result;
-            }
-            private static Sprite Get_AffixImgFromAffixList(int affix_id)
-            {
-                Sprite sprite = UITooltipItem.GetItemSprite(new ItemDataUnpacked
-                {
-                    LvlReq = 0,
-                    classReq = ItemList.ClassRequirement.Any,
-                    itemType = (byte)101, //Shard
-                    subType = (ushort)affix_id,
-                    rarity = (byte)0,
-                    forgingPotential = (byte)0,
-                    sockets = (byte)0,
-                    uniqueID = (ushort)0,
-                    legendaryPotential = (byte)0,
-                    weaversWill = (byte)0,
-                    hasSealedAffix = false
-                }, ItemUIContext.Default);
-
-                return sprite;
-            }
-            private static GameObject Get_AffixHolder(int slot)
-            {
-                GameObject result = new GameObject();
-                GameObject affix_slot = new GameObject();
-                if (slot == 4) { affix_slot = Slot5; }
-                else if (slot == 5) { affix_slot = Slot6; }
-
-                if (!affix_slot.IsNullOrDestroyed())
-                {
-                    GameObject affix_holder = Functions.GetChild(affix_slot, "affixDescHolder");
-                    if (!affix_holder.IsNullOrDestroyed()) { result = affix_holder; }
-                }
-
-                return result;
-            }
-
-            //Events
-            private static readonly System.Action Slot_OnClick_Action = new System.Action(Slot_Click);
-            private static void Slot_Click()
-            {
-                if (!modifier_button.IsNullOrDestroyed())
-                {
-                    modifier_button.onClick.Invoke();
+                    Ui.backup_affixs = null;
                 }
             }
         }
