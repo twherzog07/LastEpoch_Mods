@@ -40,7 +40,8 @@ namespace LastEpoch_Hud.Scripts
         public static UIPanel craft_materials_holder = null;
         public static CraftingPanelUI crafting_panel_ui = null;
         public static ProtectionClass player_protection_class = null;
-        
+        public static GlobalDataTracker player_golbal_data_tracker = null;
+
         void Awake()
         {
             instance = this;
@@ -110,6 +111,7 @@ namespace LastEpoch_Hud.Scripts
                 if (exp_tracker.IsNullOrDestroyed()) { exp_tracker = PlayerFinder.getExperienceTracker(); }
                 if (player_treedata.IsNullOrDestroyed()) { player_treedata = PlayerFinder.getLocalTreeData(); }
                 if (player_gold_tracker.IsNullOrDestroyed()) { player_gold_tracker = PlayerFinder.getLocalGoldTracker(); }
+                if (player_golbal_data_tracker.IsNullOrDestroyed()) { player_golbal_data_tracker = PlayerFinder.getGlobalDataTracker(); }
                 if ((filter_manager.IsNullOrDestroyed()) && (!ItemFilterManager.Instance.IsNullOrDestroyed())) { filter_manager = ItemFilterManager.Instance; }
                 if ((camera_manager.IsNullOrDestroyed()) && (!CameraManager.instance.IsNullOrDestroyed())) { camera_manager = CameraManager.instance; }
                 

@@ -66,7 +66,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             {
                 if (scene_name != Scenes.SceneName) //scene changed
                 {
-                    Main.logger_instance.Msg("Skins : Scene change to " + Scenes.SceneName);
+                    //Main.logger_instance.Msg("Skins : Scene change to " + Scenes.SceneName);
                     scene_name = Scenes.SceneName;
                     Visuals.NeedUpdate = true;
                     Panel.Slots.need_update = true;
@@ -231,7 +231,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
                 public static void Update()
                 {
-                    Main.logger_instance.Msg("Skins : Panel.Slots.Update()");
+                    //Main.logger_instance.Msg("Skins : Panel.Slots.Update()");
                     System.Collections.Generic.List<Save.Data.Structures.saved_skin> saved_skins = new System.Collections.Generic.List<Save.Data.Structures.saved_skin>
                     {
                         Save.Data.UserData.helmet,
@@ -597,7 +597,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 else if (Scenes.IsGameScene())
                 {
-                    Main.logger_instance.Msg("Skins : Visuals.Update()");
+                    //Main.logger_instance.Msg("Skins : Visuals.Update()");
                     if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                     {
                         if (!Save.Data.IsEmpty(Save.Data.UserData.helmet))
@@ -629,23 +629,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     else { Main.logger_instance.Error("Refs_Manager.player_visuals is null"); }
                 }
             }
-            /*
-             * static void Postfix(Il2Cpp.CharacterCreationSelection __instance)
-{
-    try {
-       StringBuilder sb = new StringBuilder();
-       sb.AppendLine("--------------------");
-       sb.AppendLine("virtual void Il2Cpp.CharacterCreationSelection::OnEnable()");
-       sb.Append("- __instance: ").AppendLine(__instance.ToString());
-       UnityExplorer.ExplorerCore.Log(sb.ToString());
-    }
-    catch (System.Exception ex) {
-        UnityExplorer.ExplorerCore.LogWarning($"Exception in patch of virtual void Il2Cpp.CharacterCreationSelection::OnEnable():\n{ex}");
-    }
-}
-
-*/
-            [HarmonyPatch(typeof(CharacterCreationSelection), "OnEnable")]
+            
+            /*[HarmonyPatch(typeof(CharacterCreationSelection), "OnEnable")]
             public class CharacterCreationSelection_OnEnable
             {
                 [HarmonyPrefix]
@@ -653,8 +638,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 {
                     //Main.logger_instance.Msg("CharacterCreationSelection:OnEnable : " + __instance.name);              
                 }
-            }
-            [HarmonyPatch(typeof(ActorVisuals), "OnEnable")]
+            }*/
+            /*[HarmonyPatch(typeof(ActorVisuals), "OnEnable")]
             public class ActorVisuals_OnEnable
             {
                 [HarmonyPrefix]
@@ -662,7 +647,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 {
                     //Main.logger_instance.Msg("ActorVisuals:OnEnable : " + __instance.name);
                 }
-            }
+            }*/
 
             [HarmonyPatch(typeof(EquipmentVisualsManager), "EquipGear")]
             public class EquipmentVisualsManager_EquipGear
@@ -944,7 +929,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Load()
                 {
-                    Main.logger_instance.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
+                    //Main.logger_instance.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
                     bool error = false;
                     if (Data.Character.Character_Name != "")
                     {
@@ -966,7 +951,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Save()
                 {
-                    Main.logger_instance.Msg("Save : " + Data.path + Data.Character.Character_Name);
+                    //Main.logger_instance.Msg("Save : " + Data.path + Data.Character.Character_Name);
                     string jsonString = JsonConvert.SerializeObject(Data.UserData, Newtonsoft.Json.Formatting.Indented);
                     if (!Directory.Exists(Data.path)) { Directory.CreateDirectory(Data.path); }
                     if (File.Exists(Data.path + Data.Character.Character_Name)) { File.Delete(Data.path + Data.Character.Character_Name); }

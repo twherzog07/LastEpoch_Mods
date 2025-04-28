@@ -17,8 +17,8 @@ namespace LastEpoch_Hud
         public const string company_name = "Eleventh Hour Games";
         public const string game_name = "Last Epoch";
         public const string mod_name = "LastEpoch_Hud";
-        public const string mod_version = "4.2.6"; //LastEpoch 1.2.0.6
-        public static bool debug = true;
+        public const string mod_version = "4.2.8"; //LastEpoch 1.2.1.2
+        public static bool debug = false;
 
         public override void OnInitializeMelon()
         {

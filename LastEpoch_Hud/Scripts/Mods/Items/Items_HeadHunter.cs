@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
+using Il2Cpp;
 using MelonLoader;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Il2Cpp;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
@@ -26,6 +26,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             if (!Assets.Loaded) { Assets.Load(); }
             if ((Locales.current != Locales.Selected.Unknow) && (!Basic.AddedToBasicList)) { Basic.AddToBasicList(); }
             if ((Locales.current != Locales.Selected.Unknow) && (!Unique.AddedToUniqueList)) { Unique.AddToUniqueList(); }
+            if ((Locales.current != Locales.Selected.Unknow) && (Unique.AddedToUniqueList) && (!Unique.AddedToDictionary)) { Unique.AddToDictionary(); }
             if (!Events.OnKillEvent_Initialized) { Events.Init_OnKillEvent(); }
             if (!Events.OnMinionKillEvent_Initialized) { Events.Init_OnMinionKillEvent(); }
 
@@ -148,6 +149,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public class Unique
         {
             public static bool AddedToUniqueList = false;
+            public static bool AddedToDictionary = false;
             public static Sprite Icon = null;
             public static readonly ushort unique_id = 420;
             public static UniqueList.Entry Item()
@@ -185,24 +187,42 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             {
                 if ((!AddedToUniqueList) && (!Refs_Manager.unique_list.IsNullOrDestroyed()))
                 {
-                    Refs_Manager.unique_list.uniques.Add(Item());
-                    AddedToUniqueList = true;
-
-                    UniqueList.Entry item = null;
-                    foreach (UniqueList.Entry unique in Refs_Manager.unique_list.uniques)
+                    try
                     {
-                        if ((unique.uniqueID == unique_id) && (unique.name == Get_Unique_Name()))
+                        UniqueList.getUnique(0); //force initialize uniquelist
+                        Refs_Manager.unique_list.uniques.Add(Item());
+                        AddedToUniqueList = true;
+                    }
+                    catch { Main.logger_instance.Error("HH Unique List Error"); }                   
+                }                
+            }      
+            public static void AddToDictionary()
+            {
+                if ((AddedToUniqueList) && (!AddedToDictionary) && (!Refs_Manager.unique_list.IsNullOrDestroyed()))
+                {
+                    try
+                    {
+                        UniqueList.Entry item = null;
+                        if (Refs_Manager.unique_list.uniques.Count > 1)
                         {
-                            item = unique;
-                            break;
+                            foreach (UniqueList.Entry unique in Refs_Manager.unique_list.uniques)
+                            {
+                                if ((unique.uniqueID == unique_id) && (unique.name == Get_Unique_Name()))
+                                {
+                                    item = unique;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!item.IsNullOrDestroyed())
+                        {
+                            Refs_Manager.unique_list.entryDictionary.Add(unique_id, item);
+                            AddedToDictionary = true;
                         }
                     }
-                    if (!item.IsNullOrDestroyed())
-                    {
-                        Refs_Manager.unique_list.entryDictionary.Add(unique_id, item);
-                    }
+                    catch { Main.logger_instance.Error("HH Unique Dictionary Error"); }
                 }
-            }                        
+            }
             public static string Get_Unique_Name()
             {
                 string result = "";
