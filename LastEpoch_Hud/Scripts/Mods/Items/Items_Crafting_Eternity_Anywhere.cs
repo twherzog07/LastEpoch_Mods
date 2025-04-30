@@ -102,7 +102,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPrefix]
             static bool Prefix(ref EternityCachePanelUI __instance, ref ItemData __0)
             {
-                Main.logger_instance.Msg("EternityCachePanelUI.updateSelectedAffixLabelText() Prefix");
+                //Main.logger_instance.Msg("EternityCachePanelUI.updateSelectedAffixLabelText() Prefix");
                 bool r = true;
 
                 try

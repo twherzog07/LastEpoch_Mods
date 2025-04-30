@@ -1684,6 +1684,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     CraftingMaterialsPanelUI.AffixFilterType filter_type = __instance.affixFilterType;
                     string filter = __instance.searchText;
                     bool idol = Get.IsIdol(Current.item);
+                    ItemList.ClassRequirement class_req = ItemList.ClassRequirement.None;
+                    ItemList.SubClassRequirement subclass_req = ItemList.SubClassRequirement.None;
+                    Current.item.CalculateLevelAndClassRequirement(out class_req, out subclass_req);
                     bool unique = Current.item.isUniqueSetOrLegendary();
                     int p = 0;
                     int s = 0;
@@ -1759,7 +1762,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                         if ((idol) || (unique)) { can_craft = true; }
                                         else if ((count > 0) || (CanCraftWithoutShard)) { can_craft = true; }
 
-                                        if ((can_craft) && (aff.CanRollOnItemType(Current.item.itemType, ItemList.ClassRequirement.None)))
+                                        if ((can_craft) && ((aff.CanRollOnItemType(Current.item.itemType, ItemList.ClassRequirement.None)) ||
+                                            (aff.CanRollOnItemType(Current.item.itemType, class_req))))
                                         {
                                             unused_content.AddElement(shard_affix_element.gameObject);
                                             shard_affix_element.gameObject.transform.SetParent(unused_holder.transform);
@@ -1856,30 +1860,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if (instance.IsNullOrDestroyed()) { instance = __instance; }
                     Debug(false, "CraftingMaterialsPanelUI.AddShardsFromList() Prefix");
                     __0 = Get_AllAffixs_Array();
-
-                    /*if (!Refs_Manager.item_list.IsNullOrDestroyed())
-                    {
-                        Il2CppSystem.Collections.Generic.List<AffixList.Affix> affix_list = new Il2CppSystem.Collections.Generic.List<AffixList.Affix>();
-                        foreach (AffixList.Affix affix in __0) { affix_list.Add(affix); }
-                        foreach (AffixList.SingleAffix single_affix in Refs_Manager.item_list.affixList.singleAffixes)
-                        {
-                            AffixList.Affix affix = single_affix.TryCast<AffixList.Affix>();
-                            if (!affix_list.Contains(affix)) { affix_list.Add(affix); }
-                        }
-                        foreach (AffixList.MultiAffix multi_affix in Refs_Manager.item_list.affixList.multiAffixes)
-                        {
-                            AffixList.Affix affix = multi_affix.TryCast<AffixList.Affix>();
-                            if (!affix_list.Contains(affix)) { affix_list.Add(affix); }
-                        }
-                        Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix> new_list = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<AffixList.Affix>(affix_list.Count);
-                        int i = 0;
-                        foreach (AffixList.Affix affix in affix_list)
-                        {
-                            new_list[i] = affix;
-                            i++;
-                        }
-                        __0 = new_list;
-                    }*/
                 }
             }
 
