@@ -71,7 +71,10 @@ namespace LastEpoch_Hud.Scripts
                     Enable_CombatLog = false,
                     Enable_PotionResplenishment = false,
                     Craft_Seal_Tier = 0,                            //When using glyph of despair, set seal tier to : 0 = T1, 1 = T2, 2 = T3, 3 = T4, 4 = T5, 5 = T6, 6 = T7
-                    Craft_No_Forgin_Potencial_Cost = true           //When add or upgrade normal item with tier < T5
+                    Craft_No_Forgin_Potencial_Cost = true,           //When add or upgrade normal item with tier < T5
+                    Shrines_Unlimited = false,                      //Unlimited Shrine Click
+                    Shrines_Override = false,                       //Change Shrine with another shrines
+                    Shrines_Override_id = 0                         //see Shrines_Override.cs
                 },
                 Login =
                 {
@@ -470,6 +473,12 @@ namespace LastEpoch_Hud.Scripts
                 data.KeyBinds.EternityCache_Past = KeyCode.F4;
                 data.KeyBinds.EternityCache_Future = KeyCode.F5;
                 if (Main.mod_version == "4.2.3") { data.Items.Drop.IdolAffixCount_Max = 2; }
+                if (Main.mod_version == "4.2.9")
+                {
+                    data.modsNotInHud.Shrines_Override = false;
+                    data.modsNotInHud.Shrines_Override_id = 0;
+                    data.modsNotInHud.Shrines_Unlimited = false;
+                }
 
                 data.ModVersion = Main.mod_version;
                 data_changed = true;
@@ -522,6 +531,9 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_PotionResplenishment;
                 public byte Craft_Seal_Tier;
                 public bool Craft_No_Forgin_Potencial_Cost;
+                public bool Shrines_Unlimited;
+                public bool Shrines_Override;
+                public int Shrines_Override_id;
             }
             //Login
             public struct Login
