@@ -1,4 +1,13 @@
 # LastEpoch Mods
+
+## How to : 
++ Installation Instruction can be found in [Discord](https://discord.gg/Kxfq8B82xj)
+
+
+## Requirements :
++ [Melon Loader](https://github.com/LavaGang/MelonLoader)
+  
+##Options :
 + ItemDrop :
 - Gold Multiplier
 - Items multiplier
@@ -41,11 +50,3 @@
 - Complete Objective on start
 - No lost when die (untested)
 <br/><br/>
-## How to : 
-+ Install Melon Loader 5.7
-+ Launch your game once
-+ Compile "LastEpochMods.dll" from the source code (or [get compiled version here](https://www.nexusmods.com/lastepoch/mods/4/?tab=files&jump_to_comment=135082019)), and copy in "YourGame\Mods\"
-+ Launch your game
-<br/><br/>
-## Requirements :
-+ [Melon Loader 5.7](https://github.com/LavaGang/MelonLoader)
