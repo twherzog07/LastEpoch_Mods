@@ -7,8 +7,8 @@
 ## Requirements :
 + [Melon Loader](https://github.com/LavaGang/MelonLoader)
   
-##Options :
-+ ItemDrop :
+## Options :
+ItemDrop :
 - Gold Multiplier
 - Items multiplier
 - Experience Multiplier
@@ -21,7 +21,7 @@
 - Legendary Potencial
 - Weaver Will
 <br/><br/>
-+ Autoloot :
+Autoloot :
 - Gold
 - Keys
 - Unique & Set
@@ -29,21 +29,21 @@
 - Materials
 - AutoStore Materials
 <br/><br/>
-+ Scene :
+Scene :
 - Density Multiplier
 - Experience Multiplier
 - Waypoint Unlock
 <br/><br/>
-+ Remove Prerequisites :
+Remove Prerequisites :
 - Remove Level
 - Remove Class
 - Remove subclass
 <br/><br/>
-+ Dungeons :
+Dungeons :
 - Objective Reveal
 - Enter Without Key
 <br/><br/>
-+ Monoliths :
+Monoliths :
 - Override max stability
 - Objective Reveal
 - Set ennemies defeat count on start
