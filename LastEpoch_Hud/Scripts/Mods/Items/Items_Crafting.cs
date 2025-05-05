@@ -820,8 +820,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public static bool Invoke_UpgradeAvailable(CraftingSlotManager __instance, int affix_id )
             {
                 bool already = false;
-                //if (!Crafting_Manager_instance.IsNullOrDestroyed())
-                //{
+                if (!Current.item.IsNullOrDestroyed())
+                {
                     Debug(false, "Ui.Invoke_UpgradeAvailable(), Id = " + affix_id);                    
                     bool idol = Get.IsIdol(Current.item);
                     if (!idol)
@@ -843,7 +843,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             }
                         }
                     }
-                //}
+                }
 
                 return already;
             }

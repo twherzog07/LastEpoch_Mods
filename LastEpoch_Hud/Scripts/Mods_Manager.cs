@@ -24,7 +24,7 @@ namespace LastEpoch_Hud.Scripts
         GameObject items_headhunter_obj = null;
         GameObject items_crafting_obj = null;
         GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
-        GameObject minimap_icons_obj = null;        
+        GameObject minimap_icons_obj = null;
 
         bool initialized = false;
         
@@ -117,7 +117,7 @@ namespace LastEpoch_Hud.Scripts
             minimap_icons_obj = Object.Instantiate(new GameObject { name = "Mod_Minimap_Icons" }, Vector3.zero, Quaternion.identity);
             minimap_icons_obj.active = false;
             minimap_icons_obj.AddComponent<Mods.Minimap.Minimap_Icons>();
-            Mods_Objects.Add(minimap_icons_obj);            
+            Mods_Objects.Add(minimap_icons_obj);
 
             foreach (GameObject mod in Mods_Objects) { Object.DontDestroyOnLoad(mod); }
             Mods_Objects.Clear();

@@ -11,7 +11,7 @@ namespace LastEpoch_Hud.Scripts
         public Refs_Manager(System.IntPtr ptr) : base(ptr) { }
         public static Refs_Manager instance { get; private set; }
         public static UIBase game_uibase;
-        public static bool online = true;
+        public static bool online = true;        
         public static CharacterSelect character_select;
         public static SceneList scene_list;
         public static InventoryPanelUI InventoryPanelUI = null;
@@ -41,6 +41,7 @@ namespace LastEpoch_Hud.Scripts
         public static CraftingPanelUI crafting_panel_ui = null;
         public static ProtectionClass player_protection_class = null;
         public static GlobalDataTracker player_golbal_data_tracker = null;
+        public static MonolithZoneManager monolith_zone_manager = null;
 
         void Awake()
         {

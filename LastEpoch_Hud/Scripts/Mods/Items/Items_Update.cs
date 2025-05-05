@@ -8,8 +8,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             Items_Req_Class.Enable();
             Items_Req_Level.Enable();
-            if ((Items_Req_Class.need_update) ||
-                (Items_Req_Level.need_update))
+            if ((Items_Req_Class.need_update) || (Items_Req_Level.need_update))
             {
                 Items_Req_Class.need_update = false;
                 Items_Req_Level.need_update = false;

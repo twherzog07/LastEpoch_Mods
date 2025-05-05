@@ -71,12 +71,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Shrines
                     if (id < ShrineList.instance.entries.Count) { __0 = ShrineList.instance.entries[id].prefab; }
                 }
             }
-            /*[HarmonyPostfix]
-            static void Postix(ref UnityEngine.GameObject __result)
-            {
-                if (!__result.IsNullOrDestroyed()) { Main.logger_instance.Msg("Result = " + __result.name); }
-                else { Main.logger_instance.Error("Object is null"); }
-            }*/
         }
     }
 }

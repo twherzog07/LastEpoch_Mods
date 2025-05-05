@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using Il2Cpp;
 using System.Linq;
 using Il2CppSystem.Collections.Generic;
+using Il2CppLE.Data;
+using static LastEpoch_Hud.Scripts.Mods.Items.Items_HeadHunter;
+using Il2CppLE.UI.MultiPicker;
 
 namespace LastEpoch_Hud.Scripts
 {
@@ -1640,6 +1643,36 @@ namespace LastEpoch_Hud.Scripts
 
                             Data.soul_text = Functions.Get_TextInButton(character_data_content, "Soul Embers", "Value");
                             Data.soul_slider = Functions.Get_SliderInPanel(character_data_content, "Soul Embers", "Slider_Character_Data_SoulEmbers");
+
+                            Data.monolith_stability_basic_go = Functions.GetChild(character_data_content, "Monolith_Stability_Basic");
+                            Data.monolith_stability_basic_go.active = false;
+                            Data.monolith_stability_basic_text = Functions.Get_TextInButton(character_data_content, "Monolith_Stability_Basic", "Value");
+                            Data.monolith_stability_basic_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Stability_Basic", "Slider_Basic_Stability");
+                            
+                            Data.monolith_stability_empower_go = Functions.GetChild(character_data_content, "Monolith_Stability_Empower");
+                            Data.monolith_stability_empower_go.active = false;
+                            Data.monolith_stability_empower_text = Functions.Get_TextInButton(character_data_content, "Monolith_Stability_Empower", "Value");
+                            Data.monolith_stability_empower_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Stability_Empower", "Slider_Empower_Stability");
+
+                            Data.monolith_corruption_go = Functions.GetChild(character_data_content, "Monolith_Corruption");
+                            Data.monolith_corruption_go.active = false;
+                            Data.monolith_corruption_text = Functions.Get_TextInButton(character_data_content, "Monolith_Corruption", "Value");
+                            Data.monolith_corruption_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Corruption", "Slider_Empower_Corruption");
+
+                            Data.monolith_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Monoliths", "Dropdown", new System.Action<int>((_) => { Update_Monoliths_Data(); }));
+                            Data.monolith_dropdown.options = new List<Dropdown.OptionData>();
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Select" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Fall_Of_The_Outcast" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "The_Stolen_Lance" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "The_Black_Sun" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Blood_Frost_And_Death" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Ending_The_Storm" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Fall_Of_The_Empire" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Reign_Of_Dragon" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "The_Last_Ruins" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "The_Age_Of_Winter" });
+                            Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Spirits_Of_Fire" });
+                            Data.monolith_dropdown.m_CurrentIndex = 0;
                         }
                         else { Main.logger_instance.Error("Hud Manager : character_data_content is null"); }
 
@@ -1760,6 +1793,10 @@ namespace LastEpoch_Hud.Scripts
                     Events.Set_Button_Event(Cheats.add_glyphs_button, Cheats.AddGlyphs_OnClick_Action);
                     Events.Set_Button_Event(Cheats.add_shards_button, Cheats.AddAffixs_OnClick_Action);
                     Events.Set_Button_Event(Cheats.discover_blessings_button, Cheats.DiscoverAllBlessings_OnClick_Action);
+
+                    Events.Set_Slider_Event(Data.monolith_stability_basic_slider, Data.monolith_stability_basic_slider_Action);
+                    Events.Set_Slider_Event(Data.monolith_stability_empower_slider, Data.monolith_stability_empower_slider_Action);
+                    Events.Set_Slider_Event(Data.monolith_corruption_slider, Data.monolith_corruption_slider_Action);
 
                     Events.Set_Button_Event(Data.save_button, Data.Save_OnClick_Action);
                 }
@@ -1897,6 +1934,85 @@ namespace LastEpoch_Hud.Scripts
                         Data.lantern_text.text = Refs_Manager.player_data.LanternLuminance.ToString();
                         Data.soul_slider.value = Refs_Manager.player_data.SoulEmbers;
                         Data.soul_text.text = Refs_Manager.player_data.SoulEmbers.ToString();
+                    }
+                }
+                public static void Update_Monoliths_Data()
+                {                    
+                    if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Data.monolith_dropdown.IsNullOrDestroyed()))
+                    {                        
+                        int index = Data.monolith_dropdown.value;
+                        if (index < 1)
+                        {
+                            int value = -1;
+                            Data.monolith_stability_basic_go.active = false;
+                            Data.monolith_stability_basic_slider.value = value;
+                            Data.monolith_stability_basic_text.text = value.ToString();
+
+                            Data.monolith_stability_empower_go.active = false;
+                            Data.monolith_stability_empower_slider.value = value;
+                            Data.monolith_stability_empower_text.text = value.ToString();
+
+                            Data.monolith_corruption_go.active = false;
+                            Data.monolith_corruption_slider.value = value;
+                            Data.monolith_corruption_text.text = value.ToString();
+                        }
+                        else
+                        {
+                            SavedMonolithRun basic = null;
+                            SavedMonolithRun empower = null;
+                            foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
+                            {
+                                if (run.TimelineID == index)
+                                {
+                                    if (run.DifficultyIndex == 0) { basic = run; }
+                                    else { empower = run; }
+                                }
+                            }
+
+                            if (!basic.IsNullOrDestroyed())
+                            {
+                                Data.monolith_stability_basic_go.active = true;
+                                int value = basic.Stability;
+                                Data.monolith_stability_basic_slider.value = value;
+                                Data.monolith_stability_basic_text.text = value.ToString();
+                            }
+                            else
+                            {
+                                Data.monolith_stability_basic_go.active = false;
+                                int value = -1;
+                                Data.monolith_stability_basic_slider.value = value;
+                                Data.monolith_stability_basic_text.text = value.ToString();
+                            }
+
+                            if (!empower.IsNullOrDestroyed())
+                            {
+                                Data.monolith_stability_empower_go.active = true;
+                                int value = empower.Stability;
+                                Data.monolith_stability_empower_slider.value = value;
+                                Data.monolith_stability_empower_text.text = value.ToString();
+                                if (!empower.SavedEchoWeb.IsNullOrDestroyed())
+                                {
+                                    Data.monolith_corruption_go.active = true;
+                                    int value2 = empower.SavedEchoWeb.Corruption;
+                                    Data.monolith_corruption_slider.value = value2;
+                                    Data.monolith_corruption_text.text = value2.ToString();
+                                }
+                                else
+                                {
+                                    Data.monolith_corruption_go.active = false;
+                                    int value2 = -1;
+                                    Data.monolith_corruption_slider.value = value2;
+                                    Data.monolith_corruption_text.text = value2.ToString();
+                                }
+                            }
+                            else
+                            {
+                                Data.monolith_stability_empower_go.active = false;
+                                int value = -1;
+                                Data.monolith_stability_empower_slider.value = value;
+                                Data.monolith_stability_empower_text.text = value.ToString();
+                            }
+                        }
                     }
                 }
                 public static void UpdateVisuals()
@@ -2128,6 +2244,79 @@ namespace LastEpoch_Hud.Scripts
                     public static Slider lantern_slider = null;
                     public static Text soul_text = null;
                     public static Slider soul_slider = null;
+
+                    public static Dropdown monolith_dropdown = null;
+                    public static GameObject monolith_stability_basic_go = null;
+                    public static Text monolith_stability_basic_text = null;
+                    public static Slider monolith_stability_basic_slider = null;
+                    public static readonly System.Action<float> monolith_stability_basic_slider_Action = new System.Action<float>(Set_monolith_stability_basic);
+                    public static void Set_monolith_stability_basic(float f)
+                    {
+                        int result = System.Convert.ToInt32(monolith_stability_basic_slider.value);
+                        int index = monolith_dropdown.value;
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                        {
+                            foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
+                            {
+                                if ((run.TimelineID == index) && (run.DifficultyIndex == 0))
+                                {
+                                    if (run.Stability != result) { run.Stability = result; }
+                                    break;
+                                }
+                            }
+                        }
+                        monolith_stability_basic_text.text = result.ToString();
+                    }
+
+
+                    public static GameObject monolith_stability_empower_go = null;
+                    public static Text monolith_stability_empower_text = null;
+                    public static Slider monolith_stability_empower_slider = null;
+                    public static readonly System.Action<float> monolith_stability_empower_slider_Action = new System.Action<float>(Set_monolith_stability_empower);
+                    public static void Set_monolith_stability_empower(float f)
+                    {
+                        int result = System.Convert.ToInt32(monolith_stability_empower_slider.value);
+                        int index = monolith_dropdown.value;
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                        {
+                            foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
+                            {
+                                if ((run.TimelineID == index) && (run.DifficultyIndex == 1))
+                                {
+                                    if (run.Stability != result) { run.Stability = result; }
+                                    break;
+                                }
+                            }
+                        }
+                        monolith_stability_empower_text.text = result.ToString();
+                    }
+
+
+                    public static GameObject monolith_corruption_go = null;
+                    public static Text monolith_corruption_text = null;
+                    public static Slider monolith_corruption_slider = null;
+                    public static readonly System.Action<float> monolith_corruption_slider_Action = new System.Action<float>(Set_monolith_corruption_empower);
+                    public static void Set_monolith_corruption_empower(float f)
+                    {
+                        int result = System.Convert.ToInt32(monolith_corruption_slider.value);
+                        int index = monolith_dropdown.value;
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                        {
+                            foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
+                            {
+                                if ((run.TimelineID == index) && (run.DifficultyIndex == 1))
+                                {
+                                    if (!run.SavedEchoWeb.IsNullOrDestroyed())
+                                    {
+                                        if (run.SavedEchoWeb.Corruption != result) { run.SavedEchoWeb.Corruption = result; }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        monolith_corruption_text.text = result.ToString();
+                    }
+
                     public static Button save_button = null;
 
                     public static readonly System.Action Save_OnClick_Action = new System.Action(Save_Click);

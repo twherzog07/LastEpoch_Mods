@@ -307,6 +307,7 @@ namespace LastEpoch_Hud.Scripts
                     },
                     Monoliths =
                     {
+                        Monoliths_Corruption = 1000,
                         Enable_MaxStability = false,
                         MaxStability = 0,
                         Enable_MobsDensity = false,
@@ -317,9 +318,23 @@ namespace LastEpoch_Hud.Scripts
                         BlessingSlots = 3,
                         Enable_MaxStabilityOnStart = false,
                         Enable_MaxStabilityOnStabilityChanged = false,
+                        Enable_DropShadeGauntlet = false,
                         Enable_ObjectiveReveal = false,
                         Enable_CompleteObjective = false,
-                        Enable_NoLostWhenDie = false
+                        Enable_NoLostWhenDie = false,
+                        Corruptions =
+                        {
+                            Enable_Monoliths_Corruptions = false,
+                            Fall_Of_The_Outcast = 0,
+                            The_Stolen_Lance = 0,
+                            The_Black_Sun = 0,
+                            Blood_Frost_And_Death = 0,
+                            Ending_The_Storm = 0,
+                            Fall_Of_The_Empire = 0,
+                            Reign_Of_Dragon = 0,
+                            The_Last_Ruins = 0,
+                            Spirits_Of_Fire = 0
+                        }
                     }
                 },
                 Skills =
@@ -472,13 +487,6 @@ namespace LastEpoch_Hud.Scripts
                 //Update save when mod update here
                 data.KeyBinds.EternityCache_Past = KeyCode.F4;
                 data.KeyBinds.EternityCache_Future = KeyCode.F5;
-                if (Main.mod_version == "4.2.3") { data.Items.Drop.IdolAffixCount_Max = 2; }
-                if (Main.mod_version == "4.2.9")
-                {
-                    data.modsNotInHud.Shrines_Override = false;
-                    data.modsNotInHud.Shrines_Override_id = 0;
-                    data.modsNotInHud.Shrines_Unlimited = false;
-                }
 
                 data.ModVersion = Main.mod_version;
                 data_changed = true;
@@ -523,6 +531,7 @@ namespace LastEpoch_Hud.Scripts
                 public UnityEngine.KeyCode HeadhunterBuffs;
                 public UnityEngine.KeyCode EternityCache_Past;
                 public UnityEngine.KeyCode EternityCache_Future;
+                public UnityEngine.KeyCode Monoliths_Corruption;
             }
             //Options not in hud (you have to set in defaultconfig before build)
             public struct ModsNotInHud
@@ -820,6 +829,8 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_MaxStability;
                 public float MaxStability;
 
+                public int Monoliths_Corruption;
+
                 public bool Enable_MobsDensity;
                 public float MobsDensity;
 
@@ -832,8 +843,24 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_MaxStabilityOnStart;
                 public bool Enable_MaxStabilityOnStabilityChanged;
                 public bool Enable_ObjectiveReveal;
+                public bool Enable_DropShadeGauntlet;
                 public bool Enable_CompleteObjective;
                 public bool Enable_NoLostWhenDie;
+                public Monoliths_Corruptions Corruptions;
+            }
+            public struct Monoliths_Corruptions
+            {
+                public bool Enable_Monoliths_Corruptions;
+                public int Fall_Of_The_Outcast;
+                public int The_Stolen_Lance;
+                public int The_Black_Sun;
+                public int Blood_Frost_And_Death;
+                public int Ending_The_Storm;
+                public int Fall_Of_The_Empire;
+                public int Reign_Of_Dragon;
+                public int The_Last_Ruins;
+                public int The_Age_Of_Winter;
+                public int Spirits_Of_Fire;
             }
 
             //Skills
