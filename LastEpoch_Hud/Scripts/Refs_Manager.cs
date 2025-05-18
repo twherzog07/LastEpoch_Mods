@@ -11,7 +11,8 @@ namespace LastEpoch_Hud.Scripts
         public Refs_Manager(System.IntPtr ptr) : base(ptr) { }
         public static Refs_Manager instance { get; private set; }
         public static UIBase game_uibase;
-        public static bool online = true;        
+        public static bool online = true;
+        public static EpochInputManager epoch_input_manager; //Use to block input
         public static CharacterSelect character_select;
         public static SceneList scene_list;
         public static InventoryPanelUI InventoryPanelUI = null;
@@ -42,6 +43,7 @@ namespace LastEpoch_Hud.Scripts
         public static ProtectionClass player_protection_class = null;
         public static GlobalDataTracker player_golbal_data_tracker = null;
         public static MonolithZoneManager monolith_zone_manager = null;
+        public static MovingPlayer player_moving = null;
 
         void Awake()
         {
@@ -50,6 +52,7 @@ namespace LastEpoch_Hud.Scripts
         void Update()
         {
             if ((game_uibase.IsNullOrDestroyed()) && (!UIBase.instance.IsNullOrDestroyed())) { game_uibase = UIBase.instance; }
+            if ((epoch_input_manager.IsNullOrDestroyed()) && (!EpochInputManager.instance.IsNullOrDestroyed())) { epoch_input_manager = EpochInputManager.instance; }
             if ((character_class_list.IsNullOrDestroyed()) && (!CharacterClassList.instance.IsNullOrDestroyed())) { character_class_list = CharacterClassList.instance; }
             if ((item_list.IsNullOrDestroyed()) && (!ItemList.instance.IsNullOrDestroyed())) { item_list = ItemList.instance; }
             if (unique_list.IsNullOrDestroyed())
@@ -106,6 +109,7 @@ namespace LastEpoch_Hud.Scripts
                 if (player_data.IsNullOrDestroyed()) { player_data = PlayerFinder.getPlayerData(); }
                 if (player_data_tracker.IsNullOrDestroyed()) { player_data_tracker = PlayerFinder.getPlayerDataTracker(); }
                 if (player_health.IsNullOrDestroyed()) { player_health = PlayerFinder.getLocalPlayerHealth(); }
+                if ((player_moving.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { player_moving = player_actor.gameObject.GetComponent<MovingPlayer>(); }
                 if ((player_protection_class.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { player_protection_class = player_actor.gameObject.GetComponent<ProtectionClass>(); }
                 if ((health_potion.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { health_potion = player_actor.gameObject.GetComponent<HealthPotion>(); }
                 if (player_stats.IsNullOrDestroyed()) { player_stats = PlayerFinder.getLocalPlayerStats(); }

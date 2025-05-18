@@ -334,7 +334,8 @@ namespace LastEpoch_Hud.Scripts
                             Reign_Of_Dragon = 0,
                             The_Last_Ruins = 0,
                             Spirits_Of_Fire = 0
-                        }
+                        },
+                        Enable_Islands = false
                     }
                 },
                 Skills =
@@ -847,6 +848,7 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_CompleteObjective;
                 public bool Enable_NoLostWhenDie;
                 public Monoliths_Corruptions Corruptions;
+                public bool Enable_Islands;
             }
             public struct Monoliths_Corruptions
             {

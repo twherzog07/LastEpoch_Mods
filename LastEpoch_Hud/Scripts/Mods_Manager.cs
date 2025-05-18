@@ -8,6 +8,7 @@ namespace LastEpoch_Hud.Scripts
     {
         public Mods_Manager(System.IntPtr ptr) : base(ptr) { }
         public static Mods_Manager instance { get; private set; }
+
         GameObject cosmetics_skins_obj = null;
         GameObject character_autopotion_obj = null;
         GameObject character_potionreplenishment_obj = null;
@@ -25,6 +26,7 @@ namespace LastEpoch_Hud.Scripts
         GameObject items_crafting_obj = null;
         GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
         GameObject minimap_icons_obj = null;
+        GameObject monoliths_complete_objectives_obj = null;
 
         bool initialized = false;
         
@@ -119,6 +121,11 @@ namespace LastEpoch_Hud.Scripts
             minimap_icons_obj.AddComponent<Mods.Minimap.Minimap_Icons>();
             Mods_Objects.Add(minimap_icons_obj);
 
+            monoliths_complete_objectives_obj = Object.Instantiate(new GameObject { name = "Mod_Monoliths_Complete_Objectives" }, Vector3.zero, Quaternion.identity);
+            monoliths_complete_objectives_obj.active = false;
+            monoliths_complete_objectives_obj.AddComponent<Mods.Monoliths.Monoliths_CompleteObjective>();
+            Mods_Objects.Add(monoliths_complete_objectives_obj);
+
             foreach (GameObject mod in Mods_Objects) { Object.DontDestroyOnLoad(mod); }
             Mods_Objects.Clear();
 
@@ -144,10 +151,11 @@ namespace LastEpoch_Hud.Scripts
                 character_masteries_obj.active = true; //Hud
                 character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
                 Mods.Items.Items_Update.Reqs(); //Used to update item req
-                items_headhunter_obj.active = true;
+                items_headhunter_obj.active = true; //Save_Manager.instance.data.Items.Headhunter.enable;
                 items_crafting_obj.active = true;
                 items_crafting_eternal.active = true;
                 minimap_icons_obj.active = true; //Enable/Disable Minimap Icons
+                monoliths_complete_objectives_obj.active = true;
             }
         }
         void Disable()
@@ -172,6 +180,7 @@ namespace LastEpoch_Hud.Scripts
                 items_crafting_obj.active = false;
                 items_crafting_eternal.active = false;
                 minimap_icons_obj.active = false;
+                monoliths_complete_objectives_obj.active = false;
             }
         }
 

@@ -22,7 +22,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             [HarmonyPrefix]
             static void Prefix(CharacterMutator __instance, AbilityInfo __0, ref AbilityMutator __1, float __2, UnityEngine.Vector3 __3, bool __4)
             {
-                if (CanRun())
+                if ((CanRun()) && (!__1.IsNullOrDestroyed()))
                 {
                     Ability ability = null;
                     try { ability = __1.getAbility(); }

@@ -1,12 +1,187 @@
-﻿using Il2Cpp;
-using Il2CppTMPro;
-using UnityEngine;
+﻿using HarmonyLib;
+using Il2Cpp;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
-    public class Items_Crafting_Slots
+    public class Items_Crafting_Slot
     {
-        public class Slots
+        public static bool first_time = true;
+        public static bool forge = false; //Disable when forge
+        public static ItemData item = null;
+
+        [HarmonyPatch(typeof(CraftingManager), "OnMainItemChange")]
+        public class CraftingManager_OnMainItemChange
+        {
+            [HarmonyPostfix]
+            static void Postfix(ref CraftingManager __instance, ref Il2CppSystem.Object __0, ref ItemContainerEntryHandler __1)
+            {
+                item = null;
+                if (!__0.IsNullOrDestroyed() && (!forge))
+                {
+                    OneItemContainer item_container = __0.TryCast<OneItemContainer>();                    
+                    if (!item_container.IsNullOrDestroyed())
+                    {
+                        if (!item_container.content.IsNullOrDestroyed()) { item = item_container.content.data; }
+                    }
+                }
+                if ((!item.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()) && (first_time))
+                {
+                    first_time = false;
+                    if (!Save_Manager.instance.data.IsNullOrDestroyed())
+                    {
+                        if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Mod)
+                        {
+                            if (Save_Manager.instance.data.Items.CraftingSlot.Enable_ForginPotencial)
+                            {
+                                item.forgingPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.ForginPotencial;
+                            }
+
+                            System.Collections.Generic.List<bool> implicits_enables = new System.Collections.Generic.List<bool>();
+                            implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_0);
+                            implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_1);
+                            implicits_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2);
+                            System.Collections.Generic.List<float> implicits_values = new System.Collections.Generic.List<float>();
+                            implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_0);
+                            implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_1);
+                            implicits_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Implicit_2);
+
+                            for (int z = 0; z < item.implicitRolls.Count; z++)
+                            {
+                                if (implicits_enables[z]) { item.implicitRolls[z] = (byte)implicits_values[z]; }
+                            }
+                            implicits_enables.Clear();
+                            implicits_values.Clear();
+
+                            System.Collections.Generic.List<bool> affix_tier_enables = new System.Collections.Generic.List<bool>();
+                            affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Tier);
+                            affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Tier);
+                            affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Tier);
+                            affix_tier_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Tier);
+                            System.Collections.Generic.List<float> affix_tier_values = new System.Collections.Generic.List<float>();
+                            affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier);
+                            affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier);
+                            affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier);
+                            affix_tier_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Tier);
+                            System.Collections.Generic.List<bool> affix_value_enables = new System.Collections.Generic.List<bool>();
+                            affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_0_Value);
+                            affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_1_Value);
+                            affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_2_Value);
+                            affix_value_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_Affix_3_Value);
+                            System.Collections.Generic.List<float> affix_value_values = new System.Collections.Generic.List<float>();
+                            affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value);
+                            affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value);
+                            affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value);
+                            affix_value_values.Add(Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value);
+
+                            int nb_prefix = 0;
+                            int nb_suffix = 0;
+                            foreach (ItemAffix affix in item.affixes)
+                            {
+                                if (affix.isSealedAffix)
+                                {
+                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier) { affix.affixTier = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier; }
+                                    if (Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Value) { affix.affixRoll = (byte)Scripts.Save_Manager.instance.data.Items.CraftingSlot.Seal_Value; }
+                                }
+                                else
+                                {
+                                    int result = -1;
+                                    if ((affix.affixType == AffixList.AffixType.PREFIX) && (nb_prefix < 3))
+                                    {
+                                        result = 0 + nb_prefix;
+                                        nb_prefix++;
+                                    }
+                                    else if ((affix.affixType == AffixList.AffixType.SUFFIX) && (nb_suffix < 3))
+                                    {
+                                        result = 2 + nb_suffix;
+                                        nb_suffix++;
+                                    }
+
+                                    if ((result > -1) && (result < 6))
+                                    {
+                                        if ((result < affix_tier_enables.Count) && (result < affix_tier_values.Count) &&
+                                            (result < affix_value_enables.Count) && (result < affix_value_values.Count))
+                                        {
+                                            if (affix_tier_enables[result]) { affix.affixTier = (byte)affix_tier_values[result]; }
+                                            if (affix_value_enables[result]) { affix.affixRoll = (byte)affix_value_values[result]; }
+
+                                        }
+                                    }
+                                }
+                            }
+                            affix_tier_enables.Clear();
+                            affix_tier_values.Clear();
+                            affix_value_enables.Clear();
+                            affix_value_values.Clear();
+
+                            if (item.rarity > 6)
+                            {
+                                System.Collections.Generic.List<bool> unique_mods_enables = new System.Collections.Generic.List<bool>();
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_0);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_3);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_4);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_5);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_6);
+                                unique_mods_enables.Add(Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_7);
+                                System.Collections.Generic.List<float> unique_mods_values = new System.Collections.Generic.List<float>();
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_3);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_4);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_5);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_6);
+                                unique_mods_values.Add(Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_7);
+                                for (int z = 0; z < item.uniqueRolls.Count; z++)
+                                {
+                                    if (unique_mods_enables[z]) { item.uniqueRolls[z] = (byte)unique_mods_values[z]; }
+                                }
+                                unique_mods_enables.Clear();
+                                unique_mods_values.Clear();
+
+                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_LegendaryPotencial)
+                                { item.legendaryPotential = (byte)Save_Manager.instance.data.Items.CraftingSlot.LegendaryPotencial; }
+
+                                if (Save_Manager.instance.data.Items.CraftingSlot.Enable_WeaverWill)
+                                { item.weaversWill = (byte)Save_Manager.instance.data.Items.CraftingSlot.WeaverWill; }
+                            }
+
+                            item.RefreshIDAndValues();
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(CraftingManager), "OnMainItemRemoved")]
+        public class CraftingManager_OnMainItemRemoved
+        {
+            [HarmonyPostfix]
+            static void Postfix(CraftingManager __instance, Il2CppSystem.Object __0, ItemContainerEntryHandler __1)
+            {
+                item = null;
+                first_time = true;
+            }
+        }
+
+        [HarmonyPatch(typeof(CraftingSlotManager), "Forge")]
+        public class CraftingSlotManager_Forge
+        {
+            [HarmonyPrefix]
+            static void Prefix(ref CraftingSlotManager __instance)
+            {
+                forge = true;
+            }
+
+            [HarmonyPostfix]
+            static void Postfix(ref CraftingSlotManager __instance)
+            {
+                forge = false;
+            }
+        }
+
+        /*public class Slots
         {
             public static bool Initialized = false;
             public static bool Initializing = false;
@@ -411,7 +586,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             }
             public static void UpdateSlots(ItemData item)
             {
-                /*int nb_prefix = 0;
+                int nb_prefix = 0;
                 int nb_suffix = 0;
                 if (!item.IsNullOrDestroyed())
                 {
@@ -497,7 +672,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                         Get_GlassLenseFromSlot(5).active = true;                            //Show Glass Lense
                     }
-                }*/
+                }
             }
 
             public class Slot0
@@ -645,124 +820,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             {
                 public static GameObject game_object;
             }
-        }
-
-        /*public class ModSlot
-        {
-            public static GameObject game_object;
-            public static RectTransform rect_transform;
-            public static AffixSlotForge affix_slot_forge;
-
-            public class Shard
-            {
-                public static GameObject game_object;
-                public static RectTransform rect_transform;
-
-                public class AddShardButton
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                    public static UnityEngine.UI.Button button;
-                    public static LE.Audio.ButtonSounds button_sounds;
-                }
-                public class ShardIcon
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                }
-                public class GlassLense
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                }
-                public class SLAM
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.LayoutElement layout_element;
-                    public static DeactivateOnEnable deactivate_onenable;
-                }
-            }
-            public class AvailableShardSlotType
-            {
-                public static GameObject game_object;
-                public static RectTransform rect_transform;
-                public static UnityEngine.CanvasRenderer canvas_renderer;
-                public static UnityEngine.UI.Image image;
-
-                public class AvailableShardCoundType
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static TMPro.TextMeshProUGUI textmeshpro_gui;
-                }
-            }
-            public class UpgradeAvailable
-            {
-                public static GameObject game_object;
-                public static RectTransform rect_transform;
-                public static UnityEngine.CanvasRenderer canvas_renderer;
-                public static UnityEngine.UI.Image image;
-                public static UnityEngine.UI.Button button;
-                public static CraftingUpgradeButton upgrade_button;
-
-                public class UpgradeAvailableIndicator
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                    public static UnityEngine.UI.LayoutElement layout_element;
-                }
-            }
-            public class AffixDescHolder
-            {
-                public static GameObject game_object;
-                public static RectTransform rect_transform;
-                public static UnityEngine.CanvasRenderer canvas_renderer;
-                public static UnityEngine.UI.VerticalLayoutGroup vertical_layout_group;
-                public static UnityEngine.UI.ContentSizeFitter content_size_filter;
-
-                public class DropShadow
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                    public static UnityEngine.UI.LayoutElement layout_element;
-                }
-                public class TierLevel
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static TMPro.TextMeshProUGUI textmeshpro_gui;
-                }
-                public class Separator
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static UnityEngine.UI.Image image;
-                    public static UnityEngine.UI.LayoutElement layout_element;
-                }
-                public class AffixName
-                {
-                    public static GameObject game_object;
-                    public static RectTransform rect_transform;
-                    public static UnityEngine.CanvasRenderer canvas_renderer;
-                    public static TMPro.TextMeshProUGUI textmeshpro_gui;
-                    public static UnityEngine.UI.LayoutElement layout_element;
-                }
-            }
         }*/
+
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using System.Net.NetworkInformation;
 using UnityEngine;
 
 namespace LastEpoch_Hud.Scripts.Mods.Monoliths
@@ -17,8 +16,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                     if ((Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStability) ||
                         (Save_Manager.instance.data.Scenes.Monoliths.Enable_MaxStabilityOnStart) ||
                         (Save_Manager.instance.data.Scenes.Monoliths.Enable_MobsDefeatOnStart) ||
-                        (Save_Manager.instance.data.Scenes.Monoliths.Enable_ObjectiveReveal) ||
-                        (Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective))
+                        (Save_Manager.instance.data.Scenes.Monoliths.Enable_ObjectiveReveal)) //||
+                        //(Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective))
                     {
                         return true;
                     }
@@ -49,43 +48,59 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                         //Drop woven echoes on start
                         __instance.DropShadeGauntletWovenEchoForAllPlayersInEcho(Refs_Manager.player_actor.gameObject.transform.position, 0);
                     }                    
-                    if (Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective)
+                    /*if (Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective)
                     {
-                        Main.logger_instance.Msg("CompleteObjective : type = " + __instance.defaultObjectiveType.ToString());
-
                         //Objectives Quest
+                        Main.logger_instance.Msg("MonolithZoneManager.questsThatCompleteZone count = " + __instance.questsThatCompleteZone.Count);
                         foreach (Il2Cpp.Quest quest in __instance.questsThatCompleteZone)
                         {
-                            Main.logger_instance.Msg("Try to complete quest : " + quest.name);
+                            Main.logger_instance.Msg("Complete quest : " + quest.name);
                             quest.completeQuest(Refs_Manager.player_actor);
                         }
 
-                        //Objective enemies
+                        //Spawn, move and kill objective enemies
+                        Main.logger_instance.Msg("MonolithZoneManager.objectiveEnemies count = " + __instance.objectiveEnemies.Count);
                         foreach (Dying dying in __instance.objectiveEnemies)
                         {
-                            Main.logger_instance.Msg("Try to move and kill Objective : " + dying.name);
-                            if (!Refs_Manager.player_actor.IsNullOrDestroyed()) { dying.gameObject.transform.position = Refs_Manager.player_actor.transform.position; }
+                            Main.logger_instance.Msg("Move enemie (" + dying.name + ") to Player");
+                            dying.gameObject.transform.position = Refs_Manager.player_actor.transform.position;
+                            Main.logger_instance.Msg("Kill enemie (" + dying.name + ")");
                             dying.die();
                         }
 
-                        //Spawn all enemies
+                        //Spawn, move and kill all enemies
+                        Main.logger_instance.Msg("MonolithZoneManager.spawners count = " + __instance.spawners.Count);
+                        foreach (Spawner spawner in __instance.spawners)
+                        {
+                            Main.logger_instance.Msg("Spawn enemies from : " + spawner.name);
+                            spawner.spawn();
+                            Main.logger_instance.Msg(spawner.name + " contain " + spawner.spawnedActors.Count + " enemies");
+                            foreach (Actor actor in spawner.spawnedActors)
+                            {
+                                Main.logger_instance.Msg("Move enemie (" + actor.name + ") to Player");
+                                actor.gameObject.transform.position = Refs_Manager.player_actor.transform.position;
+                                Main.logger_instance.Msg("Kill enemie (" + actor.name + ")");
+                                actor.gameObject.GetComponent<Dying>().die();
+                            }
+                        }
 
                         //Kill all spanwed enemies
+                        Main.logger_instance.Msg("MonolithZoneManager.spawnedEntities count = " + __instance.spawnedEntities.Count);
                         foreach (Dying dying in __instance.spawnedEntities)
                         {
-                            Main.logger_instance.Msg("Try to move and kill Enemies : " + dying.name);
-                            if (!Refs_Manager.player_actor.IsNullOrDestroyed()) { dying.gameObject.transform.position = Refs_Manager.player_actor.transform.position; }
+                            Main.logger_instance.Msg("Move enemie (" + dying.name + ") to Player");
+                            dying.gameObject.transform.position = Refs_Manager.player_actor.transform.position;
+                            Main.logger_instance.Msg("Kill enemie (" + dying.name + ")");
                             dying.die();
                         }
 
                         //Objective Tomb
                         if (!__instance.TombManager.IsNullOrDestroyed())
                         {
-                            Main.logger_instance.Msg("A tomb has been found");
-                            //Unlock tomb
+                            Main.logger_instance.Msg("Unlock tomb");
                             __instance.TombManager.AccessState = Il2CppLE.Gameplay.Tombs.TombAccessState.Unlocked;
 
-                            //Get entrance location
+                            Main.logger_instance.Msg("Get entrance location");
                             bool entrance_found = false;
                             Vector3 entrance_location = new Vector3(0, 0, 0);
                             foreach (TombEntranceLogic _logic in GameObject.FindObjectsOfType<TombEntranceLogic>())
@@ -97,30 +112,39 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                                     break;
                                 }
                             }
-                            //Move to entrance location
                             if (entrance_found)
                             {
-                                Main.logger_instance.Msg("Try to move to tomb entrance");
+                                Main.logger_instance.Msg("Move player to tomb entrance");
                                 Refs_Manager.player_actor.gameObject.transform.position = entrance_location;
-                            }
-                            else { Main.logger_instance.Msg("Entrance not found"); }
 
+                                //Enter tomb
 
-                            //Spawn and kill boss //Move player to boss spawner
-                            if (!__instance.TombManager.BossSpawner.IsNotNullOrDestroyed())
-                            {
-                                Main.logger_instance.Msg("Try to spawn Boss");
-                                __instance.TombManager.BossSpawner.spawn();
-                                foreach (Actor actor in __instance.TombManager.BossSpawner.spawnedActors)
+                                //Spawn and kill boss //Move player to boss spawner
+                                if (!__instance.TombManager.BossSpawner.IsNotNullOrDestroyed())
                                 {
-                                    Main.logger_instance.Msg("Try to move Boss : " + actor.name + " to Player");
-                                    actor.gameObject.transform.position = Refs_Manager.player_actor.transform.position;
-                                    Main.logger_instance.Msg("Try to kill Boss : " + actor.name);
-                                    actor.gameObject.GetComponent<Dying>().die();
+                                    Main.logger_instance.Msg("Try to spawn Boss");
+                                    __instance.TombManager.BossSpawner.spawn();
+                                    foreach (Actor actor in __instance.TombManager.BossSpawner.spawnedActors)
+                                    {
+                                        Main.logger_instance.Msg("Try to move Boss : " + actor.name + " to Player");
+                                        actor.gameObject.transform.position = Refs_Manager.player_actor.transform.position;
+                                        Main.logger_instance.Msg("Try to kill Boss : " + actor.name);
+                                        actor.gameObject.GetComponent<Dying>().die();
+                                    }
                                 }
-                            }                            
+                            }
+                            else { Main.logger_instance.Warning("Tomb entrance not found"); }
                         }
-                    }
+                        
+                        try
+                        {
+                            Main.logger_instance.Msg("Try to complete objective");
+                            __instance.objectiveComplete = true;
+                            __instance.runComplete = true;
+                            //__instance.CompleteObjective();
+                        }
+                        catch { Main.logger_instance.Error("Error when trying to complete objective"); }
+                    }*/
                 }                
             }
         }

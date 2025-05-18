@@ -1,15 +1,12 @@
 ﻿using HarmonyLib;
+using Il2Cpp;
+using Il2CppLE.Data;
+using Il2CppSystem.Collections.Generic;
 using MelonLoader;
 using System.IO;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using Il2Cpp;
 using System.Linq;
-using Il2CppSystem.Collections.Generic;
-using Il2CppLE.Data;
-using static LastEpoch_Hud.Scripts.Mods.Items.Items_HeadHunter;
-using Il2CppLE.UI.MultiPicker;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace LastEpoch_Hud.Scripts
 {
@@ -24,12 +21,15 @@ namespace LastEpoch_Hud.Scripts
 
         private string asset_path = Application.dataPath + "/../Mods/" + Main.mod_name + "/Assets";
         private static Canvas game_canvas = null;
-        private static GameObject game_pause_menu = null;
+        public static GameObject game_pause_menu = null;
         private static Canvas hud_canvas = null;
         private readonly string asset_bundle_name = "lastepochmods"; //Name of asset file
         private bool hud_initializing = false;
         private bool asset_bundle_initializing = false;
         private bool data_initializing = false;
+
+        private bool updating = false;
+        private bool exit = false;
 
         void Awake()
         {
@@ -44,16 +44,27 @@ namespace LastEpoch_Hud.Scripts
             if (!hud_object.IsNullOrDestroyed())
             {
                 if ((!data_initialized) && (!data_initializing)) { Init_UserData(); } //set once
-                if (IsPauseOpen())
+                if ((IsPauseOpen()) && (!updating))
                 {
+                    updating = true;
                     Update_Hud_Content();
                     hud_object.active = true;
                     Content.Set_Active();
+                    if ((!Refs_Manager.epoch_input_manager.IsNullOrDestroyed()) && (!Hud_Base.Btn_Resume.IsNullOrDestroyed()))
+                    {
+                        if (Input.GetKeyDown(KeyCode.Escape)) { exit = true; }
+                        if ((Input.GetKeyUp(KeyCode.Escape)) && (exit)) { Hud_Base.Btn_Resume.onClick.Invoke(); exit = false; }
+                        else { Refs_Manager.epoch_input_manager.forceDisableInput = true; }
+                    }
+                    updating = false;
                 }
-                else
+                else if (!updating)
                 {
+                    updating = true;
                     hud_object.active = false;
+                    if (!Refs_Manager.epoch_input_manager.IsNullOrDestroyed()) { Refs_Manager.epoch_input_manager.forceDisableInput = false; }
                     Content.Character.need_update = true;
+                    updating = false;
                 }
             }            
         }
@@ -454,143 +465,6 @@ namespace LastEpoch_Hud.Scripts
         
         public class Hooks
         {
-            //Disable Ladder(L)
-            [HarmonyPatch(typeof(UIBase), "LadderKeyDown")]
-            public class UIBase_LadderKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    return false;
-                }
-            }
-            //Disable Chat
-            [HarmonyPatch(typeof(UIBase), "ChatKeyDown")]
-            public class UIBase_ChatKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    return false;
-                }
-            }
-
-            //Disable Keys when hud is open (allow inputField)            
-            [HarmonyPatch(typeof(Input), "GetKeyDown", new System.Type[] { typeof(UnityEngine.KeyCode) })]
-            public class Input_GetKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix(bool __result, UnityEngine.KeyCode __0)
-                {
-                    if ((IsPauseOpen()) &&
-                        (__0 != KeyCode.Escape) && //Open / Close Pause
-                        (__0 != KeyCode.F7) && (__0 != KeyCode.F8)) // Unity Explorer
-                    { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "FactionsKeyDown")] //Y
-            public class UIBase_FactionsKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "openInventory")] //I
-            public class UIBase_openInventory
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "SettingsKeyDown")] //O
-            public class UIBase_SettingsKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "PassiveGridKeyDown")] //P
-            public class UIBase_PassiveGridKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "openCraftingPanel")] //F
-            public class UIBase_openCraftingPanel
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "GameGuideKeyDown")] //G
-            public class UIBase_GameGuideKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "SocialKeyDown")] //H
-            public class UIBase_SocialKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "SkillsKeyDown")] //K
-            public class UIBase_SkillsKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "MapKeyDown")] //M
-            public class UIBase_MapKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-            [HarmonyPatch(typeof(UIBase), "CharacterStatsKeyDown")] //C
-            public class UIBase_CharacterStatsKeyDown
-            {
-                [HarmonyPrefix]
-                static bool Prefix()
-                {
-                    if (IsPauseOpen()) { return false; }
-                    return true;
-                }
-            }
-
-
             //Select Shards
             [HarmonyPatch(typeof(Button), "Press")]
             public class Button_Press
@@ -1659,6 +1533,11 @@ namespace LastEpoch_Hud.Scripts
                             Data.monolith_corruption_text = Functions.Get_TextInButton(character_data_content, "Monolith_Corruption", "Value");
                             Data.monolith_corruption_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Corruption", "Slider_Empower_Corruption");
 
+                            Data.monolith_gaze_go = Functions.GetChild(character_data_content, "Monolith_Gaze");
+                            Data.monolith_gaze_go.active = false;
+                            Data.monolith_gaze_text = Functions.Get_TextInButton(character_data_content, "Monolith_Gaze", "Value");
+                            Data.monolith_gaze_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Gaze", "Slider");
+
                             Data.monolith_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Monoliths", "Dropdown", new System.Action<int>((_) => { Update_Monoliths_Data(); }));
                             Data.monolith_dropdown.options = new List<Dropdown.OptionData>();
                             Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Select" });
@@ -1797,6 +1676,7 @@ namespace LastEpoch_Hud.Scripts
                     Events.Set_Slider_Event(Data.monolith_stability_basic_slider, Data.monolith_stability_basic_slider_Action);
                     Events.Set_Slider_Event(Data.monolith_stability_empower_slider, Data.monolith_stability_empower_slider_Action);
                     Events.Set_Slider_Event(Data.monolith_corruption_slider, Data.monolith_corruption_slider_Action);
+                    Events.Set_Slider_Event(Data.monolith_gaze_slider, Data.monolith_gaze_slider_Action);
 
                     Events.Set_Button_Event(Data.save_button, Data.Save_OnClick_Action);
                 }
@@ -1955,6 +1835,10 @@ namespace LastEpoch_Hud.Scripts
                             Data.monolith_corruption_go.active = false;
                             Data.monolith_corruption_slider.value = value;
                             Data.monolith_corruption_text.text = value.ToString();
+
+                            Data.monolith_gaze_go.active = false;
+                            Data.monolith_gaze_slider.value = value;
+                            Data.monolith_gaze_text.text = value.ToString();
                         }
                         else
                         {
@@ -1996,6 +1880,11 @@ namespace LastEpoch_Hud.Scripts
                                     int value2 = empower.SavedEchoWeb.Corruption;
                                     Data.monolith_corruption_slider.value = value2;
                                     Data.monolith_corruption_text.text = value2.ToString();
+
+                                    Data.monolith_gaze_go.active = true;
+                                    int value3 = empower.SavedEchoWeb.GazeOfOrobyss;
+                                    Data.monolith_gaze_slider.value = value3;
+                                    Data.monolith_gaze_text.text = value3.ToString();
                                 }
                                 else
                                 {
@@ -2003,6 +1892,11 @@ namespace LastEpoch_Hud.Scripts
                                     int value2 = -1;
                                     Data.monolith_corruption_slider.value = value2;
                                     Data.monolith_corruption_text.text = value2.ToString();
+
+                                    Data.monolith_gaze_go.active = false;
+                                    int value3 = -1;
+                                    Data.monolith_gaze_slider.value = value3;
+                                    Data.monolith_gaze_text.text = value3.ToString();
                                 }
                             }
                             else
@@ -2316,6 +2210,32 @@ namespace LastEpoch_Hud.Scripts
                         }
                         monolith_corruption_text.text = result.ToString();
                     }
+
+                    public static GameObject monolith_gaze_go = null;
+                    public static Text monolith_gaze_text = null;
+                    public static Slider monolith_gaze_slider = null;
+                    public static readonly System.Action<float> monolith_gaze_slider_Action = new System.Action<float>(Set_monolith_gaze_empower);
+                    public static void Set_monolith_gaze_empower(float f)
+                    {
+                        int result = System.Convert.ToInt32(monolith_gaze_slider.value);
+                        int index = monolith_dropdown.value;
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                        {
+                            foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
+                            {
+                                if ((run.TimelineID == index) && (run.DifficultyIndex == 1))
+                                {
+                                    if (!run.SavedEchoWeb.IsNullOrDestroyed())
+                                    {
+                                        if (run.SavedEchoWeb.GazeOfOrobyss != result) { run.SavedEchoWeb.GazeOfOrobyss = result; }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        monolith_gaze_text.text = result.ToString();
+                    }
+
 
                     public static Button save_button = null;
 
