@@ -17,6 +17,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Factions
                 //Main.logger_instance.Msg("corruption = " + __2.ToString());
                 Main.logger_instance.Msg("increasedItemRarity = " + __3.ToString());
                 //Main.logger_instance.Msg("dungeonOrArenaTier = " + __4.ToString());
+                //Main.logger_instance.Msg("islandTier = " + __5.ToString());
                 //Main.logger_instance.Msg("maxIslandTierForNonShadeEchoes = " + __6.ToString());
                 //Main.logger_instance.Msg("playerGroup = " + __7.ToString());
             }
