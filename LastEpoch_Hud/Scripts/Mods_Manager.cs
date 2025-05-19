@@ -23,6 +23,7 @@ namespace LastEpoch_Hud.Scripts
         GameObject items_nbsocket_obj = null;
         GameObject items_autosell_timer_obj = null;
         GameObject items_headhunter_obj = null;
+        GameObject items_mjolner_obj = null;
         GameObject items_crafting_obj = null;
         GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
         GameObject minimap_icons_obj = null;
@@ -101,6 +102,11 @@ namespace LastEpoch_Hud.Scripts
             items_headhunter_obj.AddComponent<Mods.Items.Items_HeadHunter>();
             Mods_Objects.Add(items_headhunter_obj);
 
+            items_mjolner_obj = Object.Instantiate(new GameObject { name = "Mod_Items_Mjolner" }, Vector3.zero, Quaternion.identity);
+            items_mjolner_obj.active = false;
+            items_mjolner_obj.AddComponent<Mods.Items.Items_Mjolner>();
+            Mods_Objects.Add(items_mjolner_obj);
+
             items_crafting_obj = Object.Instantiate(new GameObject { name = "Mod_Items_Crafting" }, Vector3.zero, Quaternion.identity);
             items_crafting_obj.active = false;
             items_crafting_obj.AddComponent<Mods.Items.Items_Crafting>();
@@ -152,6 +158,7 @@ namespace LastEpoch_Hud.Scripts
                 character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
                 Mods.Items.Items_Update.Reqs(); //Used to update item req
                 items_headhunter_obj.active = true; //Save_Manager.instance.data.Items.Headhunter.enable;
+                items_mjolner_obj.active = true;
                 items_crafting_obj.active = true;
                 items_crafting_eternal.active = true;
                 minimap_icons_obj.active = true; //Enable/Disable Minimap Icons
@@ -177,6 +184,7 @@ namespace LastEpoch_Hud.Scripts
                 character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Disable();
                 character_safetp_obj.active = false;
                 items_headhunter_obj.active = false;
+                items_mjolner_obj.active = false;
                 items_crafting_obj.active = false;
                 items_crafting_eternal.active = false;
                 minimap_icons_obj.active = false;

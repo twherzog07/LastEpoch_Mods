@@ -268,6 +268,15 @@ namespace LastEpoch_Hud.Scripts
                         AddValue = 1f,
                         IncreasedValue = 1f,
                         WeaverWill = false
+                    },
+                    Mjolner =
+                    {
+                        enable = true,
+                        BaseDrop = true, UniqueDrop = true,
+                        MinTriggerChance = 0.3f,
+                        MaxTriggerChance = 0.5f,
+                        WeaverWill = false,
+                        ProcAnyLightningSpell = true
                     }
                 },
                 Scenes =
@@ -623,6 +632,7 @@ namespace LastEpoch_Hud.Scripts
                 public Req Req;
                 public CraftingSlot CraftingSlot;
                 public Headhunter Headhunter;
+                public Mjolner Mjolner;
             }
             public struct Drop
             {
@@ -773,6 +783,16 @@ namespace LastEpoch_Hud.Scripts
                 public bool WeaverWill;
                 public bool BaseDrop;
                 public bool UniqueDrop;
+            }
+            public struct Mjolner
+            {
+                public bool enable;
+                public float MinTriggerChance;
+                public float MaxTriggerChance;
+                public bool BaseDrop;
+                public bool UniqueDrop;
+                public bool WeaverWill;
+                public bool ProcAnyLightningSpell;
             }
 
             //Scenes
