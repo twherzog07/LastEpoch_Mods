@@ -20,6 +20,9 @@ namespace LastEpoch_Hud.Scripts
         GameObject character_permanentbuffs_obj = null;
         GameObject character_dps_obj = null;
         GameObject character_safetp_obj = null;
+        GameObject factions_circle_of_fortune_obj = null;
+        GameObject factions_forgotten_knights_obj = null;
+        GameObject factions_weaver_obj = null;
         GameObject items_nbsocket_obj = null;
         GameObject items_autosell_timer_obj = null;
         GameObject items_headhunter_obj = null;
@@ -118,6 +121,21 @@ namespace LastEpoch_Hud.Scripts
             character_bank_from_anywhere.AddComponent<Mods.Character.Character_Bank_Anywhere>();
             Mods_Objects.Add(character_bank_from_anywhere);
 
+            factions_circle_of_fortune_obj = Object.Instantiate(new GameObject { name = "Mod_Factions_CircleOfFortune" }, Vector3.zero, Quaternion.identity);
+            factions_circle_of_fortune_obj.active = false;
+            factions_circle_of_fortune_obj.AddComponent<Mods.Factions.Factions_CircleOfFortune>();
+            Mods_Objects.Add(factions_circle_of_fortune_obj);
+
+            factions_forgotten_knights_obj = Object.Instantiate(new GameObject { name = "Mod_Factions_ForgottenKnights" }, Vector3.zero, Quaternion.identity);
+            factions_forgotten_knights_obj.active = false;
+            factions_forgotten_knights_obj.AddComponent<Mods.Factions.Factions_ForgottenKnights>();
+            Mods_Objects.Add(factions_forgotten_knights_obj);
+
+            factions_weaver_obj = Object.Instantiate(new GameObject { name = "Mod_Factions_Weaver" }, Vector3.zero, Quaternion.identity);
+            factions_weaver_obj.active = false;
+            factions_weaver_obj.AddComponent<Mods.Factions.Factions_Weaver>();
+            Mods_Objects.Add(factions_weaver_obj);
+
             items_crafting_eternal = Object.Instantiate(new GameObject { name = "Mod_Items_Crafting_Eternal" }, Vector3.zero, Quaternion.identity);
             items_crafting_eternal.active = false;
             items_crafting_eternal.AddComponent<Mods.Items.Items_Crafting_Eternity_Anywhere>();
@@ -163,6 +181,9 @@ namespace LastEpoch_Hud.Scripts
                 character_masteries_obj.active = true; //Hud
                 character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
                 Mods.Items.Items_Update.Reqs(); //Used to update item req
+                factions_circle_of_fortune_obj.active = true;
+                factions_forgotten_knights_obj.active = true;
+                factions_weaver_obj.active = true;
                 items_headhunter_obj.active = true; //Save_Manager.instance.data.Items.Headhunter.enable;
                 items_mjolner_obj.active = true;
                 items_crafting_obj.active = true;
@@ -190,6 +211,9 @@ namespace LastEpoch_Hud.Scripts
                 character_masteries_obj.active = false;
                 character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Disable();
                 character_safetp_obj.active = false;
+                factions_circle_of_fortune_obj.active = false;
+                factions_forgotten_knights_obj.active = false;
+                factions_weaver_obj.active = false;
                 items_headhunter_obj.active = false;
                 items_mjolner_obj.active = false;
                 items_crafting_obj.active = false;

@@ -142,7 +142,7 @@ namespace LastEpoch_Hud.Scripts
                         Dex_Buff_Value = 0f,
                         Enable_Att_Buff = false,
                         Att_Buff_Value = 0f
-                    }
+                    },
                 },
                 Items =
                 {
@@ -493,6 +493,59 @@ namespace LastEpoch_Hud.Scripts
                                 decay = 0
                             }
                         }
+                },
+                Factions =
+                {
+                    CircleOfFortune =
+                    {
+                        Rank =
+                        {
+                            Enable_SetRank = false,
+                            SetRank = 0,
+                        },
+                        Enable_FreeProphecies = false,
+                    },
+                    ForgottenKnights =
+                    {
+                        Rank =
+                        {
+                            Enable_SetRank = false,
+                            SetRank = 0
+                        },
+                        Enable_SetAddtlGlyphOfEnvyDropRate = false,
+                        Set_AddtlGlyphOfEnvyDropRate = 0,
+                        Enable_SetAddtlChanceForNemesisSwap = false,
+                        Set_AddtlChanceForNemesisSwap = 0,
+                        Enable_SetAberrothDefeats = false,
+                        Set_AberrothDefeats = 0,
+                        Enable_SetBonusCorruptionPerGaze = false,
+                        Set_BonusCorruptionPerGaze = 0,
+                        Enable_SetBonusGazeOnHarbingerKill = false,
+                        Set_BonusGazeOnHarbingerKill = 0,
+                        Enable_SetBonusMaxForgingPotentialWhenEmpoweringNemesis = false,
+                        Set_BonusMaxForgingPotentialWhenEmpoweringNemesis = 0,
+                        Enable_SetDoubleStabilityGainChance = false,
+                        Set_DoubleStabilityGainChance = 0,
+                        Enable_SetIncreasedChanceToDropHarbingersNeedles = false,
+                        Set_IncreasedChanceToDropHarbingersNeedles = 0,
+                        Enable_SetIncreasedChanceToDropHarbingerSpecificLoot = false,
+                        Set_IncreasedChanceToDropHarbingerSpecificLoot = 0,
+                    },
+                    Weaver =
+                    {
+                        Rank =
+                        {
+                            Enable_SetRank = false,
+                            SetRank = 0
+                        },
+                        WeaverTree =
+                        {
+                            Enable_EarnedWeaverTreePoints = false,
+                            Set_EarnedWeaverTreePoints = 0,
+                            Orig_EarnedWeaverTreePoints = -1,
+                            Orig_WeaverTreeData = ""
+                        },
+                    },
                 }
             };
 
@@ -541,6 +594,7 @@ namespace LastEpoch_Hud.Scripts
                 public Items Items;
                 public Scenes Scenes;
                 public Skills Skills;
+                public Factions Factions;
             }
             
             //KeyBinds
@@ -946,6 +1000,56 @@ namespace LastEpoch_Hud.Scripts
             {
                 public bool Enable_PointsEarnt;
                 public ushort PointsEarnt;
+            }
+            public struct Factions
+            {
+                public CircleOfFortune CircleOfFortune;
+                public ForgottenKnights ForgottenKnights;
+                public Weaver Weaver;
+            }
+            public struct Rank
+            {
+                public bool Enable_SetRank;
+                public int SetRank;
+            }
+            public struct CircleOfFortune
+            {
+                public Rank Rank;
+                public bool Enable_FreeProphecies;
+            }
+            public struct ForgottenKnights
+            {
+                public Rank Rank;
+                public bool Enable_SetAddtlGlyphOfEnvyDropRate;
+                public float Set_AddtlGlyphOfEnvyDropRate;
+                public bool Enable_SetAddtlChanceForNemesisSwap;
+                public float Set_AddtlChanceForNemesisSwap;
+                public bool Enable_SetAberrothDefeats;
+                public int Set_AberrothDefeats;
+                public bool Enable_SetBonusCorruptionPerGaze;
+                public int Set_BonusCorruptionPerGaze;
+                public bool Enable_SetBonusGazeOnHarbingerKill;
+                public int Set_BonusGazeOnHarbingerKill;
+                public bool Enable_SetBonusMaxForgingPotentialWhenEmpoweringNemesis;
+                public int Set_BonusMaxForgingPotentialWhenEmpoweringNemesis;
+                public bool Enable_SetDoubleStabilityGainChance;
+                public float Set_DoubleStabilityGainChance;
+                public bool Enable_SetIncreasedChanceToDropHarbingersNeedles;
+                public float Set_IncreasedChanceToDropHarbingersNeedles;
+                public bool Enable_SetIncreasedChanceToDropHarbingerSpecificLoot;
+                public float Set_IncreasedChanceToDropHarbingerSpecificLoot;
+            }
+            public struct Weaver
+            {
+                public Rank Rank;
+                public WeaverTree WeaverTree;
+            }
+            public struct WeaverTree
+            {
+                public bool Enable_EarnedWeaverTreePoints;
+                public int Set_EarnedWeaverTreePoints;
+                public int Orig_EarnedWeaverTreePoints;
+                public string Orig_WeaverTreeData;
             }
             public struct Companion
             {

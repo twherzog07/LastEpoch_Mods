@@ -709,6 +709,8 @@ namespace LastEpoch_Hud.Scripts
                                     //Login
                                     case "Toggle_Login_AutoClickPlayOffline": { Save_Manager.instance.data.Login.Enable_AutoLoginOffline = __instance.isOn; break; }
                                     case "Toggle_Login_AutoSelectChar": { Save_Manager.instance.data.Login.Enable_AutoSelectChar = __instance.isOn; break; }
+                                    //Factions
+                                    case "Toggle_Factions_SetWeaverTreePoints": { Save_Manager.instance.data.Factions.Weaver.WeaverTree.Enable_EarnedWeaverTreePoints = __instance.isOn; break; }
                                     //Skills
                                     case "Toggle_RemoveManaCost": { Save_Manager.instance.data.Skills.Enable_RemoveManaCost = __instance.isOn; break; }
                                     case "Toggle_RemoveChannelCost": { Save_Manager.instance.data.Skills.Enable_RemoveChannelCost = __instance.isOn; break; }
@@ -1143,6 +1145,9 @@ namespace LastEpoch_Hud.Scripts
                             {
                                 switch (__instance.name)
                                 {
+                                    // Factions
+                                    case "Slider_Factions_WeaverTreeEarnedPoints": { Save_Manager.instance.data.Factions.Weaver.WeaverTree.Set_EarnedWeaverTreePoints = (int)__0; break; }
+
                                     case "Slider_SpecializationSlots": { Save_Manager.instance.data.Skills.SpecializationSlots = __0; break; }
                                     case "Slider_SkillLevel": { Save_Manager.instance.data.Skills.SkillLevel = __0; break; }
                                     case "Slider_PassivePoints": { Save_Manager.instance.data.Skills.PassivePoints = __0; break; }
@@ -1602,6 +1607,9 @@ namespace LastEpoch_Hud.Scripts
                             Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "The_Age_Of_Winter" });
                             Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Spirits_Of_Fire" });
                             Data.monolith_dropdown.m_CurrentIndex = 0;
+
+                            // Factions - temporarily here until more options added
+                            Factions.GetRefs(character_data_content);
                         }
                         else { Main.logger_instance.Error("Hud Manager : character_data_content is null"); }
 
@@ -1793,6 +1801,9 @@ namespace LastEpoch_Hud.Scripts
 
                             Cheats.waypoints_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_WaypointsUnlock;
 
+                            //Factions
+                            Factions.UpdateControls();
+
                             //Content.Character.Buffs
                             Buffs.enable_mod.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod;
 
@@ -1872,6 +1883,9 @@ namespace LastEpoch_Hud.Scripts
                         Data.soul_slider.value = Refs_Manager.player_data.SoulEmbers;
                         Data.soul_text.text = Refs_Manager.player_data.SoulEmbers.ToString();
                     }
+
+                    // Factions
+                    Factions.UpdateActive();
                 }
                 public static void Update_Monoliths_Data()
                 {                    
@@ -1981,7 +1995,10 @@ namespace LastEpoch_Hud.Scripts
                             Cheats.itemdropchance_text.text = "+ " + (int)((Save_Manager.instance.data.Character.Cheats.ItemDropChance / 255) * 100) + " %";
                             Cheats.golddropmultiplier_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier);
                             Cheats.golddropchance_text.text = "+ " + (int)((Save_Manager.instance.data.Character.Cheats.GoldDropChance / 255) * 100) + " %";
-                            
+
+                            // Factions
+                            Factions.UpdateText();
+
                             Buffs.movespeed_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value * 100) + " %";
                             Buffs.damage_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value * 100) + " %";
                             Buffs.attackspeed_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value * 100) + " %";
@@ -2357,6 +2374,60 @@ namespace LastEpoch_Hud.Scripts
                     public static Toggle att_toggle = null;
                     public static Text att_text = null;
                     public static Slider att_slider = null;
+                }
+                public class Factions
+                {
+                    public static GameObject weaver_tree_go = null;
+                    public static GameObject weaver_tree_border = null;
+                    public static GameObject weaver_tree_earned_points_go = null;
+                    public static Toggle weaver_tree_earned_points_toggle = null;
+                    public static Text weaver_tree_earned_points_text = null;
+                    public static Slider weaver_tree_earned_points_slider = null;
+                    public static GameObject weaver_tree_earned_points_border = null;
+
+                    public static void GetRefs(GameObject parent)
+                    {
+                        weaver_tree_go = Functions.GetChild(parent, "WeaverTree");
+                        if (!weaver_tree_go.IsNullOrDestroyed()) { weaver_tree_go.active = false; }
+                        weaver_tree_border = Functions.GetChild(parent, "WeaverTreeBorder");
+                        if (!weaver_tree_border.IsNullOrDestroyed()) { weaver_tree_border.active = false; }
+                        weaver_tree_earned_points_go = Functions.GetChild(parent, "WeaverTreePoints");
+                        if (!weaver_tree_earned_points_go.IsNullOrDestroyed())
+                        {
+                            weaver_tree_earned_points_go.active = false;
+                            weaver_tree_earned_points_toggle = Functions.Get_ToggleInPanel(parent, "WeaverTreePoints", "Toggle_Factions_SetWeaverTreePoints");
+                            weaver_tree_earned_points_text = Functions.Get_TextInToggle(parent, "WeaverTreePoints", "Toggle_Factions_SetWeaverTreePoints", "Value");
+                            weaver_tree_earned_points_slider = Functions.Get_SliderInPanel(parent, "WeaverTreePoints", "Slider_Factions_WeaverTreeEarnedPoints");
+                        }
+                        weaver_tree_earned_points_border = Functions.GetChild(parent, "WeaverTreePointsBorder");
+                        if (!weaver_tree_earned_points_border.IsNullOrDestroyed()) { weaver_tree_earned_points_border.active = false; }
+                    }
+
+                    public static void UpdateActive()
+                    {
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed())
+                        {
+                            FactionCharacterData weaverCharData = Mods.Factions.Factions_Faction.getFactionCharData(Il2CppLE.Factions.FactionID.TheWeaver);
+                            if (!weaverCharData.IsNullOrDestroyed())
+                            {
+                                weaver_tree_go.active = weaverCharData.IsMember;
+                                weaver_tree_border.active = weaverCharData.IsMember;
+                                weaver_tree_earned_points_go.active = weaverCharData.IsMember;
+                                weaver_tree_earned_points_border.active = weaverCharData.IsMember;
+                            }
+                        }
+                    }
+
+                    public static void UpdateControls()
+                    {
+                        weaver_tree_earned_points_toggle.isOn = Save_Manager.instance.data.Factions.Weaver.WeaverTree.Enable_EarnedWeaverTreePoints;
+                        weaver_tree_earned_points_slider.value = Save_Manager.instance.data.Factions.Weaver.WeaverTree.Set_EarnedWeaverTreePoints;
+                    }
+
+                    public static void UpdateText()
+                    {
+                        weaver_tree_earned_points_text.text = Save_Manager.instance.data.Factions.Weaver.WeaverTree.Set_EarnedWeaverTreePoints.ToString();
+                    }
                 }
             }
             public class Items
