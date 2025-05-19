@@ -29,7 +29,7 @@ namespace LastEpoch_Hud.Scripts
             if (initialized) { Check_DataChanged(); }
         }
         
-        void Load()
+        public void Load()
         {
             bool error = false;
             if (File.Exists(path + filename))

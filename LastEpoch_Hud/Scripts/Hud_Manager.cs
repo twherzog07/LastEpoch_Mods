@@ -70,6 +70,17 @@ namespace LastEpoch_Hud.Scripts
                     updating = false;
                 }
             }            
+
+            // Ctrl + F5 - Reload settings
+            if (Input.GetKeyDown(KeyCode.F5) && Functions.IsControlKeyDown())
+            {
+                Save_Manager.instance.Load();
+            }
+            // Ctrl + F6 - Save settings
+            if (Input.GetKeyDown(KeyCode.F6) && Functions.IsControlKeyDown())
+            {
+                Save_Manager.instance.Save();
+            }
         }
 
         void Init_AssetsBundle()

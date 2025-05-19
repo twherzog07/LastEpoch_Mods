@@ -35,8 +35,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if (Refs_Manager.EternityCachePanelUI.pastHolder.active) { IsFuture = false; }
                     else if (Refs_Manager.EternityCachePanelUI.futureHolder.active) { IsFuture = true; }
                 }
-                if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Past)) { OpenClose(false); }
-                else if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Future)) { OpenClose(true); }
+                if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Past) && !Functions.IsControlKeyDown()) { OpenClose(false); }
+                else if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Future) && !Functions.IsControlKeyDown()) { OpenClose(true); }
             }
         }
 

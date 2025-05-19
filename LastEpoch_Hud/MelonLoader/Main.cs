@@ -150,6 +150,10 @@ namespace LastEpoch_Hud
     }
     public static class Functions
     {
+        public static bool IsControlKeyDown()
+        {
+            return Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        }
         public static bool IsNullOrDestroyed(this object obj)
         {
             try
