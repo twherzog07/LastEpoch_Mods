@@ -186,4 +186,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <!-- Copy output files to Last Epoch Mods path -->
+    <ItemGroup>
+      <OutputFiles Condition="Exists('$(TargetDir)')" Include="$(TargetDir)/**/*" Exclude="$(TargetDir)/**/*UnityEngine*" />
+    </ItemGroup>
+    <Message Condition="@(OutputFiles) != '' And Exists('$(LastEpochModsPath)')" Text="Copying output files from '$(TargetDir)' to Last Epoch Mods folder '$(LastEpochModsPath)'" Importance="high" />
+    <Copy Condition="@(OutputFiles) != '' And Exists('$(LastEpochModsPath)')" SourceFiles="@(OutputFiles)" DestinationFolder="$(LastEpochModsPath)\%(OutputFiles.RecursiveDir)" OverwriteReadOnlyFiles="true" />
+  </Target>
 </Project>
