@@ -3,7 +3,9 @@
 using HarmonyLib;
 using Il2Cpp;
 using MelonLoader;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using static MelonLoader.MelonLogger;
 
 namespace LastEpoch_Hud.Scripts.Mods.Items
 {
@@ -13,6 +15,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public static Items_Crafting_Eternity_Anywhere instance { get; private set; }
         public Items_Crafting_Eternity_Anywhere(System.IntPtr ptr) : base(ptr) { }
 
+        private static bool Enable = false; //Use to disable the whole mod
+
         private static bool IsOpen = false;
         private static bool IsFuture = false;
         private static bool IsOpenByMod = false;
@@ -20,15 +24,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         void Awake()
         {
             instance = this;
+            instance.enabled = Enable;
         }
         void Update()
         {
-            if (Scenes.IsGameScene())
+            if ((Scenes.IsGameScene()) && (instance.enabled))
             {                
-                if (!Refs_Manager.EternityCachePanelUI.IsNullOrDestroyed())
+                if ((!Refs_Manager.EternityCachePanelUI.IsNullOrDestroyed()) && (IsOpenByMod))
                 {
                     if (Refs_Manager.EternityCachePanelUI.pastHolder.active) { IsFuture = false; }
-                    if (Refs_Manager.EternityCachePanelUI.futureHolder.active) { IsFuture = true; }
+                    else if (Refs_Manager.EternityCachePanelUI.futureHolder.active) { IsFuture = true; }
                 }
                 if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Past)) { OpenClose(false); }
                 else if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.EternityCache_Future)) { OpenClose(true); }
@@ -102,92 +107,14 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPrefix]
             static bool Prefix(ref EternityCachePanelUI __instance, ref ItemData __0)
             {
-                //Main.logger_instance.Msg("EternityCachePanelUI.updateSelectedAffixLabelText() Prefix");
                 bool r = true;
-
-                try
+                if (instance.enabled)
                 {
-                    if (__instance.IsNullOrDestroyed())
-                    {
-                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() instance is null");
-                        r = false;
-                    }                        
+                    if (IsOpenByMod) { r = false; }
                 }
-                catch
-                {
-                    Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Catch Instance");
-                    r = false;
-                }
-
-                try
-                {
-                    if (__0.IsNullOrDestroyed())
-                    {
-                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() ItemData is null");
-                        r = false;
-                    }
-                }
-                catch
-                {
-                    Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Catch ItemData");
-                    r = false;
-                }
-
-                if (r)
-                {
-                    if ((IsFuture) || (!IsOpenByMod)) { return true; }
-                    else { return false; }  //Disable on Past with mod enable
-                }
-
                 return r;
-
-                /*try
-                {
-                    if (!__instance.IsNullOrDestroyed())
-                    {
-                        if (__0.IsNullOrDestroyed())
-                        {
-                            Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() Itemdata is null");
-                        }
-                        if (!__instance.beforeMain.IsNullOrDestroyed() && !__instance.beforeOther.IsNullOrDestroyed())
-                        {
-                            if (!__instance.beforeMain.Container.IsNullOrDestroyed() && !__instance.beforeOther.Container.IsNullOrDestroyed())
-                            {
-                                if (__instance.beforeMain.Container.GetContent().Count > 0 && __instance.beforeOther.Container.GetContent().Count > 0)
-                                {
-                                    ItemData unique = __instance.beforeMain.Container.GetContent()[0].data;
-                                    ItemData exalted = __instance.beforeOther.Container.GetContent()[0].data;
-                                    __0 = exalted;
-                                }
-                            }
-                        }
-                        return true;
-                    }
-                    else
-                    {
-                        Main.logger_instance.Error("EternityCachePanelUI.updateSelectedAffixLabelText() instance is null");
-                        return false;
-                    }
-                }
-                catch { return false; }*/
-
-                /*if (IsFuture) { return true; }
-                else { return false; }*/
             }
         }
-
-        //In case, you want unlock slots
-        /*[HarmonyPatch(typeof(EternityCachePanelUI), "canSeal")]
-        public class EternityCachePanelUI_canSeal
-        {
-            [HarmonyPrefix]
-            static bool Prefix(ref bool __result)
-            {
-                __result = true;
-                return false;
-            }
-        }*/
-
 
         [HarmonyPatch(typeof(EternityCachePanelUI), "seal")]
         public class EternityCachePanelUI_seal
@@ -196,7 +123,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             static bool Prefix(ref EternityCachePanelUI __instance)
             {
                 bool result = true;
-                if (!__instance.beforeMain.IsNullOrDestroyed() && !__instance.beforeOther.IsNullOrDestroyed())
+                if ((instance.enabled) && (IsOpenByMod) && (!__instance.beforeMain.IsNullOrDestroyed()) && (!__instance.beforeOther.IsNullOrDestroyed()))
                 {
                     if (!__instance.beforeMain.Container.IsNullOrDestroyed() && !__instance.beforeOther.Container.IsNullOrDestroyed())
                     {
@@ -204,9 +131,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         {
                             ItemData unique = __instance.beforeMain.Container.GetContent()[0].data;
                             ItemData exalted = __instance.beforeOther.Container.GetContent()[0].data;
-                            if (!unique.IsNullOrDestroyed() && !exalted.IsNullOrDestroyed())
+                            if ((!unique.IsNullOrDestroyed()) && (!exalted.IsNullOrDestroyed()))
                             {
-                                if ((IsFuture) || (!IsOpenByMod)) //isable when Future or mod disable
+                                if (IsFuture) //Future
                                 {
                                     
                                 }

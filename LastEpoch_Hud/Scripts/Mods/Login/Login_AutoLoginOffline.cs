@@ -16,11 +16,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Login
             }
             else { return false; }
         }
-        public static void Hide_Online(ref Il2CppLE.UI.Login.UnityUI.LandingZonePanel __instance)
+        /*public static void Hide_Online(ref Il2CppLE.UI.Login.UnityUI.LandingZonePanel __instance)
         {
             if (!__instance.playOnlineButton.IsNullOrDestroyed()) { __instance.playOnlineButton.gameObject.SetActive(false); }
             if (!__instance.manageAccountButton.IsNullOrDestroyed()) { __instance.manageAccountButton.gameObject.SetActive(false); }
-        }
+        }*/
         public static void AutoClickOffline(ref Il2CppLE.UI.Login.UnityUI.LandingZonePanel __instance)
         {
             __instance.OnPlayOfflineClicked();
@@ -33,7 +33,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Login
             {
                 if (CanRun())
                 {
-                    Hide_Online(ref __instance);
+                    //Hide_Online(ref __instance); //we don't need this anymore
                     AutoClickOffline(ref __instance);
                 }
             }

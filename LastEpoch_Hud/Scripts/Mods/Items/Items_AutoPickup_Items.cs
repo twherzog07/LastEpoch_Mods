@@ -60,20 +60,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 bool result = true;
                 if (CanRun())
                 {
-                    if ((Item.isKey(__1.itemType)) || (ItemList.isCraftingItem(__1.itemType)))
-                    {
-                        if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
+                    if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials) && (ItemList.isCraftingItem(__1.itemType))))
+                    {
+                        bool pickup = ItemContainersManager.Instance.attemptToPickupItem(__1, __0.position());
+                        if (pickup)
                         {
-                            bool pickup = ItemContainersManager.Instance.attemptToPickupItem(__1, __0.position());
-                            if (pickup)
+                            if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop) && (ItemList.isCraftingItem(__1.itemType)))
                             {
-                                if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop) && (ItemList.isCraftingItem(__1.itemType)))
-                                {
-                                    InventoryPanelUI.instance.StoreMaterialsButtonPress();
-                                }
-                                result = false;
+                                InventoryPanelUI.instance.StoreMaterialsButtonPress();
                             }
+                            result = false;
                         }
                     }
                     else if ((__1.itemType < 24) && (!Refs_Manager.filter_manager.IsNullOrDestroyed()) &&

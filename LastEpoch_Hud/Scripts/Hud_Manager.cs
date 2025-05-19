@@ -30,10 +30,12 @@ namespace LastEpoch_Hud.Scripts
 
         private bool updating = false;
         private bool exit = false;
+        public static bool enable = false; //Used to wait loading (Fix_PlayerLoopHelper)
 
         void Awake()
         {
             instance = this;
+            enable = true;
         }
         void Update()
         {
