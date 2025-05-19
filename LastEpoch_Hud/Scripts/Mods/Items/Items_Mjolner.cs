@@ -3,6 +3,7 @@
 using HarmonyLib;
 using Il2Cpp;
 using MelonLoader;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -306,10 +307,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             }
             public class UniqueDescription
             {
-                public static string en = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " to " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% chance to Trigger a Lightning Spell on Hit with an Attack";
-                public static string pt = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " a " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
-                public static string de = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " bis " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
-                public static string fr = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " à " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chances de Déclenche un Sort de foudre au Toucher";
+                public static string en = (Save_Manager.instance.data.Items.Mjolner.MinTriggerChance * 100) + " to " + (Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance * 100) + "% chance to Trigger a Lightning Spell on Hit with an Attack";
+                public static string pt = (Save_Manager.instance.data.Items.Mjolner.MinTriggerChance * 100) + " a " + (Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance * 100) + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
+                public static string de = (Save_Manager.instance.data.Items.Mjolner.MinTriggerChance * 100) + " bis " + (Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance * 100) + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
+                public static string fr = (Save_Manager.instance.data.Items.Mjolner.MinTriggerChance * 100) + " à " + (Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance * 100) + "% de chances de Déclenche un Sort de foudre au Toucher";
                 //Add all languages here
             }
             public class Lore
@@ -406,27 +407,33 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     if (Refs_Manager.player_actor.itemContainersManager.hasUniqueEquipped(Unique.unique_id))
                     {
-                        //ItemData item = Refs_Manager.player_actor.itemContainersManager.equipment.weapon.getItem();                                
-                        float dice_roll = Random.Range(Save_Manager.instance.data.Items.Mjolner.MinTriggerChance, Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance);
-                        if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
+                        //ItemData item = Refs_Manager.player_actor.itemContainersManager.equipment.weapon.getItem();
+                        // *a* implementation of chance to trigger lightning spells based on the configured min and max trigger chances:
+                        // each hit will calculate a random value in that range and then check if the trigger chance passes that random value
+                        float dice_roll = Random.Range(0.0f, 1.0f);
+                        float required_chance = Random.Range(Save_Manager.instance.data.Items.Mjolner.MinTriggerChance, Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance);
+                        if (dice_roll <= required_chance)
                         {
-                            if (!Refs_Manager.player_treedata.IsNullOrDestroyed())
+                            if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
                             {
-                                foreach (LocalTreeData.SkillTreeData skill_tree_data in Refs_Manager.player_treedata.specialisedSkillTrees)
+                                if (!Refs_Manager.player_treedata.IsNullOrDestroyed())
                                 {
-                                    if (!skill_tree_data.ability.IsNullOrDestroyed())
+                                    foreach (LocalTreeData.SkillTreeData skill_tree_data in Refs_Manager.player_treedata.specialisedSkillTrees)
                                     {
-                                        if (skill_tree_data.ability.tags.HasFlag(AT.Lightning))
+                                        if (!skill_tree_data.ability.IsNullOrDestroyed())
                                         {
-                                            skill_tree_data.ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
+                                            if (skill_tree_data.ability.tags.HasFlag(AT.Lightning))
+                                            {
+                                                skill_tree_data.ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            // Do stuff with specific config'd spells...
+                            else
+                            {
+                                // Do stuff with specific config'd spells...
+                            }
                         }
                     }
                 }
