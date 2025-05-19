@@ -138,8 +138,7 @@ namespace LastEpoch_Hud
         }
         public static bool IsCharacterSelection()
         {
-            if (!string.IsNullOrWhiteSpace(SceneName) && (!SceneMenuNames.Contains(SceneMenuNames[3]))) { return true; }
-            else { return false; }
+            return !string.IsNullOrWhiteSpace(SceneName) && SceneName == SceneMenuNames[3];
         }
     }
     public class Extensions

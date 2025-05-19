@@ -26,6 +26,7 @@ namespace LastEpoch_Hud.Scripts
         GameObject items_mjolner_obj = null;
         GameObject items_crafting_obj = null;
         GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
+        GameObject login_auto_select_char_obj = null;
         GameObject minimap_icons_obj = null;
         GameObject monoliths_complete_objectives_obj = null;
 
@@ -122,6 +123,11 @@ namespace LastEpoch_Hud.Scripts
             items_crafting_eternal.AddComponent<Mods.Items.Items_Crafting_Eternity_Anywhere>();
             Mods_Objects.Add(items_crafting_eternal);
 
+            login_auto_select_char_obj = Object.Instantiate(new GameObject { name = "Mod_Login_AutoSelectChar" }, Vector3.zero, Quaternion.identity);
+            login_auto_select_char_obj.active = false;
+            login_auto_select_char_obj.AddComponent<Mods.Login.Login_AutoSelectChar>();
+            Mods_Objects.Add(login_auto_select_char_obj);
+
             minimap_icons_obj = Object.Instantiate(new GameObject { name = "Mod_Minimap_Icons" }, Vector3.zero, Quaternion.identity);
             minimap_icons_obj.active = false;
             minimap_icons_obj.AddComponent<Mods.Minimap.Minimap_Icons>();
@@ -161,6 +167,7 @@ namespace LastEpoch_Hud.Scripts
                 items_mjolner_obj.active = true;
                 items_crafting_obj.active = true;
                 items_crafting_eternal.active = true;
+                login_auto_select_char_obj.active = true;
                 minimap_icons_obj.active = true; //Enable/Disable Minimap Icons
                 monoliths_complete_objectives_obj.active = true;
             }
@@ -187,6 +194,7 @@ namespace LastEpoch_Hud.Scripts
                 items_mjolner_obj.active = false;
                 items_crafting_obj.active = false;
                 items_crafting_eternal.active = false;
+                login_auto_select_char_obj.active = false;
                 minimap_icons_obj.active = false;
                 monoliths_complete_objectives_obj.active = false;
             }

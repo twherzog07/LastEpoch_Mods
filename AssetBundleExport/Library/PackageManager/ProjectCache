@@ -1,93 +1,41 @@
 m_ProjectFiles:
   m_ManifestFileStatus:
-    m_FilePath: C:/Code/Github/LastEpoch_Mods/AssetBundleExport/Packages/manifest.json
+    m_FilePath: C:/Users/Travis/Projects/Personal/LastEpoch_Mods/AssetBundleExport/Packages/manifest.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638751382053999855
-    m_Hash: 686693034
+      ticks: 638829545052543215
+    m_Hash: 130622072
   m_LockFileStatus:
-    m_FilePath: C:/Code/Github/LastEpoch_Mods/AssetBundleExport/Packages/packages-lock.json
+    m_FilePath: C:/Users/Travis/Projects/Personal/LastEpoch_Mods/AssetBundleExport/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638751382335022719
-    m_Hash: 2107504777
+      ticks: 638829597638498766
+    m_Hash: 239588058
 m_EmbeddedPackageManifests:
-  m_ManifestsStatus: {}
+  m_ManifestsStatus:
+    C:/Users/Travis/Projects/Personal/LastEpoch_Mods/AssetBundleExport/Packages/com.kybernetik.inspector-gadgets/package.json:
+      m_FilePath: C:/Users/Travis/Projects/Personal/LastEpoch_Mods/AssetBundleExport/Packages/com.kybernetik.inspector-gadgets/package.json
+      m_PathExists: 1
+      m_ContentTrackingEnabled: 1
+      m_ModificationDate:
+        serializedVersion: 2
+        ticks: 638800195400000000
+      m_Hash: 1468708047
 m_LocalPackages:
   m_LocalFileStatus: []
-m_ProjectPath: C:/Code/Github/LastEpoch_Mods/AssetBundleExport/Packages
+m_ProjectPath: C:/Users/Travis/Projects/Personal/LastEpoch_Mods/AssetBundleExport/Packages
 m_EditorVersion: 2021.3.42f1 (f1197811e8ce)
 m_ResolvedPackages:
-- packageId: com.sampaiodias.damage-meter@https://github.com/sampaiodias/damage-meter.git
+- packageId: com.unity.assetbundlebrowser@https://github.com/Unity-Technologies/AssetBundles-Browser.git
   testable: 0
   isDirectDependency: 1
-  version: 0.2.0
+  version: 1.7.0
   source: 5
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.sampaiodias.damage-meter@937efb5aae
-  assetPath: Packages/com.sampaiodias.damage-meter
-  name: com.sampaiodias.damage-meter
-  displayName: Damage Meter
-  author:
-    name: Lucas Sampaio Dias
-    email: lucassampaiodias@gmail.com
-    url: https://github.com/sampaiodias
-  category: 
-  type: tool
-  description: Simple damage meter UI to show how much DPS your player is doing.
-  status: 0
-  errors: []
-  versions:
-    all: []
-    compatible: []
-    verified: 
-  dependencies:
-  - name: com.unity.textmeshpro
-    version: 3.0.6
-  resolvedDependencies:
-  - name: com.unity.textmeshpro
-    version: 3.0.6
-  - name: com.unity.ugui
-    version: 1.0.0
-  - name: com.unity.modules.ui
-    version: 1.0.0
-  - name: com.unity.modules.imgui
-    version: 1.0.0
-  keywords:
-  - damage meter
-  - dps
-  - rpg
-  registry:
-    id: main
-    name: 
-    url: https://packages.unity.com
-    scopes: []
-    isDefault: 1
-    capabilities: 7
-    configSource: 0
-  hideInEditor: 1
-  isAssetStorePackage: 0
-  datePublishedTicks: 0
-  documentationUrl: https://github.com/sampaiodias/damage-meter
-  hasRepository: 0
-  repository:
-    type: 
-    url: 
-    revision: 
-    path: 
-  unityLifecycle:
-    version: 
-    nextVersion: 
-    recommendedVersion: 
-- packageId: com.unity.assetbundlebrowser@1.6.0
-  testable: 0
-  isDirectDependency: 1
-  version: 1.6.0
-  source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.assetbundlebrowser@1.6.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.assetbundlebrowser@ad2a81ec30
   assetPath: Packages/com.unity.assetbundlebrowser
   name: com.unity.assetbundlebrowser
   displayName: Asset Bundle Browser
@@ -97,18 +45,19 @@ m_ResolvedPackages:
     url: 
   category: Asset Bundles
   type: 
-  description: 'The Asset Bundle Browser tool enables the user to view and edit the
-    configuration of asset bundles for their Unity project. It will block editing
-    that would create invalid bundles, and inform you of any issues with existing
-    bundles. It also provides basic build functionality.
+  description: 'The Asset Bundle Browser tool makes it possible to inspect the content
+    of built AssetBundles.  It also has basic functionality to view and edit the
+    configuration of AssetBundles and to launch builds.
 
 
     Use this tool as an
     alternative to selecting assets and setting their asset bundle manually in the
-    inspector. It can be dropped into any Unity project with a version of 5.6 or
-    greater. It will create a new menu item in Window > AssetBundle Browser. The
-    bundle configuration, build functionality, and built-bundle inspection are split
-    into three tabs within the new window.'
+    inspector. Installing it will create a new menu item in Window > AssetBundle
+    Browser.
+
+
+    Note: For new projects consider using the Addressables package
+    instead.'
   status: 0
   errors: []
   versions:
@@ -144,7 +93,7 @@ m_ResolvedPackages:
     configSource: 0
   hideInEditor: 1
   isAssetStorePackage: 0
-  datePublishedTicks: 636898888800000000
+  datePublishedTicks: 0
   documentationUrl: 
   hasRepository: 0
   repository:
@@ -161,7 +110,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 2.4.4
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.collab-proxy@2.4.4
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.collab-proxy@2.4.4
   assetPath: Packages/com.unity.collab-proxy
   name: com.unity.collab-proxy
   displayName: Version Control
@@ -251,8 +200,20 @@ m_ResolvedPackages:
     - 2.3.1
     - 2.4.3
     - 2.4.4
+    - 2.5.1
+    - 2.5.2
+    - 2.6.0
+    - 2.7.1
+    - 2.8.1
+    - 2.8.2
     compatible:
     - 2.4.4
+    - 2.5.1
+    - 2.5.2
+    - 2.6.0
+    - 2.7.1
+    - 2.8.1
+    - 2.8.2
     verified: 2.4.4
   dependencies: []
   resolvedDependencies: []
@@ -298,7 +259,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 3.0.31
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.rider@3.0.31
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.rider@3.0.31
   assetPath: Packages/com.unity.ide.rider
   name: com.unity.ide.rider
   displayName: JetBrains Rider Editor
@@ -358,9 +319,15 @@ m_ResolvedPackages:
     - 3.0.27
     - 3.0.28
     - 3.0.31
+    - 3.0.34
+    - 3.0.35
+    - 3.0.36
     compatible:
     - 3.0.31
-    verified: 3.0.31
+    - 3.0.34
+    - 3.0.35
+    - 3.0.36
+    verified: 3.0.36
   dependencies:
   - name: com.unity.ext.nunit
     version: 1.0.6
@@ -395,7 +362,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 2.0.22
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.visualstudio@2.0.22
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.visualstudio@2.0.22
   assetPath: Packages/com.unity.ide.visualstudio
   name: com.unity.ide.visualstudio
   displayName: Visual Studio Editor
@@ -436,9 +403,11 @@ m_ResolvedPackages:
     - 2.0.20
     - 2.0.21
     - 2.0.22
+    - 2.0.23
     compatible:
     - 2.0.22
-    verified: 2.0.22
+    - 2.0.23
+    verified: 2.0.23
   dependencies:
   - name: com.unity.test-framework
     version: 1.1.9
@@ -479,7 +448,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.2.5
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.vscode@1.2.5
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ide.vscode@1.2.5
   assetPath: Packages/com.unity.ide.vscode
   name: com.unity.ide.vscode
   displayName: Visual Studio Code Editor
@@ -542,7 +511,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.1.33
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.test-framework@1.1.33
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.test-framework@1.1.33
   assetPath: Packages/com.unity.test-framework
   name: com.unity.test-framework
   displayName: Test Framework
@@ -606,6 +575,7 @@ m_ResolvedPackages:
     - 1.4.3
     - 1.4.4
     - 1.4.5
+    - 1.4.6
     - 2.0.1-exp.1
     - 2.0.1-exp.2
     - 2.0.1-pre.12
@@ -627,6 +597,7 @@ m_ResolvedPackages:
     - 1.4.3
     - 1.4.4
     - 1.4.5
+    - 1.4.6
     - 2.0.1-exp.1
     - 2.0.1-exp.2
     - 2.0.1-pre.12
@@ -676,7 +647,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 3.0.6
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.textmeshpro@3.0.6
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.textmeshpro@3.0.6
   assetPath: Packages/com.unity.textmeshpro
   name: com.unity.textmeshpro
   displayName: TextMeshPro
@@ -803,6 +774,8 @@ m_ResolvedPackages:
     - 3.2.0-pre.8
     - 3.2.0-pre.9
     - 3.2.0-pre.10
+    - 3.2.0-pre.11
+    - 3.2.0-pre.12
     - 4.0.0-pre.1
     - 4.0.0-pre.2
     compatible:
@@ -820,6 +793,8 @@ m_ResolvedPackages:
     - 3.2.0-pre.8
     - 3.2.0-pre.9
     - 3.2.0-pre.10
+    - 3.2.0-pre.11
+    - 3.2.0-pre.12
     verified: 3.0.9
   dependencies:
   - name: com.unity.ugui
@@ -864,7 +839,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.6.5
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.timeline@1.6.5
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.timeline@1.6.5
   assetPath: Packages/com.unity.timeline
   name: com.unity.timeline
   displayName: Timeline
@@ -958,6 +933,7 @@ m_ResolvedPackages:
     - 1.7.4
     - 1.7.5
     - 1.7.6
+    - 1.7.7
     - 1.8.0
     - 1.8.1
     - 1.8.2
@@ -966,6 +942,7 @@ m_ResolvedPackages:
     - 1.8.5
     - 1.8.6
     - 1.8.7
+    - 1.8.8
     compatible:
     - 1.6.5
     - 1.7.0-pre.1
@@ -977,6 +954,7 @@ m_ResolvedPackages:
     - 1.7.4
     - 1.7.5
     - 1.7.6
+    - 1.7.7
     - 1.8.0
     - 1.8.1
     - 1.8.2
@@ -985,20 +963,21 @@ m_ResolvedPackages:
     - 1.8.5
     - 1.8.6
     - 1.8.7
+    - 1.8.8
     verified: 1.6.5
   dependencies:
+  - name: com.unity.modules.audio
+    version: 1.0.0
   - name: com.unity.modules.director
     version: 1.0.0
   - name: com.unity.modules.animation
     version: 1.0.0
-  - name: com.unity.modules.audio
-    version: 1.0.0
   - name: com.unity.modules.particlesystem
     version: 1.0.0
   resolvedDependencies:
-  - name: com.unity.modules.director
-    version: 1.0.0
   - name: com.unity.modules.audio
+    version: 1.0.0
+  - name: com.unity.modules.director
     version: 1.0.0
   - name: com.unity.modules.animation
     version: 1.0.0
@@ -1037,7 +1016,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ugui@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ugui@1.0.0
   assetPath: Packages/com.unity.ugui
   name: com.unity.ugui
   displayName: Unity UI
@@ -1099,12 +1078,108 @@ m_ResolvedPackages:
     version: 1.0.0
     nextVersion: 
     recommendedVersion: 
+- packageId: com.unity.visualscripting@1.9.4
+  testable: 0
+  isDirectDependency: 1
+  version: 1.9.4
+  source: 1
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.visualscripting@1.9.4
+  assetPath: Packages/com.unity.visualscripting
+  name: com.unity.visualscripting
+  displayName: Visual Scripting
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: tool
+  description: 'Visual scripting is a workflow that uses visual, node-based graphs
+    to design behaviors rather than write lines of C# script.
+
+
+    Enabling artists,
+    designers and programmers alike, visual scripting can be used to design final
+    logic, quickly create prototypes, iterate on gameplay and create custom nodes
+    to help streamline collaboration.
+
+
+    Visual scripting is compatible with third-party
+    APIs, including most packages, assets and custom libraries.'
+  status: 0
+  errors: []
+  versions:
+    all:
+    - 1.5.0
+    - 1.5.1-pre.3
+    - 1.5.1-pre.5
+    - 1.5.1
+    - 1.5.2
+    - 1.6.0-pre.3
+    - 1.6.0
+    - 1.6.1
+    - 1.7.1
+    - 1.7.2
+    - 1.7.3
+    - 1.7.5
+    - 1.7.6
+    - 1.7.7
+    - 1.7.8
+    - 1.8.0-pre.1
+    - 1.8.0
+    - 1.9.0
+    - 1.9.1
+    - 1.9.2
+    - 1.9.4
+    - 1.9.5
+    - 1.9.6
+    compatible:
+    - 1.9.4
+    - 1.9.5
+    - 1.9.6
+    verified: 1.9.6
+  dependencies:
+  - name: com.unity.ugui
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.ugui
+    version: 1.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+  hideInEditor: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638488567680000000
+  documentationUrl: 
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.visualscripting.git
+    revision: 41aac2b7038c2b1259c546329890d3736ce2394e
+    path: 
+  unityLifecycle:
+    version: 1.9.4
+    nextVersion: 
+    recommendedVersion: 
 - packageId: com.unity.modules.ai@1.0.0
   testable: 0
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.ai@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.ai@1.0.0
   assetPath: Packages/com.unity.modules.ai
   name: com.unity.modules.ai
   displayName: AI
@@ -1154,7 +1229,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.androidjni@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.androidjni@1.0.0
   assetPath: Packages/com.unity.modules.androidjni
   name: com.unity.modules.androidjni
   displayName: Android JNI
@@ -1203,7 +1278,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.animation@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.animation@1.0.0
   assetPath: Packages/com.unity.modules.animation
   name: com.unity.modules.animation
   displayName: Animation
@@ -1253,7 +1328,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.assetbundle@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.assetbundle@1.0.0
   assetPath: Packages/com.unity.modules.assetbundle
   name: com.unity.modules.assetbundle
   displayName: Asset Bundle
@@ -1303,7 +1378,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.audio@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.audio@1.0.0
   assetPath: Packages/com.unity.modules.audio
   name: com.unity.modules.audio
   displayName: Audio
@@ -1353,7 +1428,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.cloth@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.cloth@1.0.0
   assetPath: Packages/com.unity.modules.cloth
   name: com.unity.modules.cloth
   displayName: Cloth
@@ -1407,7 +1482,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.director@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.director@1.0.0
   assetPath: Packages/com.unity.modules.director
   name: com.unity.modules.director
   displayName: Director
@@ -1465,7 +1540,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.imageconversion@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.imageconversion@1.0.0
   assetPath: Packages/com.unity.modules.imageconversion
   name: com.unity.modules.imageconversion
   displayName: Image Conversion
@@ -1516,7 +1591,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.imgui@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.imgui@1.0.0
   assetPath: Packages/com.unity.modules.imgui
   name: com.unity.modules.imgui
   displayName: IMGUI
@@ -1566,7 +1641,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0
   assetPath: Packages/com.unity.modules.jsonserialize
   name: com.unity.modules.jsonserialize
   displayName: JSONSerialize
@@ -1616,7 +1691,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.particlesystem@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.particlesystem@1.0.0
   assetPath: Packages/com.unity.modules.particlesystem
   name: com.unity.modules.particlesystem
   displayName: Particle System
@@ -1666,7 +1741,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.physics@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.physics@1.0.0
   assetPath: Packages/com.unity.modules.physics
   name: com.unity.modules.physics
   displayName: Physics
@@ -1716,7 +1791,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.physics2d@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.physics2d@1.0.0
   assetPath: Packages/com.unity.modules.physics2d
   name: com.unity.modules.physics2d
   displayName: Physics 2D
@@ -1766,7 +1841,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.screencapture@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.screencapture@1.0.0
   assetPath: Packages/com.unity.modules.screencapture
   name: com.unity.modules.screencapture
   displayName: Screen Capture
@@ -1820,7 +1895,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.terrain@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.terrain@1.0.0
   assetPath: Packages/com.unity.modules.terrain
   name: com.unity.modules.terrain
   displayName: Terrain
@@ -1870,7 +1945,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.terrainphysics@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.terrainphysics@1.0.0
   assetPath: Packages/com.unity.modules.terrainphysics
   name: com.unity.modules.terrainphysics
   displayName: Terrain Physics
@@ -1928,7 +2003,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.tilemap@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.tilemap@1.0.0
   assetPath: Packages/com.unity.modules.tilemap
   name: com.unity.modules.tilemap
   displayName: Tilemap
@@ -1981,7 +2056,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.ui@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.ui@1.0.0
   assetPath: Packages/com.unity.modules.ui
   name: com.unity.modules.ui
   displayName: UI
@@ -2031,7 +2106,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.uielements@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.uielements@1.0.0
   assetPath: Packages/com.unity.modules.uielements
   name: com.unity.modules.uielements
   displayName: UIElements
@@ -2097,7 +2172,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.umbra@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.umbra@1.0.0
   assetPath: Packages/com.unity.modules.umbra
   name: com.unity.modules.umbra
   displayName: Umbra
@@ -2147,7 +2222,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unityanalytics@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unityanalytics@1.0.0
   assetPath: Packages/com.unity.modules.unityanalytics
   name: com.unity.modules.unityanalytics
   displayName: Unity Analytics
@@ -2205,7 +2280,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequest
   name: com.unity.modules.unitywebrequest
   displayName: Unity Web Request
@@ -2255,7 +2330,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestassetbundle
   name: com.unity.modules.unitywebrequestassetbundle
   displayName: Unity Web Request Asset Bundle
@@ -2313,7 +2388,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestaudio
   name: com.unity.modules.unitywebrequestaudio
   displayName: Unity Web Request Audio
@@ -2371,7 +2446,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequesttexture
   name: com.unity.modules.unitywebrequesttexture
   displayName: Unity Web Request Texture
@@ -2429,7 +2504,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestwww
   name: com.unity.modules.unitywebrequestwww
   displayName: Unity Web Request WWW
@@ -2503,7 +2578,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.vehicles@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.vehicles@1.0.0
   assetPath: Packages/com.unity.modules.vehicles
   name: com.unity.modules.vehicles
   displayName: Vehicles
@@ -2557,7 +2632,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.video@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.video@1.0.0
   assetPath: Packages/com.unity.modules.video
   name: com.unity.modules.video
   displayName: Video
@@ -2619,7 +2694,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.vr@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.vr@1.0.0
   assetPath: Packages/com.unity.modules.vr
   name: com.unity.modules.vr
   displayName: VR
@@ -2683,7 +2758,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.wind@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.wind@1.0.0
   assetPath: Packages/com.unity.modules.wind
   name: com.unity.modules.wind
   displayName: Wind
@@ -2733,7 +2808,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.xr@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.xr@1.0.0
   assetPath: Packages/com.unity.modules.xr
   name: com.unity.modules.xr
   displayName: XR
@@ -2790,12 +2865,64 @@ m_ResolvedPackages:
     version: 1.0.0
     nextVersion: 
     recommendedVersion: 
+- packageId: com.kybernetik.inspector-gadgets@file:C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Packages\com.kybernetik.inspector-gadgets
+  testable: 1
+  isDirectDependency: 1
+  version: 8.0.1
+  source: 3
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Packages\com.kybernetik.inspector-gadgets
+  assetPath: Packages/com.kybernetik.inspector-gadgets
+  name: com.kybernetik.inspector-gadgets
+  displayName: Inspector Gadgets
+  author:
+    name: Kybernetik
+    email: mail@kybernetik.com.au
+    url: https://kybernetik.com.au
+  category: 
+  type: 
+  description: Inspector Gadgets is a Unity plugin which enhances various aspects
+    of the Unity Editor to streamline your development workflow.
+  status: 0
+  errors: []
+  versions:
+    all: []
+    compatible: []
+    verified: 
+  dependencies:
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+  hideInEditor: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: https://kybernetik.com.au/inspector-gadgets
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 
+    nextVersion: 
+    recommendedVersion: 
 - packageId: com.unity.modules.subsystems@1.0.0
   testable: 0
   isDirectDependency: 0
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.subsystems@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.subsystems@1.0.0
   assetPath: Packages/com.unity.modules.subsystems
   name: com.unity.modules.subsystems
   displayName: Subsystems
@@ -2849,7 +2976,7 @@ m_ResolvedPackages:
   isDirectDependency: 0
   version: 1.0.0
   source: 2
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.uielementsnative@1.0.0
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.modules.uielementsnative@1.0.0
   assetPath: Packages/com.unity.modules.uielementsnative
   name: com.unity.modules.uielementsnative
   displayName: UIElements Native
@@ -2910,7 +3037,7 @@ m_ResolvedPackages:
   isDirectDependency: 0
   version: 1.0.6
   source: 1
-  resolvedPath: C:\Code\Github\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ext.nunit@1.0.6
+  resolvedPath: C:\Users\Travis\Projects\Personal\LastEpoch_Mods\AssetBundleExport\Library\PackageCache\com.unity.ext.nunit@1.0.6
   assetPath: Packages/com.unity.ext.nunit
   name: com.unity.ext.nunit
   displayName: Custom NUnit

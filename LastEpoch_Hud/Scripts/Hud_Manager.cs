@@ -706,6 +706,9 @@ namespace LastEpoch_Hud.Scripts
                             {
                                 switch (__instance.name)
                                 {
+                                    //Login
+                                    case "Toggle_Login_AutoClickPlayOffline": { Save_Manager.instance.data.Login.Enable_AutoLoginOffline = __instance.isOn; break; }
+                                    case "Toggle_Login_AutoSelectChar": { Save_Manager.instance.data.Login.Enable_AutoSelectChar = __instance.isOn; break; }
                                     //Skills
                                     case "Toggle_RemoveManaCost": { Save_Manager.instance.data.Skills.Enable_RemoveManaCost = __instance.isOn; break; }
                                     case "Toggle_RemoveChannelCost": { Save_Manager.instance.data.Skills.Enable_RemoveChannelCost = __instance.isOn; break; }
@@ -1545,6 +1548,9 @@ namespace LastEpoch_Hud.Scripts
                         GameObject character_data_content = Functions.GetViewportContent(content_obj, "Character_Data", "Character_Data_Content");
                         if (!character_data_content.IsNullOrDestroyed())
                         {
+                            // Login here because it doesn't fit anywhere else
+                            Login.GetRefs(character_data_content);
+
                             Data.class_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Classe", "Dropdown_Character_Data_Classes", new System.Action<int>((_) => { if (!Refs_Manager.player_data.IsNullOrDestroyed()) { Refs_Manager.player_data.CharacterClass = Data.class_dropdown.value; } }));
                             
                             Data.died_toggle = Functions.Get_ToggleInPanel(character_data_content, "Died", "Toggle_Character_Data_Died");
@@ -1748,6 +1754,10 @@ namespace LastEpoch_Hud.Scripts
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
+                            //Login
+                            Login.auto_click_play_offline_toggle.isOn = Save_Manager.instance.data.Login.Enable_AutoLoginOffline;
+                            Login.auto_select_char_toggle.isOn = Save_Manager.instance.data.Login.Enable_AutoSelectChar;
+
                             //Content.Character.Cheats
                             Cheats.godmode_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_GodMode;
                             Cheats.lowlife_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
@@ -1835,6 +1845,9 @@ namespace LastEpoch_Hud.Scripts
                 public static void Update_PlayerData()
                 {
                     need_update = false;
+                    // Login - Auto Select Char
+                    Login.AddAutoSelectCharactersToDropdown();
+
                     if ((!Refs_Manager.player_treedata.IsNullOrDestroyed()) &&
                         (!Refs_Manager.character_class_list.IsNullOrDestroyed()) &&
                         (!Refs_Manager.player_data.IsNullOrDestroyed()))
@@ -3339,6 +3352,61 @@ namespace LastEpoch_Hud.Scripts
                     public static Toggle weaver_will_toggle = null;
                     public static Text weaver_will_text = null;
                     public static Slider weaver_will_slider = null;
+                }
+            }
+            public class Login
+            {
+                public const Cycle current_cycle = Cycle.Trout;
+
+                public static Toggle auto_click_play_offline_toggle = null;
+                public static Toggle auto_select_char_toggle = null;
+                public static Dropdown auto_select_char_dropdown = null;
+
+                public static void AddAutoSelectCharactersToDropdown()
+                {
+                    if (!Refs_Manager.character_select.IsNullOrDestroyed() && !Refs_Manager.character_select.AvailableCharacterTiles.IsNullOrDestroyed() && Refs_Manager.character_select.AvailableCharacterTiles.Count > 0)
+                    {
+                        Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> charNames = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
+                        int index = -1;
+                        for (int i = 0; i < Refs_Manager.character_select.AvailableCharacterTiles.Count; i++)
+                        {
+                            if (!Refs_Manager.character_select.AvailableCharacterTiles[i].characterData.IsNullOrDestroyed())
+                            {
+                                CharacterTile tile = Refs_Manager.character_select.AvailableCharacterTiles[i];
+                                string charName = tile.characterData.CharacterName + (tile.characterCycle < current_cycle ? " (Legacy)" : "");
+                                charNames.Add(new Dropdown.OptionData { text = charName });
+                                if (!Save_Manager.instance.IsNullOrDestroyed())
+                                {
+                                    if (string.IsNullOrWhiteSpace(Save_Manager.instance.data.Login.AutoSelectCharName))
+                                    {
+                                        Save_Manager.instance.data.Login.AutoSelectCharName = tile.characterData.CharacterName;
+                                        Save_Manager.instance.data.Login.LegacyCharacter = tile.characterData.Cycle < current_cycle;
+                                    }
+                                    if (Save_Manager.instance.data.Login.AutoSelectCharName == tile.characterData.CharacterName) { index = i; }
+                                }
+                            }
+                        }
+                        auto_select_char_dropdown.options = charNames;
+                        if (index > -1) { auto_select_char_dropdown.value = index; }
+                    }
+                }
+
+                public static void AutoSelectCharDropdown_SelectedIndexChanged(int index)
+                {
+                    if (!Refs_Manager.character_select.IsNullOrDestroyed() && index > -1 && index < Refs_Manager.character_select.AvailableCharacterTiles.Count &&
+                        !Refs_Manager.character_select.AvailableCharacterTiles[index].characterData.IsNullOrDestroyed())
+                    {
+                        CharacterTile selTile = Refs_Manager.character_select.AvailableCharacterTiles[index];
+                        Save_Manager.instance.data.Login.AutoSelectCharName = selTile.characterData.CharacterName;
+                        Save_Manager.instance.data.Login.LegacyCharacter = selTile.characterData.Cycle < current_cycle;
+                    }
+                }
+
+                public static void GetRefs(GameObject parent)
+                {
+                    auto_click_play_offline_toggle = Functions.Get_ToggleInPanel(parent, "AutoClickPlayOffline", "Toggle_Login_AutoClickPlayOffline");
+                    auto_select_char_toggle = Functions.Get_ToggleInPanel(parent, "AutoSelectChar", "Toggle_Login_AutoSelectChar");
+                    auto_select_char_dropdown = Functions.Get_DopboxInPanel(parent, "AutoSelectChar", "Dropdown_Login_AutoSelectChar", new System.Action<int>(AutoSelectCharDropdown_SelectedIndexChanged));
                 }
             }
             public class Scenes

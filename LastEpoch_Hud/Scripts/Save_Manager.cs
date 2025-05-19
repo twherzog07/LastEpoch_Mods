@@ -79,7 +79,10 @@ namespace LastEpoch_Hud.Scripts
                 Login =
                 {
                     //Enable_Mods = true,
-                    Enable_AutoLoginOffline = true
+                    Enable_AutoLoginOffline = true,
+                    Enable_AutoSelectChar = false,
+                    AutoSelectCharName = "",
+                    LegacyCharacter = false
                 },
                 Character =
                 {
@@ -565,6 +568,9 @@ namespace LastEpoch_Hud.Scripts
             {
                 //public bool Enable_Mods;
                 public bool Enable_AutoLoginOffline;
+                public bool Enable_AutoSelectChar;
+                public string AutoSelectCharName;
+                public bool LegacyCharacter;
             }
             //Character
             public struct Character
