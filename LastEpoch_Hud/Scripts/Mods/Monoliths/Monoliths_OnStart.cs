@@ -47,7 +47,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                     {
                         //Drop woven echoes on start
                         __instance.DropShadeGauntletWovenEchoForAllPlayersInEcho(Refs_Manager.player_actor.gameObject.transform.position, 0);
-                    }                    
+                    }
                     /*if (Save_Manager.instance.data.Scenes.Monoliths.Enable_CompleteObjective)
                     {
                         //Objectives Quest
@@ -103,7 +103,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                             Main.logger_instance.Msg("Get entrance location");
                             bool entrance_found = false;
                             Vector3 entrance_location = new Vector3(0, 0, 0);
-                            foreach (TombEntranceLogic _logic in GameObject.FindObjectsOfType<TombEntranceLogic>())
+                            foreach (TombEntranceLogic _logic in Object.FindObjectsOfType<TombEntranceLogic>())
                             {
                                 if (_logic.isActiveAndEnabled)
                                 {
@@ -145,7 +145,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                         }
                         catch { Main.logger_instance.Error("Error when trying to complete objective"); }
                     }*/
-                }                
+                }
             }
         }
     }

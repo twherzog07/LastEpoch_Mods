@@ -1,4 +1,6 @@
-﻿//https://discord.com/channels/1366160878579351756/1372660677491036272
+﻿//______________________________________________________________________//
+//https://discord.com/channels/1366160878579351756/1372660677491036272
+//https://github.com/zakt4n
 
 using HarmonyLib;
 using Il2Cpp;
@@ -32,6 +34,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if (Scenes.IsGameScene())
             {
+                Skills.Initialize();
                 if (!InGame) { Events.OnHitEvent_Initialized = false; }
                 InGame = true;
             }
@@ -160,20 +163,37 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             public static string Get_Unique_Description()
             {
                 string result = "";
-                switch (Locales.current)
+                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
                 {
-                    case Locales.Selected.English: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.French: { result = MjLocales.UniqueDescription.fr; break; }
-
-                    case Locales.Selected.Korean: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.German: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.Russian: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.Polish: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.Portuguese: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.Chinese: { result = MjLocales.UniqueDescription.en; break; }
-                    case Locales.Selected.Spanish: { result = MjLocales.UniqueDescription.en; break; }
+                    switch (Locales.current)
+                    {
+                        case Locales.Selected.English: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.French: { result = MjLocales.UniqueDescription_TriggerAll.fr; break; }
+                        case Locales.Selected.Korean: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.German: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.Russian: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.Polish: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.Portuguese: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.Chinese: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        case Locales.Selected.Spanish: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                    }
                 }
-
+                else
+                {
+                    switch (Locales.current)
+                    {
+                        case Locales.Selected.English: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.French: { result = MjLocales.UniqueDescription_TriggerSocketed.fr; break; }
+                        case Locales.Selected.Korean: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.German: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.Russian: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.Polish: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.Portuguese: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.Chinese: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                        case Locales.Selected.Spanish: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
+                    }
+                }
+                
                 return result;
             }
             public static string Get_Unique_Lore()
@@ -225,6 +245,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     maxValue = 1.2f,
                     value = 0.8f
                 });
+                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
+                {
+                    result.Add(new UniqueItemMod
+                    {
+                        canRoll = true,
+                        property = SP.AbilityProperty,
+                        tags = AT.Hit,
+                        type = BaseStats.ModType.QUOTIENT,
+                        maxValue = 255f,
+                        value = 0f
+                    });
+                }
 
                 return result;
             }
@@ -233,6 +265,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry> result = new Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry>();
                 result.Add(new UniqueModDisplayListEntry(0));
                 result.Add(new UniqueModDisplayListEntry(1));
+                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell) { result.Add(new UniqueModDisplayListEntry(2)); }                    
                 result.Add(new UniqueModDisplayListEntry(128));
 
                 return result;
@@ -304,13 +337,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 public static string pt = "Mjölner";
                 //Add all languages here
             }
-            public class UniqueDescription
+            public class UniqueDescription_TriggerAll
             {
                 public static string en = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " to " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% chance to Trigger a Lightning Spell on Hit with an Attack";
                 public static string pt = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " a " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
                 public static string de = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " bis " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
                 public static string fr = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " à " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chances de Déclenche un Sort de foudre au Toucher";
-                //Add all languages here
+            }
+            public class UniqueDescription_TriggerSocketed
+            {
+                public static string en = "Trigger " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " and " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " on Hit, with a " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " second Cooldown";
+                public static string fr = "Déclenche " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " et " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " à l'impact, avec un temps de recharge de " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " seconde";
             }
             public class Lore
             {
@@ -379,6 +416,111 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     return result;
                 }
             }
+        }        
+        public class Skills
+        {
+            public static Ability[] Abilities = null;
+            public static System.DateTime[] Times = null;
+            public static bool Initialized = false;
+            public static bool Initializing = false;
+
+            public static void Initialize()
+            {
+                if (!Initializing)
+                {
+                    Initializing = true;
+                    Abilities = new Ability[3];
+                    Times = new System.DateTime[3];
+                    ;
+                    if (!Refs_Manager.ability_manager.IsNullOrDestroyed())
+                    {
+                        //Main.logger_instance.Msg("Get Socketed Abilities");
+                        int i = 0;
+                        foreach (Ability ability in Refs_Manager.ability_manager.abilities)
+                        {
+                            if ((!ability.IsNullOrDestroyed()) && (i < 3))
+                            {
+                                if ((ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0) ||
+                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1) ||
+                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2))
+                                {
+                                    //Main.logger_instance.Msg(i + " : Added : " + ability.abilityName);
+                                    Skills.Abilities[i] = ability;
+                                    Skills.Times[i] = System.DateTime.Now;
+                                    i++;
+                                }
+
+                                /*if (ability.tags.HasFlag(AT.Lightning)) //Use to see ability names
+                                {
+                                    Main.logger_instance.Msg("Ability : " + ability.abilityName);
+                                    Skills.Abilities.Add(ability);
+                                }*/
+                            }
+                        }
+                        Initialized = true;
+                    }
+                    Initializing = false;
+                }
+            }
+        }
+        public class Trigger
+        {
+            public static bool trigger = false;
+
+            public static void AllSkills(Actor hitActor)
+            {
+                if (!hitActor.IsNullOrDestroyed())
+                {
+                    //Min 0f, Max 255f
+                    float item_roll = Random.Range(Save_Manager.instance.data.Items.Mjolner.MinTriggerChance, Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance);
+                    float item_roll_percent = (item_roll / 255) * 100;
+                    float roll_percent = Random.Range(0f, 100f);
+                    //Main.logger_instance.Msg("Min roll : " + item_roll_percent + "% , Roll : " + roll_percent + "%");
+                    if ((roll_percent <= item_roll_percent) && (!Refs_Manager.player_treedata.IsNullOrDestroyed()))
+                    {
+                        foreach (Ability ability in Refs_Manager.player_actor.GetAbilityList().abilities)
+                        {
+                            if (ability.tags.HasFlag(AT.Lightning))
+                            {
+                                Main.logger_instance.Msg("Trigger Ability : " + ability.abilityName + " to " + hitActor.name);
+                                ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
+                            }
+                        }
+                    }
+                }
+            }
+            public static void SocketedSkills(Actor hitActor)
+            {
+                if ((!hitActor.IsNullOrDestroyed()) && (!trigger))
+                {
+                    trigger = true;
+                    for (int i = 0; i < Skills.Abilities.Length; i++)
+                    {
+                        if ((!Skills.Abilities[i].IsNullOrDestroyed()) && ((i < Skills.Times.Length)))
+                        {
+                            bool run = false;
+                            System.Double cd = Save_Manager.instance.data.Items.Mjolner.SocketedCooldown;
+                            if (cd < 250) { cd = 250; }
+
+                            if ((System.DateTime.Now - Skills.Times[i]).TotalMilliseconds > cd) { run = true; }
+
+                            if (run)
+                            {
+                                //Main.logger_instance.Msg("Trigger Ability : " + Skills.Abilities[i].abilityName + " to " + hitActor.name);
+                                var backup_manacost = Skills.Abilities[i].manaCost;
+                                var backup_channelcost = Skills.Abilities[i].channelCost;
+                                Skills.Abilities[i].manaCost = 0; //Remove ManaCost
+                                Skills.Abilities[i].channelCost = 0; //Remove ChannelCost
+                                Skills.Abilities[i].castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);                                                                
+                                Skills.Abilities[i].manaCost = backup_manacost; //Reset ManaCost
+                                Skills.Abilities[i].channelCost = backup_channelcost; //Reset ChannelCost
+                                Skills.Times[i] = System.DateTime.Now;
+                            }
+                        }
+                    }
+                    trigger = false;
+                }
+            }
         }
         public class Events
         {
@@ -406,28 +548,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     if (Refs_Manager.player_actor.itemContainersManager.hasUniqueEquipped(Unique.unique_id))
                     {
-                        //ItemData item = Refs_Manager.player_actor.itemContainersManager.equipment.weapon.getItem();                                
-                        float dice_roll = Random.Range(Save_Manager.instance.data.Items.Mjolner.MinTriggerChance, Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance);
-                        if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
-                        {
-                            if (!Refs_Manager.player_treedata.IsNullOrDestroyed())
-                            {
-                                foreach (LocalTreeData.SkillTreeData skill_tree_data in Refs_Manager.player_treedata.specialisedSkillTrees)
-                                {
-                                    if (!skill_tree_data.ability.IsNullOrDestroyed())
-                                    {
-                                        if (skill_tree_data.ability.tags.HasFlag(AT.Lightning))
-                                        {
-                                            skill_tree_data.ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // Do stuff with specific config'd spells...
-                        }
+                        if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell) { Trigger.AllSkills(hitActor); }
+                        else { Trigger.SocketedSkills(hitActor); }
                     }
                 }
             }
