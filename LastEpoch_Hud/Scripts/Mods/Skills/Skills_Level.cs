@@ -18,7 +18,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             else { return false; }
         }
 
-        [HarmonyPatch(typeof(AbilityXPBar), "updateBar")]
+        /*[HarmonyPatch(typeof(AbilityXPBar), "updateBar")]
         public class AbilityXPBar_updateBar
         {
             [HarmonyPrefix]
@@ -41,14 +41,14 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     return false;
                 }
             }
-            /*[HarmonyPostfix]
+            [HarmonyPostfix]
             static void Postfix(byte __0, int __1)
             {
                 Main.logger_instance.Msg("AbilityXPBar.updateBar() Postfix Level = " + __0 + " Xp = " + __1);
-            }*/
-        }
+            }
+        }*/
         
-        [HarmonyPatch(typeof(UITreeSkillName), "SetAbility")]
+        /*[HarmonyPatch(typeof(UITreeSkillName), "SetAbility")]
         public class UITreeSkillName_SetAbility
         {
             [HarmonyPrefix]
@@ -66,14 +66,14 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     return false;
                 }
             }
-            /*[HarmonyPostfix]
+            [HarmonyPostfix]
             static void Postfix(Ability __0)
             {
                 Main.logger_instance.Msg("UITreeSkillName.SetAbility() Postfix Ability = " + __0.abilityName);
-            }*/
-        }
+            }
+        }*/
 
-        [HarmonyPatch(typeof(UITreeSkillLevel), "updateForAbility")]
+        /*[HarmonyPatch(typeof(UITreeSkillLevel), "updateForAbility")]
         public class UITreeSkillLevel_updateForAbility
         {
             [HarmonyPrefix]
@@ -91,12 +91,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     return false;
                 }
             }
-            /*[HarmonyPostfix]
+            [HarmonyPostfix]
             static void Postfix(Ability __0, bool __1)
             {
                 Main.logger_instance.Msg("UITreeSkillLevel.updateForAbility() Postfix Ability = " + __0.abilityName + ", Locked = " + __1);
-            }*/
-        }
+            }
+        }*/
 
         /*[HarmonyPatch(typeof(TreeUIManager), "onSkillTreeOpened")]
         public class TreeUIManager_onSkillTreeOpened
