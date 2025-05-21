@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppLE.Data;
 using Il2CppSystem.Collections.Generic;
+using LastEpoch_Hud.Unity;
 using MelonLoader;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace LastEpoch_Hud.Scripts
     {
         public Hud_Manager(System.IntPtr ptr) : base(ptr) { }
         public static Hud_Manager instance;
+
         public static AssetBundle asset_bundle;
         public static GameObject hud_object = null;
         public bool data_initialized = false;
@@ -102,6 +104,7 @@ namespace LastEpoch_Hud.Scripts
                 if (!prefab_object.IsNullOrDestroyed())
                 {
                     prefab_object.active = false; //Hide
+                    //prefab_object.AddComponent<Hud_S>(); //try to load unity script
                     prefab_object.AddComponent<UIMouseListener>(); //Block Mouse
                     prefab_object.AddComponent<WindowFocusManager>();
                     
