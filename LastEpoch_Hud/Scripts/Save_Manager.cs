@@ -276,7 +276,11 @@ namespace LastEpoch_Hud.Scripts
                         MinTriggerChance = 0.3f,
                         MaxTriggerChance = 0.5f,
                         WeaverWill = false,
-                        ProcAnyLightningSpell = true
+                        ProcAnyLightningSpell = true,
+                        SocketedCooldown = 250,
+                        SockectedSkill_0 = "Lightning Nova",
+                        SockectedSkill_1 = "Elemental Nova",
+                        SockectedSkill_2 = "Storm Bolt"
                     }
                 },
                 Scenes =
@@ -793,6 +797,10 @@ namespace LastEpoch_Hud.Scripts
                 public bool UniqueDrop;
                 public bool WeaverWill;
                 public bool ProcAnyLightningSpell;
+                public System.Double SocketedCooldown;
+                public string SockectedSkill_0;
+                public string SockectedSkill_1;
+                public string SockectedSkill_2;
             }
 
             //Scenes

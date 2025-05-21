@@ -44,6 +44,7 @@ namespace LastEpoch_Hud.Scripts
         public static GlobalDataTracker player_golbal_data_tracker = null;
         public static MonolithZoneManager monolith_zone_manager = null;
         public static MovingPlayer player_moving = null;
+        public static AbilityManager ability_manager = null;
 
         void Awake()
         {
@@ -70,7 +71,8 @@ namespace LastEpoch_Hud.Scripts
             if ((character_select.IsNullOrDestroyed()) && (!CharacterSelect.instance.IsNullOrDestroyed())) { character_select = CharacterSelect.instance; }
             if ((!character_select.IsNullOrDestroyed()) && (character_select.OnOnlineTabChange.IsNullOrDestroyed())) { character_select.OnOnlineTabChange = Action_SetOnline; }
             if ((craft_slot_manager.IsNullOrDestroyed()) && (!CraftingSlotManager.instance.IsNullOrDestroyed())) { craft_slot_manager = CraftingSlotManager.instance; }
-            
+            if (ability_manager.IsNullOrDestroyed()) { ability_manager = AbilityManager.instance; }
+
             if (Scenes.IsGameScene())
             {
                 if (!game_uibase.IsNullOrDestroyed())
