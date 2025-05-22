@@ -1,24 +1,26 @@
-﻿using MelonLoader;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LastEpoch_Hud.Unity
 {
-    [RegisterTypeInIl2Cpp]
+    //[RegisterTypeInIl2Cpp]
     public class Hud_S : MonoBehaviour
     {
-        public Hud_S(System.IntPtr ptr) : base(ptr) { }
-        public static Hud_S instance;
-
         public Button Character_btn;
 
-        void Awake()
+
+        // Start is called before the first frame update
+        void Start()
         {
-            instance = this;
+
         }
+
+        // Update is called once per frame
         void Update()
         {
-            
+
         }
     }
 }

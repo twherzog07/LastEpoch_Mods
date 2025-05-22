@@ -32,7 +32,7 @@ namespace UnityEngineDebug
         public static bool initialized = false;
 
         //------------------------- Config -----------------------//
-        public static bool Enable_Trace = true;
+        public static bool Enable_Trace = false;
         public static bool Enable_DebugLog = true;
         public static bool Enable_DebugLogWarning = true;
         public static bool Enable_DebugLogError = true;
