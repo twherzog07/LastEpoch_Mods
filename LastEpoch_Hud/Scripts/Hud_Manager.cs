@@ -69,7 +69,7 @@ namespace LastEpoch_Hud.Scripts
                     Content.Character.need_update = true;
                     updating = false;
                 }
-            }            
+            }
 
             // Ctrl + F5 - Reload settings
             if (Input.GetKeyDown(KeyCode.F5) && Functions.IsControlKeyDown())
@@ -125,7 +125,7 @@ namespace LastEpoch_Hud.Scripts
                 if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Convert to GameObject"); }
                 GameObject prefab_object = obj.TryCast<GameObject>();
 
-                //GameObject prefab_object = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();                
+                //GameObject prefab_object = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();
                 if (!prefab_object.IsNullOrDestroyed())
                 {
                     if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud prefab"); }
@@ -133,7 +133,7 @@ namespace LastEpoch_Hud.Scripts
                     //prefab_object.AddComponent<Hud_S>(); //try to load unity script
                     prefab_object.AddComponent<UIMouseListener>(); //Block Mouse
                     prefab_object.AddComponent<WindowFocusManager>();
-                    
+
                     //Instantiate
                     if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Instantiate hud prefab"); }
                     hud_object = Object.Instantiate(prefab_object, Vector3.zero, Quaternion.identity);
@@ -171,7 +171,7 @@ namespace LastEpoch_Hud.Scripts
         }
         void Init_Hud_Refs()
         {
-            if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud refs"); }            
+            if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud refs"); }
             Hud_Menu.Set_Events();
 
             Content.content_obj = Functions.GetChild(hud_object, "Content");
@@ -218,7 +218,7 @@ namespace LastEpoch_Hud.Scripts
         }
         void Update_Refs()
         {
-            if ((hud_canvas.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed())) { hud_canvas = hud_object.GetComponent<Canvas>(); }            
+            if ((hud_canvas.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed())) { hud_canvas = hud_object.GetComponent<Canvas>(); }
             if ((asset_bundle.IsNullOrDestroyed()) && (!asset_bundle_initializing)) { Init_AssetsBundle(); }
             if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
             {
@@ -334,13 +334,13 @@ namespace LastEpoch_Hud.Scripts
         }
         void Update_Hud_Content()
         {
-            if ((Content.Character.enable) && (Content.Character.need_update)) { Content.Character.Update_PlayerData(); }            
+            if ((Content.Character.enable) && (Content.Character.need_update)) { Content.Character.Update_PlayerData(); }
             if ((Content.Character.enable) && (Content.Character.controls_initialized)) { Content.Character.UpdateVisuals(); }
             if ((Content.Items.enable) && (Content.Items.controls_initialized))
             {
                 Content.Items.UpdateVisuals();
                 if (!Content.Items.ForceDrop.Type_Initialized) { Content.Items.ForceDrop.InitForcedrop(); }
-            }            
+            }
             if ((Content.Scenes.enable) && (Content.Scenes.controls_initialized)) { Content.Scenes.UpdateVisuals(); }
             if ((Content.Skills.enable) && (Content.Skills.controls_initialized)) { Content.Skills.UpdateVisuals(); }
             if ((Content.OdlForceDrop.enable) && (Content.OdlForceDrop.initialized))
@@ -350,7 +350,7 @@ namespace LastEpoch_Hud.Scripts
                 {
                     Content.OdlForceDrop.implicits.active = Content.OdlForceDrop.implicits_enable;
                     Content.OdlForceDrop.implicits_border.active = Content.OdlForceDrop.implicits_enable;
-                    if (!Content.OdlForceDrop.implicits_enable) { Content.OdlForceDrop.implicits_roll = false; }                    
+                    if (!Content.OdlForceDrop.implicits_enable) { Content.OdlForceDrop.implicits_roll = false; }
                     Content.OdlForceDrop.implicit_0.active = Content.OdlForceDrop.implicits_roll;
                     Content.OdlForceDrop.implicit_1.active = Content.OdlForceDrop.implicits_roll;
                     Content.OdlForceDrop.implicit_2.active = Content.OdlForceDrop.implicits_roll;
@@ -373,10 +373,10 @@ namespace LastEpoch_Hud.Scripts
                         {
                             Content.OdlForceDrop.seal_select_text.text = Content.OdlForceDrop.seal_name;
                         }
-                        else { Main.logger_instance.Error("seal_select_text NULLLLL"); }                            
+                        else { Main.logger_instance.Error("seal_select_text NULLLLL"); }
                     }
                     else { Content.OdlForceDrop.seal_id = -1; }
-                    
+
                     Content.OdlForceDrop.affixs.active = Content.OdlForceDrop.affixs_enable;
                     Content.OdlForceDrop.affixs_border.active = Content.OdlForceDrop.affixs_enable;
                     if (!Content.OdlForceDrop.affixs_enable) { Content.OdlForceDrop.affixs_roll = false; }
@@ -453,7 +453,7 @@ namespace LastEpoch_Hud.Scripts
                         Content.OdlForceDrop.affix_5.active = false;
                         Content.OdlForceDrop.affix_5_id = -1;
                     }
-                    
+
                     Content.OdlForceDrop.unique_mods.active = Content.OdlForceDrop.unique_mods_enable;
                     Content.OdlForceDrop.unique_mods_border.active = Content.OdlForceDrop.unique_mods_enable;
                     if (!Content.OdlForceDrop.unique_mods_enable) { Content.OdlForceDrop.unique_mods_roll = false; }
@@ -487,7 +487,7 @@ namespace LastEpoch_Hud.Scripts
                 }
             }
         }
-        
+
         public static bool IsPauseOpen()
         {
             if (!game_pause_menu.IsNullOrDestroyed()) { return game_pause_menu.active; }
@@ -538,7 +538,7 @@ namespace LastEpoch_Hud.Scripts
                                 //Text shard_id = shard_id_object.GetComponent<Text>();
 
                                 GameObject shard_name_object = Functions.GetChild(__instance.gameObject, "shard_name");
-                                Text shard_name = shard_name_object.GetComponent<Text>();                                
+                                Text shard_name = shard_name_object.GetComponent<Text>();
                                 Content.OdlForceDrop.SelectShard(i, shard_name.text);
                             }
                             catch { }
@@ -629,7 +629,7 @@ namespace LastEpoch_Hud.Scripts
                                     case "Toggle_Items_Drop_ForceSeal": { Save_Manager.instance.data.Items.Drop.Enable_ForceSeal = __instance.isOn; break; }
                                     case "Toggle_Items_Drop_SealTier": { Save_Manager.instance.data.Items.Drop.Enable_SealTier = __instance.isOn; break; }
                                     case "Toggle_Items_Drop_SealValue": { Save_Manager.instance.data.Items.Drop.Enable_SealValue = __instance.isOn; break; }
-                                    case "Toggle_Items_Drop_NbAffixes": { Save_Manager.instance.data.Items.Drop.Enable_AffixCount = __instance.isOn; break; }                                    
+                                    case "Toggle_Items_Drop_NbAffixes": { Save_Manager.instance.data.Items.Drop.Enable_AffixCount = __instance.isOn; break; }
                                     case "Toggle_Items_Drop_AffixesTiers": { Save_Manager.instance.data.Items.Drop.Enable_AffixTiers = __instance.isOn; break; }
                                     case "Toggle_Items_Drop_AffixesValues": { Save_Manager.instance.data.Items.Drop.Enable_AffixValues = __instance.isOn; break; }
                                     case "Toggle_Items_Drop_UniqueMods": { Save_Manager.instance.data.Items.Drop.Enable_UniqueMods = __instance.isOn; break; }
@@ -646,7 +646,7 @@ namespace LastEpoch_Hud.Scripts
                                     case "Toggle_Items_Pickup_AutoStore_OnInventoryOpen": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_AutoStore_10sec": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_All10Sec = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_AutoSell_All_Hide": { Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide = __instance.isOn; break; }
-                                    
+
                                     case "Toggle_Items_Pickup_Range_Pickup": { Save_Manager.instance.data.Items.Pickup.Enable_RangePickup = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_Hide_Notifications": { Save_Manager.instance.data.Items.Pickup.Enable_HideMaterialsNotifications = __instance.isOn; break; }
 
@@ -786,9 +786,9 @@ namespace LastEpoch_Hud.Scripts
                                     case "Toggle_DreadShades_DisableLimit": { Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableLimit = __instance.isOn; break; }
                                     case "Toggle_DreadShades_DisableHealthDrain": { Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableHealthDrain = __instance.isOn; break; }
                                 }
-                            }                            
+                            }
                         }
-                    }                    
+                    }
                 }
             }
 
@@ -867,7 +867,7 @@ namespace LastEpoch_Hud.Scripts
                                             {
                                                 Refs_Manager.player_data.Deaths = (int)__0;
                                             }
-                                            
+
                                             //Content.Character.Data.deaths_text.text = ((int)__0).ToString();
                                             break;
                                         }
@@ -1032,7 +1032,7 @@ namespace LastEpoch_Hud.Scripts
                                         {
                                             if (Save_Manager.instance.data.Items.Drop.AffixCount_Max != __0) { Save_Manager.instance.data.Items.Drop.AffixCount_Max = __0; }
                                             if (__0 < Save_Manager.instance.data.Items.Drop.AffixCount_Min) { Content.Items.Drop.affix_count_slider_min.value = __0; }
-                                            
+
                                             break;
                                         }
                                     case "Slider_Items_Drop_AffixesTiers_Min":
@@ -1110,7 +1110,7 @@ namespace LastEpoch_Hud.Scripts
 
                                     case "Slider_Items_Craft_SealTier": { Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier = (int)__0; break; }
                                     case "Slider_Items_Craft_SealValue": { Save_Manager.instance.data.Items.CraftingSlot.Seal_Value = __0; break; }
-                                    
+
                                     case "Slider_Items_Craft_AffixTier0": { Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Tier = (int)__0; break; }
                                     case "Slider_Items_Craft_AffixTier1": { Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Tier = (int)__0; break; }
                                     case "Slider_Items_Craft_AffixTier2": { Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Tier = (int)__0; break; }
@@ -1145,7 +1145,7 @@ namespace LastEpoch_Hud.Scripts
                                     case "Slider_Scenes_Camera_OffsetMaximum": { Save_Manager.instance.data.Scenes.Camera.OffsetMaximum = __0; break; }
                                     case "Slider_Scenes_Camera_AngleMinimum": { Save_Manager.instance.data.Scenes.Camera.AngleMinimum = __0; break; }
                                     case "Slider_Scenes_Camera_AngleMaximum": { Save_Manager.instance.data.Scenes.Camera.AngleMaximum = __0; break; }
-                                    
+
                                     case "Slider_Scenes_Monoliths_MaxStability": { Save_Manager.instance.data.Scenes.Monoliths.MaxStability = __0; break; }
                                     case "Slider_Scenes_Monoliths_MobsDensity": { Save_Manager.instance.data.Scenes.Monoliths.MobsDensity = __0; break; }
                                     case "Slider_Scenes_Monoliths_MobsDefeatOnStart": { Save_Manager.instance.data.Scenes.Monoliths.MobsDefeatOnStart = __0; break; }
@@ -1260,7 +1260,7 @@ namespace LastEpoch_Hud.Scripts
             public static GameObject ChapterInfo = null;
             public static GameObject Menu_Fade_Background = null;
             public static GameObject Chapter_Fade_Background = null;
-                        
+
             public static bool Get_DefaultPauseMenu()
             {
                 bool result = false;
@@ -1277,7 +1277,7 @@ namespace LastEpoch_Hud.Scripts
                             //Set_Events();
                             result = true;
                         }
-                        else { Main.logger_instance.Msg("Get_DefaultPauseMenu : game_pause_menu NOT FOUND"); }                        
+                        else { Main.logger_instance.Msg("Get_DefaultPauseMenu : game_pause_menu NOT FOUND"); }
                     }
                     else { Main.logger_instance.Msg("Get_DefaultPauseMenu : Draw_over_login_canvas NOT FOUND"); }
                 }
@@ -1297,12 +1297,12 @@ namespace LastEpoch_Hud.Scripts
                     if (Chapter_Fade_Background.IsNullOrDestroyed()) { Chapter_Fade_Background = Functions.GetChild(game_pause_menu, "Chapter_Fade_Background"); }
                     if (!Chapter_Fade_Background.IsNullOrDestroyed()) { Chapter_Fade_Background.active = show; }
                 }
-            }                        
+            }
             public static bool Get_DefaultPauseMenu_Open()
             {
                 if (!Default_PauseMenu_Btns.IsNullOrDestroyed())
                 {
-                     return Default_PauseMenu_Btns.active;
+                    return Default_PauseMenu_Btns.active;
                 }
                 else { return false; }
             }
@@ -1313,7 +1313,7 @@ namespace LastEpoch_Hud.Scripts
                     Default_PauseMenu_Btns.active = show;
                 }
             }
-            
+
             public static void Get_Refs()
             {
                 if (!Default_PauseMenu_Btns.IsNullOrDestroyed())
@@ -1328,7 +1328,7 @@ namespace LastEpoch_Hud.Scripts
                         Hud_Base.Btn_ExitDesktop = Functions.GetChild(Btns, "ExitGameButton").GetComponent<Button>();
                     }
                 }
-            }            
+            }
             public static void Set_Events()
             {
                 if ((!Default_PauseMenu_Btns.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed()))
@@ -1400,7 +1400,7 @@ namespace LastEpoch_Hud.Scripts
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_ForceDrop", OldForceDrop_OnClick_Action);
                 Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Headhunter", Headhunter_OnClick_Action);
             }
-            
+
             private static readonly System.Action Character_OnClick_Action = new System.Action(Character_Click);
             public static void Character_Click()
             {
@@ -1409,7 +1409,7 @@ namespace LastEpoch_Hud.Scripts
                 Content.Skills.Set_Active(false);
                 Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Set_Active(false);
-                Content.Character.Toggle_Active();          
+                Content.Character.Toggle_Active();
             }
 
             private static readonly System.Action Items_OnClick_Action = new System.Action(Items_Click);
@@ -1466,7 +1466,7 @@ namespace LastEpoch_Hud.Scripts
                 Content.OdlForceDrop.Set_Active(false);
                 Content.Headhunter.Toggle_Active();
             }
-        }                
+        }
         public class Content
         {
             public static GameObject content_obj = null;
@@ -1508,7 +1508,7 @@ namespace LastEpoch_Hud.Scripts
                             Cheats.godmode_toggle = Functions.Get_ToggleInPanel(character_cheats_content, "GodMode", "Toggle_Character_Cheats_GodMode");
                             Cheats.lowlife_toggle = Functions.Get_ToggleInPanel(character_cheats_content, "ForceLowLife", "Toggle_Character_Cheats_LowLife");
                             Cheats.allow_choosing_blessing = Functions.Get_ToggleInPanel(character_cheats_content, "AllowChoosingBlessings", "Toggle_Character_Cheats_AllowChooseBlessings");
-                            Cheats.unlock_all_idols = Functions.Get_ToggleInPanel(character_cheats_content, "UnlockAllIdolsSlots", "Toggle_Character_Cheats_UnlockAllIdols");                            
+                            Cheats.unlock_all_idols = Functions.Get_ToggleInPanel(character_cheats_content, "UnlockAllIdolsSlots", "Toggle_Character_Cheats_UnlockAllIdols");
 
                             Cheats.autoPot_toggle = Functions.Get_ToggleInPanel(character_cheats_content, "AutoPotions", "Toggle_Character_Cheats_AutoPotions");
                             Cheats.autopot_text = Functions.Get_TextInToggle(character_cheats_content, "AutoPotions", "Toggle_Character_Cheats_AutoPotions", "Value");
@@ -1568,7 +1568,7 @@ namespace LastEpoch_Hud.Scripts
                             Login.GetRefs(character_data_content);
 
                             Data.class_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Classe", "Dropdown_Character_Data_Classes", new System.Action<int>((_) => { if (!Refs_Manager.player_data.IsNullOrDestroyed()) { Refs_Manager.player_data.CharacterClass = Data.class_dropdown.value; } }));
-                            
+
                             Data.died_toggle = Functions.Get_ToggleInPanel(character_data_content, "Died", "Toggle_Character_Data_Died");
                             Data.hardcore_toggle = Functions.Get_ToggleInPanel(character_data_content, "Hardcore", "Toggle_Character_Data_Hardcore");
                             Data.masochist_toggle = Functions.Get_ToggleInPanel(character_data_content, "Masochist", "Toggle_Character_Data_Masochist");
@@ -1588,7 +1588,7 @@ namespace LastEpoch_Hud.Scripts
                             Data.monolith_stability_basic_go.active = false;
                             Data.monolith_stability_basic_text = Functions.Get_TextInButton(character_data_content, "Monolith_Stability_Basic", "Value");
                             Data.monolith_stability_basic_slider = Functions.Get_SliderInPanel(character_data_content, "Monolith_Stability_Basic", "Slider_Basic_Stability");
-                            
+
                             Data.monolith_stability_empower_go = Functions.GetChild(character_data_content, "Monolith_Stability_Empower");
                             Data.monolith_stability_empower_go.active = false;
                             Data.monolith_stability_empower_text = Functions.Get_TextInButton(character_data_content, "Monolith_Stability_Empower", "Value");
@@ -1713,7 +1713,7 @@ namespace LastEpoch_Hud.Scripts
                     Events.Set_Toggle_Event(Cheats.godmode_toggle, Cheats.Godmode_Toggle_Action);
                     Events.Set_Toggle_Event(Cheats.lowlife_toggle, Cheats.Lowlife_Toggle_Action);
                     Events.Set_Toggle_Event(Cheats.allow_choosing_blessing, Cheats.AllowChooseBlessings_Toggle_Action);
-                    Events.Set_Toggle_Event(Cheats.unlock_all_idols, Cheats.UnlockAllIdols_Toggle_Action);                    
+                    Events.Set_Toggle_Event(Cheats.unlock_all_idols, Cheats.UnlockAllIdols_Toggle_Action);
                     Events.Set_Toggle_Event(Cheats.autoPot_toggle, Cheats.AutoPot_Toggle_Action);
 
                     Events.Set_Toggle_Event(Cheats.density_toggle, Cheats.Density_Toggle_Action);
@@ -1729,12 +1729,12 @@ namespace LastEpoch_Hud.Scripts
                     Events.Set_Toggle_Event(Cheats.itemdropchance_toggle, Cheats.ItemDropChance_Toggle_Action);
 
                     Events.Set_Toggle_Event(Cheats.golddropmultiplier_toggle, Cheats.GoldMulti_Toggle_Action);
-                    
+
                     Events.Set_Toggle_Event(Cheats.golddropchance_toggle, Cheats.GoldChance_Toggle_Action);
-                    
+
                     Events.Set_Toggle_Event(Cheats.waypoints_toggle, Cheats.Waypoints_Toggle_Action);
                     Events.Set_Button_Event(Cheats.level_once_button, Cheats.LevelUpOnce_OnClick_Action);
-                    Events.Set_Button_Event(Cheats.level_max_button, Cheats.LevelUpMax_OnClick_Action);                    
+                    Events.Set_Button_Event(Cheats.level_max_button, Cheats.LevelUpMax_OnClick_Action);
                     Events.Set_Button_Event(Cheats.complete_quest_button, Cheats.CompleteQuest_OnClick_Action);
                     Events.Set_Button_Event(Cheats.masterie_buttons, Cheats.Masteries_OnClick_Action);
                     Events.Set_Button_Event(Cheats.add_runes_button, Cheats.AddRunes_OnClick_Action);
@@ -1782,7 +1782,7 @@ namespace LastEpoch_Hud.Scripts
                             Cheats.lowlife_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
                             Cheats.allow_choosing_blessing.isOn = Save_Manager.instance.data.Character.Cheats.Enable_CanChooseBlessing;
                             Cheats.unlock_all_idols.isOn = Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots;
-                            
+
                             Cheats.autoPot_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_AutoPot;
                             Cheats.autopot_slider.value = Save_Manager.instance.data.Character.Cheats.autoPot;
 
@@ -1899,9 +1899,9 @@ namespace LastEpoch_Hud.Scripts
                     Factions.UpdateActive();
                 }
                 public static void Update_Monoliths_Data()
-                {                    
+                {
                     if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Data.monolith_dropdown.IsNullOrDestroyed()))
-                    {                        
+                    {
                         int index = Data.monolith_dropdown.value;
                         if (index < 1)
                         {
@@ -2072,7 +2072,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text autopot_text = null;
                     public static Slider autopot_slider = null;
-                                        
+
                     public static Toggle density_toggle = null;
                     public static readonly System.Action<bool> Density_Toggle_Action = new System.Action<bool>(Set_Density_Enable);
                     private static void Set_Density_Enable(bool enable)
@@ -2081,7 +2081,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text density_text = null;
                     public static Slider density_slider = null;
-                    
+
                     public static Toggle experience_toggle = null;
                     public static readonly System.Action<bool> Experience_Toggle_Action = new System.Action<bool>(Set_Experience_Enable);
                     private static void Set_Experience_Enable(bool enable)
@@ -2090,7 +2090,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text experience_text = null;
                     public static Slider experience_slider = null;
-                    
+
                     public static Toggle ability_toggle = null;
                     public static readonly System.Action<bool> Ability_Toggle_Action = new System.Action<bool>(Set_Ability_Enable);
                     private static void Set_Ability_Enable(bool enable)
@@ -2099,7 +2099,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text ability_text = null;
                     public static Slider ability_slider = null;
-                    
+
                     public static Toggle favor_toggle = null;
                     public static readonly System.Action<bool> Favor_Toggle_Action = new System.Action<bool>(Set_Favor_Enable);
                     private static void Set_Favor_Enable(bool enable)
@@ -2108,7 +2108,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text favor_text = null;
                     public static Slider favor_slider = null;
-                    
+
                     public static Toggle itemdropmultiplier_toggle = null;
                     public static readonly System.Action<bool> ItemDropMulti_Toggle_Action = new System.Action<bool>(Set_ItemDropMulti_Enable);
                     private static void Set_ItemDropMulti_Enable(bool enable)
@@ -2117,7 +2117,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text itemdropmultiplier_text = null;
                     public static Slider itemdropmultiplier_slider = null;
-                    
+
                     public static Toggle itemdropchance_toggle = null;
                     public static readonly System.Action<bool> ItemDropChance_Toggle_Action = new System.Action<bool>(Set_ItemDropChance_Enable);
                     private static void Set_ItemDropChance_Enable(bool enable)
@@ -2126,7 +2126,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text itemdropchance_text = null;
                     public static Slider itemdropchance_slider = null;
-                    
+
                     public static Toggle golddropmultiplier_toggle = null;
                     public static readonly System.Action<bool> GoldMulti_Toggle_Action = new System.Action<bool>(Set_GoldMulti_Enable);
                     private static void Set_GoldMulti_Enable(bool enable)
@@ -2135,7 +2135,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static Text golddropmultiplier_text = null;
                     public static Slider golddropmultiplier_slider = null;
-                    
+
                     public static Toggle golddropchance_toggle = null;
                     public static readonly System.Action<bool> GoldChance_Toggle_Action = new System.Action<bool>(Set_GoldChance_Enable);
                     private static void Set_GoldChance_Enable(bool enable)
@@ -2484,7 +2484,7 @@ namespace LastEpoch_Hud.Scripts
                             Drop.affix_count_toggle = Functions.Get_ToggleInPanel(items_drop_content, "NbAffixes", "Toggle_Items_Drop_NbAffixes");
                             Drop.affix_count_text = Functions.Get_TextInToggle(items_drop_content, "NbAffixes", "Toggle_Items_Drop_NbAffixes", "Value");
                             Drop.affix_count_slider_min = Functions.Get_SliderInPanel(items_drop_content, "NbAffixes", "Slider_Items_Drop_NbAffixes_Min");
-                            Drop.affix_count_slider_min.maxValue = 6;                            
+                            Drop.affix_count_slider_min.maxValue = 6;
                             Drop.affix_count_slider_max = Functions.Get_SliderInPanel(items_drop_content, "NbAffixes", "Slider_Items_Drop_NbAffixes_Max");
                             Drop.affix_count_slider_max.maxValue = 6;
 
@@ -2513,7 +2513,7 @@ namespace LastEpoch_Hud.Scripts
                             Drop.weaver_will_slider_min = Functions.Get_SliderInPanel(items_drop_content, "WeaverWill", "Slider_Items_Drop_WeaverWill_Min");
                             Drop.weaver_will_slider_max = Functions.Get_SliderInPanel(items_drop_content, "WeaverWill", "Slider_Items_Drop_WeaverWill_Max");
                         }
-                        
+
                         GameObject items_pickup_content = Functions.GetViewportContent(content_obj, "Items_Pickup", "Items_Pickup_Content");
                         if (!items_pickup_content.IsNullOrDestroyed())
                         {
@@ -2523,13 +2523,13 @@ namespace LastEpoch_Hud.Scripts
                             Pickup.autopickup_xptome_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoPickup_XpTome", "Toggle_Items_Pickup_AutoPickup_XpTome");
                             Pickup.autopickup_materials_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoPickup_Materials", "Toggle_Items_Pickup_AutoPickup_Materials");
                             Pickup.autopickup_fromfilter_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoPickup_Filters", "Toggle_Items_Pickup_AutoPickup_Filters");
-                            
+
                             Pickup.autostore_materials_ondrop_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoStore_OnDrop", "Toggle_Items_Pickup_AutoStore_OnDrop");
                             Pickup.autostore_materials_oninventoryopen_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoStore_OnInventoryOpen", "Toggle_Items_Pickup_AutoStore_OnInventoryOpen");
                             Pickup.autostore_materials_all10sec_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoStore_10sec", "Toggle_Items_Pickup_AutoStore_10sec");
-                            
-                            Pickup.autosell_hide_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoSell_All_Hide", "Toggle_Items_Pickup_AutoSell_All_Hide");                            
-                            
+
+                            Pickup.autosell_hide_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoSell_All_Hide", "Toggle_Items_Pickup_AutoSell_All_Hide");
+
                             Pickup.range_pickup_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "Range_Pickup", "Toggle_Items_Pickup_Range_Pickup");
                             Pickup.hide_materials_notifications_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "Hide_Notifications", "Toggle_Items_Pickup_Hide_Notifications");
                         }
@@ -2739,7 +2739,7 @@ namespace LastEpoch_Hud.Scripts
                             Drop.weaver_will_toggle.isOn = Save_Manager.instance.data.Items.Drop.Enable_WeaverWill;
                             Drop.weaver_will_slider_min.value = Save_Manager.instance.data.Items.Drop.WeaverWill_Min;
                             Drop.weaver_will_slider_max.value = Save_Manager.instance.data.Items.Drop.WeaverWill_Max;
-                            
+
                             //Pickup
                             Pickup.autopickup_gold_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Gold;
                             Pickup.autopickup_keys_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys;
@@ -2752,7 +2752,7 @@ namespace LastEpoch_Hud.Scripts
                             Pickup.autostore_materials_oninventoryopen_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen;
                             Pickup.autostore_materials_all10sec_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_All10Sec;
 
-                            Pickup.autosell_hide_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide;                            
+                            Pickup.autosell_hide_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide;
 
                             Pickup.range_pickup_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_RangePickup;
                             Pickup.hide_materials_notifications_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_HideMaterialsNotifications;
@@ -2775,7 +2775,7 @@ namespace LastEpoch_Hud.Scripts
 
                             CraftingSlot.implicit_2_toggle.isOn = Save_Manager.instance.data.Items.CraftingSlot.Enable_Implicit_2;
                             CraftingSlot.implicit_2_slider.value = Save_Manager.instance.data.Items.CraftingSlot.Implicit_2;
-                            
+
                             CraftingSlot.seal_tier_toggle.isOn = Save_Manager.instance.data.Items.CraftingSlot.Enable_Seal_Tier;
                             CraftingSlot.seal_tier_slider.value = Save_Manager.instance.data.Items.CraftingSlot.Seal_Tier;
 
@@ -2811,7 +2811,7 @@ namespace LastEpoch_Hud.Scripts
 
                             CraftingSlot.uniquemod_1_value_toggle.isOn = Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_1;
                             CraftingSlot.uniquemod_1_value_slider.value = Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1;
-                            
+
                             CraftingSlot.uniquemod_2_value_toggle.isOn = Save_Manager.instance.data.Items.CraftingSlot.Enable_UniqueMod_2;
                             CraftingSlot.uniquemod_2_value_slider.value = Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_2;
 
@@ -2842,7 +2842,7 @@ namespace LastEpoch_Hud.Scripts
                     }
 
                     return result;
-                }                
+                }
                 public static void UpdateVisuals()
                 {
                     if ((!Save_Manager.instance.IsNullOrDestroyed()) && (controls_initialized))
@@ -2851,7 +2851,7 @@ namespace LastEpoch_Hud.Scripts
                         {
                             //Values
                             Drop.forgin_potencial_text.text = (int)(Save_Manager.instance.data.Items.Drop.ForginPotencial_Min) + " to " + (int)(Save_Manager.instance.data.Items.Drop.ForginPotencial_Max);
-                            Drop.affix_count_text.text = (int)(Save_Manager.instance.data.Items.Drop.AffixCount_Min) + " to " + (int)(Save_Manager.instance.data.Items.Drop.AffixCount_Max);                            
+                            Drop.affix_count_text.text = (int)(Save_Manager.instance.data.Items.Drop.AffixCount_Min) + " to " + (int)(Save_Manager.instance.data.Items.Drop.AffixCount_Max);
                             Drop.legendary_potencial_text.text = (int)(Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Min) + " to " + (int)(Save_Manager.instance.data.Items.Drop.LegendaryPotencial_Max);
                             Drop.weaver_will_text.text = (int)(Save_Manager.instance.data.Items.Drop.WeaverWill_Min) + " to " + (int)(Save_Manager.instance.data.Items.Drop.WeaverWill_Max);
                             ForceDrop.forcedrop_quantity_text.text = "" + (int)(ForceDrop.forcedrop_quantity_slider.value);
@@ -2878,8 +2878,8 @@ namespace LastEpoch_Hud.Scripts
                             CraftingSlot.implicit_2_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Implicit_2 / 255) * 100) + " %";
                             CraftingSlot.seal_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Seal_Value / 255) * 100) + " %";
                             CraftingSlot.affix_0_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_0_Value / 255) * 100) + " %";
-                            CraftingSlot.affix_1_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value / 255) * 100) + " %";                            
-                            CraftingSlot.affix_2_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value / 255) * 100) + " %";                            
+                            CraftingSlot.affix_1_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_1_Value / 255) * 100) + " %";
+                            CraftingSlot.affix_2_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_2_Value / 255) * 100) + " %";
                             CraftingSlot.affix_3_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.Affix_3_Value / 255) * 100) + " %";
                             CraftingSlot.uniquemod_0_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_0 / 255) * 100) + " %";
                             CraftingSlot.uniquemod_1_value_text.text = (int)((Save_Manager.instance.data.Items.CraftingSlot.UniqueMod_1 / 255) * 100) + " %";
@@ -2976,7 +2976,7 @@ namespace LastEpoch_Hud.Scripts
                         Save_Manager.instance.data.Items.Req.classe = class_req_toggle.isOn;
                         //Items_Req_Class.Enable();
                     }
-                    
+
                     public static Toggle level_req_toggle = null;
                     public static readonly System.Action<bool> Level_Toggle_Action = new System.Action<bool>(Level_Enable);
                     private static void Level_Enable(bool enable)
@@ -3000,7 +3000,7 @@ namespace LastEpoch_Hud.Scripts
                     public static Text forcedrop_quantity_text = null;
                     public static Slider forcedrop_quantity_slider = null;
                     public static Button forcedrop_drop_button = null;
-                    public static int item_type = -1;                    
+                    public static int item_type = -1;
                     public static int item_rarity = -1;
                     public static int item_subtype = -1;
                     public static int item_unique_id = -1;
@@ -3167,7 +3167,7 @@ namespace LastEpoch_Hud.Scripts
                                             foreach (ItemList.EquipmentItem item in item_t.subItems)
                                             {
                                                 string name = item.displayName;
-                                                if (name == "" ) { name =  item.name; }
+                                                if (name == "") { name = item.name; }
                                                 options.Add(new Dropdown.OptionData { text = name });
                                             }
                                             type_found = true;
@@ -3242,12 +3242,12 @@ namespace LastEpoch_Hud.Scripts
                                                     item_subtype = item.subTypeID;
                                                     item_found = true;
                                                     break;
-                                                }                                                
+                                                }
                                             }
                                         }
                                     }
                                     if (!item_found)
-                                    {                                        
+                                    {
                                         foreach (ItemList.BaseNonEquipmentItem item_t in ItemList.get().nonEquippableItems)
                                         {
                                             if (item_t.baseTypeID == item_type)
@@ -3666,7 +3666,7 @@ namespace LastEpoch_Hud.Scripts
                             result = true;
                         }
                     }
-                    
+
                     return result;
                 }
                 public static void UpdateVisuals()
@@ -3776,7 +3776,7 @@ namespace LastEpoch_Hud.Scripts
                     public static Toggle complete_objective_toggle = null;
                     public static Toggle no_lost_when_die_toggle = null;
                 }
-            }            
+            }
             public class Skills
             {
                 public static GameObject content_obj = null;
@@ -3816,7 +3816,7 @@ namespace LastEpoch_Hud.Scripts
                             SkillTree.enable_movement_simple_path_toggle = Functions.Get_ToggleInPanel(skills_content, "DisableSimplePath", "Toggle_DisableSimplePath");
                         }
                         else { Main.logger_instance.Error("Skills content is null"); }
-                        
+
                         GameObject companions_content = Functions.GetViewportContent(content_obj, "Center", "Companions_Content");
                         if (!companions_content.IsNullOrDestroyed())
                         {
@@ -4366,7 +4366,7 @@ namespace LastEpoch_Hud.Scripts
                 //Type
                 public static int type_size = 24;
                 public static Dropdown type_dropdown = null;
-                public static int item_type = -1;               
+                public static int item_type = -1;
                 public static bool Type_Initialized = false;
                 public static bool Initializing_type = false;
 
@@ -4586,7 +4586,7 @@ namespace LastEpoch_Hud.Scripts
                 public static Text unique_mod_7_Text = null;
                 public static Slider unique_mod_7_slider = null;
                 public static readonly System.Action<float> unique_mod_7_Action = new System.Action<float>(SetUniqueMod_7);
-                                
+
                 public static UniqueList.LegendaryType item_legendary_type = UniqueList.LegendaryType.LegendaryPotential;
 
                 public static bool legenday_potencial_enable = false;
@@ -4814,7 +4814,7 @@ namespace LastEpoch_Hud.Scripts
                                 if (!line_1.IsNullOrDestroyed())
                                 {
                                     GameObject name = Functions.GetChild(line_1, "Name");
-                                    if(!name.IsNullOrDestroyed())
+                                    if (!name.IsNullOrDestroyed())
                                     {
                                         GameObject g = Functions.GetChild(name, "InputField");
                                         if (!g.IsNullOrDestroyed()) { shards_filter_name = g.GetComponent<InputField>(); }
@@ -4844,7 +4844,7 @@ namespace LastEpoch_Hud.Scripts
 
                         }
                         else { error = true; Main.logger_instance.Error("center_content not found"); }
-                        
+
                         //Drop button
                         GameObject left_obj = Functions.GetChild(content_obj, "Left");
                         if (!left_obj.IsNullOrDestroyed())
@@ -4873,7 +4873,7 @@ namespace LastEpoch_Hud.Scripts
                         Events.Set_Slider_Event(forgin_potencial_slider, forgin_potencial_Action);
                         Events.Set_Button_Event(seal_select_btn, Seal_OnClick_Action);
                         Events.Set_Slider_Event(seal_tier_slider, seal_tier_Action);
-                        Events.Set_Slider_Event(seal_value_slider, seal_value_Action);                                                
+                        Events.Set_Slider_Event(seal_value_slider, seal_value_Action);
                         Events.Set_Button_Event(affix_0_button, affix_0_OnClick_Action);
                         Events.Set_Slider_Event(affix_0_tier_slider, affix_0_tier_Action);
                         Events.Set_Slider_Event(affix_0_value_slider, affix_0_value_Action);
@@ -4902,7 +4902,7 @@ namespace LastEpoch_Hud.Scripts
                         Events.Set_Slider_Event(unique_mod_7_slider, unique_mod_7_Action);
                         Events.Set_Slider_Event(legenday_potencial_slider, legenday_potencial_Action);
                         Events.Set_Slider_Event(weaver_will_slider, weaver_will_Action);
-                                                
+
                         Events.Set_Button_Event(shards_filters_button, Resfresh_OnClick_Action);
 
                         Events.Set_Button_Event(forcedrop_drop_button, Drop_OnClick_Action);
@@ -5351,7 +5351,7 @@ namespace LastEpoch_Hud.Scripts
                 {
                     int result = System.Convert.ToInt32((affix_5_value_slider.value / 255) * 100);
                     affix_5_value_text.text = result.ToString() + " %";
-                }                
+                }
                 public static void EnableUniqueMods()
                 {
                     int index = unique_mods_dropdown.value;
@@ -5432,12 +5432,12 @@ namespace LastEpoch_Hud.Scripts
                 {
                     shard_seal = seal;
                     shard_number = affix_number;
-                    if (!shard_initialized) { InitializeShardsView(); }                    
+                    if (!shard_initialized) { InitializeShardsView(); }
                 }
                 public static void InitializeShardsView()
                 {
                     RemoveShardsInView();
-                    bool filter_by_type = false;                    
+                    bool filter_by_type = false;
                     AffixList.AffixType wanted_type = AffixList.AffixType.PREFIX;
                     if (shards_filter_type.value > 0)
                     {
@@ -5455,7 +5455,7 @@ namespace LastEpoch_Hud.Scripts
                         else if (shards_filter_class.value == 3) { wanted_class = AffixList.ClassSpecificity.Mage; }
                         else if (shards_filter_class.value == 4) { wanted_class = AffixList.ClassSpecificity.Sentinel; }
                         else if (shards_filter_class.value == 5) { wanted_class = AffixList.ClassSpecificity.Acolyte; }
-                        else if (shards_filter_class.value == 6) { wanted_class = AffixList.ClassSpecificity.Rogue; }                        
+                        else if (shards_filter_class.value == 6) { wanted_class = AffixList.ClassSpecificity.Rogue; }
                     }
                     bool filter_by_name = false;
                     string wanted_name = "";
@@ -5502,7 +5502,7 @@ namespace LastEpoch_Hud.Scripts
                     {
                         Destroy(go);
                     }
-                        
+
                 }
                 public static void AddShardInView(int id, string name)
                 {
@@ -5629,7 +5629,7 @@ namespace LastEpoch_Hud.Scripts
                             //Forgin potencial
                             byte fg = 0;
                             if ((item_type < 100) && (ra < 7))
-                            {                                
+                            {
                                 if (forgin_potencial_roll) { fg = (byte)forgin_potencial_slider.value; }
                                 else { fg = (byte)Random.RandomRange(0f, 255f); } //Random
                             }
@@ -5650,7 +5650,7 @@ namespace LastEpoch_Hud.Scripts
                                         af.Add(affix);
                                     }
                                     else { Main.logger_instance.Error("Seal is null"); }
-                                }                                
+                                }
                             }
                             if (affixs_roll)
                             {
@@ -5679,7 +5679,7 @@ namespace LastEpoch_Hud.Scripts
                                 {
                                     new_affixes.Add(MakeAffix(affix_5_id, (byte)affix_5_tier_slider.value, (byte)affix_5_value_slider.value, false));
                                 }
-                                
+
                                 byte new_count = 0;
                                 foreach (ItemAffix a in new_affixes)
                                 {
@@ -5696,10 +5696,10 @@ namespace LastEpoch_Hud.Scripts
                             //Unique
                             byte lp = 0; //Legendary potencial
                             byte ww = 0; //Weaver will
-                            if (ra > 6)                            
+                            if (ra > 6)
                             {
                                 if (item_legendary_type == UniqueList.LegendaryType.LegendaryPotential)
-                                {                                    
+                                {
                                     if (legenday_potencial_roll)
                                     {
                                         lp = (byte)legenday_potencial_slider.value;
@@ -5707,13 +5707,13 @@ namespace LastEpoch_Hud.Scripts
                                     else { lp = (byte)Random.RandomRange(0f, 4f); } //Random
                                 }
                                 else
-                                {                                    
+                                {
                                     if (weaver_will_roll)
                                     {
                                         ww = (byte)weaver_will_slider.value;
                                     }
                                     else { ww = (byte)Random.RandomRange(0f, 28f); } //Random
-                                }                                
+                                }
                             }
 
                             //Create item
@@ -5723,7 +5723,7 @@ namespace LastEpoch_Hud.Scripts
                                 classReq = ItemList.ClassRequirement.Any,
                                 itemType = (byte)item_type,
                                 subType = (ushort)item_subtype,
-                                rarity = (byte)ra,                                
+                                rarity = (byte)ra,
                                 forgingPotential = fg,
                                 hasSealedAffix = sa,
                                 sockets = (byte)an,
@@ -5771,7 +5771,7 @@ namespace LastEpoch_Hud.Scripts
                                 }
                             }
                             item.RefreshIDAndValues(); //Refresh item for implicits and unique mods
-                            
+
                             Refs_Manager.ground_item_manager.dropItemForPlayer(Refs_Manager.player_actor, item.TryCast<ItemData>(), Refs_Manager.player_actor.position(), false);
                         }
                     }
