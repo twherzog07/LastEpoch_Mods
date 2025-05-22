@@ -275,6 +275,8 @@ namespace LastEpoch_Hud.Scripts
                         BaseDrop = true, UniqueDrop = true,
                         MinTriggerChance = 0.3f,
                         MaxTriggerChance = 0.5f,
+                        IntRequirement = 95,
+                        StrRequirement = 105,
                         WeaverWill = false,
                         ProcAnyLightningSpell = true,
                         SocketedCooldown = 250,
@@ -793,6 +795,8 @@ namespace LastEpoch_Hud.Scripts
                 public bool enable;
                 public float MinTriggerChance;
                 public float MaxTriggerChance;
+                public int IntRequirement;
+                public int StrRequirement;
                 public bool BaseDrop;
                 public bool UniqueDrop;
                 public bool WeaverWill;
