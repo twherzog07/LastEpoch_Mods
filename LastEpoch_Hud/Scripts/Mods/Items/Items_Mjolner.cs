@@ -245,18 +245,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     maxValue = 1.2f,
                     value = 0.8f
                 });
-                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
-                {
-                    result.Add(new UniqueItemMod
-                    {
-                        canRoll = true,
-                        property = SP.AbilityProperty,
-                        tags = AT.Hit,
-                        type = BaseStats.ModType.QUOTIENT,
-                        maxValue = 255f,
-                        value = 0f
-                    });
-                }
 
                 return result;
             }
