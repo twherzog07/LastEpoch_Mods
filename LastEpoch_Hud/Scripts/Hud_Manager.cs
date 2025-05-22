@@ -2,7 +2,6 @@
 using Il2Cpp;
 using Il2CppLE.Data;
 using Il2CppSystem.Collections.Generic;
-using LastEpoch_Hud.Unity;
 using MelonLoader;
 using System.IO;
 using System.Linq;
@@ -94,15 +93,31 @@ namespace LastEpoch_Hud.Scripts
             {
                 if ((Functions.Check_Prefab(name)) && (name.Contains("/hud/")) && (name.Contains("hud.prefab")))
                 {
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Dhud prefab found"); }
                     asset_name = name;
                     break;
                 }
             }
             if (asset_name != "")
             {
-                GameObject prefab_object = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();                
+                //UnityEngine.AddressableAssets
+
+                if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Register Hud_S"); }
+                Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<LastEpoch_Hud.Unity.Hud_S>();
+                //LastEpoch_Hud.Unity.Hud_S.guid
+
+                if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Load hud prefab obj"); }
+                UnityEngine.Object obj = asset_bundle.LoadAsset(asset_name);
+                //we need guid in order to load Hus_S
+
+                //GameObject prefab_object = asset_bundle.LoadAsset<GameObject>(asset_name);
+                if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Convert to GameObject"); }
+                GameObject prefab_object = obj.TryCast<GameObject>();
+
+                //GameObject prefab_object = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();                
                 if (!prefab_object.IsNullOrDestroyed())
                 {
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud prefab"); }
                     prefab_object.active = false; //Hide
                     //prefab_object.AddComponent<Hud_S>(); //try to load unity script
                     prefab_object.AddComponent<UIMouseListener>(); //Block Mouse
@@ -467,9 +482,33 @@ namespace LastEpoch_Hud.Scripts
             if (!game_pause_menu.IsNullOrDestroyed()) { return game_pause_menu.active; }
             else { return false; }
         }
-        
+
         public class Hooks
         {
+            //GUID
+            /*[HarmonyPatch(typeof(UnityEngine.AddressableAssets.AssetReference), "get_AssetGUID")]
+            public class UnityEngine_AddressableAssets_AssetReference
+            {
+                [HarmonyPrefix]
+                static void Prefix(UnityEngine.AddressableAssets.AssetReference __instance, string __result)
+                {
+                    try
+                    {
+                        Main.logger_instance.Msg("AssetReference.get_AssetGUID(); Prefix : " + __instance?.ToString() ?? "null");
+                    }
+                    catch { }
+                }
+                [HarmonyPostfix]
+                static void Postfix(UnityEngine.AddressableAssets.AssetReference __instance, string __result)
+                {
+                    try
+                    {
+                    Main.logger_instance.Msg("AssetReference.get_AssetGUID(); Postfix : " + __instance?.ToString() ?? "null" + ", Result = " + __result?.ToString() ?? "null");
+                    }
+                    catch { }
+                }
+            }*/
+
             //Select Shards
             [HarmonyPatch(typeof(Button), "Press")]
             public class Button_Press
