@@ -339,14 +339,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             }
             public class UniqueDescription_TriggerAll
             {
-                public static string en = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " to " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% chance to Trigger a Lightning Spell on Hit with an Attack";
-                public static string pt = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " a " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
-                public static string de = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " bis " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
-                public static string fr = Save_Manager.instance.data.Items.Mjolner.MinTriggerChance + " à " + Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance + "% de chances de Déclenche un Sort de foudre au Toucher";
+                private static int display_min_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MinTriggerChance / 255f) * 100f);
+                private static int display_max_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance / 255f) * 100f);
+                public static string en = "If you have at least " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Strength and " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligence, " + UniqueDescription_TriggerAll.display_min_chance + " to " + UniqueDescription_TriggerAll.display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack";
+                public static string pt = "Se você tiver pelo menos " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " de Força e " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " de Inteligência, ganhe " + UniqueDescription_TriggerAll.display_min_chance + " a " + UniqueDescription_TriggerAll.display_max_chance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
+                public static string de = "Wenn Sie mindestens " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Stärke und " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligenz, " + UniqueDescription_TriggerAll.display_min_chance + " bis " + UniqueDescription_TriggerAll.display_max_chance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
+                public static string fr = UniqueDescription_TriggerAll.display_min_chance + " à " + UniqueDescription_TriggerAll.display_max_chance + "% de chances de Déclenche un Sort de foudre au Toucher";
             }
             public class UniqueDescription_TriggerSocketed
             {
-                public static string en = "Trigger " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " and " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " on Hit, with a " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " second Cooldown";
+                public static string en = "If you have at least " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Strength and " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligence, Trigger " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " and " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " on Hit, with a " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " second Cooldown";
                 public static string fr = "Déclenche " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " et " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " à l'impact, avec un temps de recharge de " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " seconde";
             }
             public class Lore
@@ -480,7 +482,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     {
                         foreach (Ability ability in Refs_Manager.player_actor.GetAbilityList().abilities)
                         {
-                            if (ability.tags.HasFlag(AT.Lightning))
+                            if (ability.tags.HasFlag(AT.Lightning)  && ability.tags.HasFlag(AT.Spell))
                             {
                                 Main.logger_instance.Msg("Trigger Ability : " + ability.abilityName + " to " + hitActor.name);
                                 ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
@@ -546,9 +548,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             {
                 if (!Refs_Manager.player_actor.IsNullOrDestroyed())
                 {
-                    if (Refs_Manager.player_actor.itemContainersManager.hasUniqueEquipped(Unique.unique_id))
+                    if (Refs_Manager.player_actor.itemContainersManager.hasUniqueEquipped(Unique.unique_id)
+                        && (Refs_Manager.player_actor.stats.GetAttributeValue(CoreAttribute.Attribute.Strength) >= Save_Manager.instance.data.Items.Mjolner.StrRequirement)
+                        && (Refs_Manager.player_actor.stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence) >= Save_Manager.instance.data.Items.Mjolner.IntRequirement))
                     {
-                        if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell) { Trigger.AllSkills(hitActor); }
+                        if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell && (!ability.tags.HasFlag(AT.Spell))) { Trigger.AllSkills(hitActor); }
                         else { Trigger.SocketedSkills(hitActor); }
                     }
                 }
