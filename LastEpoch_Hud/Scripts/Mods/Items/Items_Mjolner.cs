@@ -33,7 +33,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if (Scenes.IsGameScene())
             {
-                Skills.Initialize();
+                Trigger.Initialize_SocketedSkills();
                 if (!InGame) { Events.Reset(); }
                 InGame = true;
             }
@@ -371,50 +371,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     }
                 }
             }            
-        }        
-        public class Skills
-        {
-            public static Ability[] Abilities = null;
-            public static System.DateTime[] Times = null;
-            public static bool Initialized = false;
-            public static bool Initializing = false;
-
-            public static void Initialize()
-            {
-                if (!Initializing)
-                {
-                    Initializing = true;
-                    Abilities = new Ability[3];
-                    Times = new System.DateTime[3];
-                    ;
-                    if (!Refs_Manager.ability_manager.IsNullOrDestroyed())
-                    {
-                        int i = 0;
-                        foreach (Ability ability in Refs_Manager.ability_manager.abilities)
-                        {
-                            if ((!ability.IsNullOrDestroyed()) && (i < 3))
-                            {
-                                if ((ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0) ||
-                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1) ||
-                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2))
-                                {
-                                    Skills.Abilities[i] = ability;
-                                    Skills.Times[i] = System.DateTime.Now;
-                                    i++;
-                                }
-
-                                /*if (ability.tags.HasFlag(AT.Lightning)) //Use to see ability names
-                                {
-                                    Main.logger_instance.Msg("Ability : " + ability.abilityName);
-                                    Skills.Abilities.Add(ability);
-                                }*/
-                            }
-                        }
-                        Initialized = true;
-                    }
-                    Initializing = false;
-                }
-            }
         }
         public class Trigger
         {
@@ -443,35 +399,67 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     trigger = false;
                 }
             }
+
+            public static void Initialize_SocketedSkills()
+            {
+                if (!Initializing)
+                {
+                    Initializing = true;
+                    Abilities = new Ability[3];
+                    Times = new System.DateTime[3];
+                    if (!Refs_Manager.ability_manager.IsNullOrDestroyed())
+                    {
+                        int i = 0;
+                        foreach (Ability ability in Refs_Manager.ability_manager.abilities)
+                        {
+                            if ((!ability.IsNullOrDestroyed()) && (i < 3))
+                            {
+                                if ((ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0) ||
+                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1) ||
+                                    (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2))
+                                {
+                                    Abilities[i] = ability;
+                                    Times[i] = System.DateTime.Now;
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                    Initializing = false;
+                }
+            }
             public static void SocketedSkills(Actor hitActor)
             {
                 if ((!hitActor.IsNullOrDestroyed()) && (!trigger))
                 {
                     trigger = true;
-                    for (int i = 0; i < Skills.Abilities.Length; i++)
+                    for (int i = 0; i < Abilities.Length; i++)
                     {
-                        if ((!Skills.Abilities[i].IsNullOrDestroyed()) && ((i < Skills.Times.Length)))
+                        if ((!Abilities[i].IsNullOrDestroyed()) && ((i < Times.Length)))
                         {
                             bool run = false;
                             System.Double cd = Save_Manager.instance.data.Items.Mjolner.SocketedCooldown;
                             if (cd < 250) { cd = 250; }
 
-                            if ((System.DateTime.Now - Skills.Times[i]).TotalMilliseconds > cd) { run = true; }
+                            if ((System.DateTime.Now - Times[i]).TotalMilliseconds > cd) { run = true; }
 
                             if (run)
                             {
-                                float backup_manacost = Skills.Abilities[i].manaCost;
-                                Skills.Abilities[i].manaCost = 0; //Remove ManaCost
-                                Skills.Abilities[i].castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);                                                                
-                                Skills.Abilities[i].manaCost = backup_manacost; //Reset ManaCost
-                                Skills.Times[i] = System.DateTime.Now;
+                                float backup_manacost = Abilities[i].manaCost;
+                                Abilities[i].manaCost = 0; //Remove ManaCost
+                                Abilities[i].castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
+                                Abilities[i].manaCost = backup_manacost; //Reset ManaCost
+                                Times[i] = System.DateTime.Now;
                             }
                         }
                     }
                     trigger = false;
                 }
-            }
+            }            
 
+            private static Ability[] Abilities = null;
+            private static System.DateTime[] Times = null;
+            private static bool Initializing = false;
             private static bool trigger = false;
         }
         public class Events
