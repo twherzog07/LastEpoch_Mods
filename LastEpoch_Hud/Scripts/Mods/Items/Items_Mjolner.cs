@@ -25,17 +25,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         void Update()
         {
-            if (Unique.Icon.IsNullOrDestroyed()) { Unique.Get_Unique_Icon(); }
-            if ((Locales.current != Locales.Selected.Unknow) && (!Unique.AddedToUniqueList)) { Unique.AddToUniqueList(); }
-            if ((Locales.current != Locales.Selected.Unknow) && (Unique.AddedToUniqueList) && (!Unique.AddedToDictionary)) { Unique.AddToDictionary(); }
-            if (!Events.OnHitEvent_Initialized) { Events.Init_OnHitEvent(); }
+            Icon.Update();
+            Unique.Update();
+            Events.Update();
         }
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (Scenes.IsGameScene())
             {
                 Skills.Initialize();
-                if (!InGame) { Events.OnHitEvent_Initialized = false; }
+                if (!InGame) { Events.Reset(); }
                 InGame = true;
             }
             else if (InGame) { InGame = false; }
@@ -48,24 +47,65 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         public class Unique
         {
-            public static bool AddedToUniqueList = false;
-            public static bool AddedToDictionary = false;
-            public static bool Loading_icon = false;
-            public static Sprite Icon = null;
             public static readonly ushort unique_id = 421;
-
-            public static UniqueList.Entry Item()
+            public static void Update()
             {
+                if ((LastEpoch_Hud.Locales.current != LastEpoch_Hud.Locales.Selected.Unknow) && (!AddedToUniqueList)) { AddToUniqueList(); }
+                if ((LastEpoch_Hud.Locales.current != LastEpoch_Hud.Locales.Selected.Unknow) && (AddedToUniqueList) && (!AddedToDictionary)) { AddToDictionary(); }
+            }
+
+            private static bool AddedToUniqueList = false;
+            private static bool AddedToDictionary = false;
+            private static UniqueList.Entry Item()
+            {
+                string name = Locales.Get_UniqueName();
+
+                UniqueList.LegendaryType legendaryType = UniqueList.LegendaryType.LegendaryPotential;
+                if (Save_Manager.instance.data.Items.Mjolner.WeaverWill) { legendaryType = UniqueList.LegendaryType.WeaversWill; }
+
+                Il2CppSystem.Collections.Generic.List<byte> subtypes = new Il2CppSystem.Collections.Generic.List<byte>();
+                byte r = (byte)Basic.base_id;
+                subtypes.Add(r);
+
+                Il2CppSystem.Collections.Generic.List<UniqueItemMod> mods = new Il2CppSystem.Collections.Generic.List<UniqueItemMod>();
+                mods.Add(new UniqueItemMod
+                {
+                    canRoll = true,
+                    property = SP.Damage,
+                    tags = AT.Lightning,
+                    type = BaseStats.ModType.INCREASED,
+                    maxValue = 1.0f,
+                    value = 0.8f
+                });
+                mods.Add(new UniqueItemMod
+                {
+                    canRoll = true,
+                    property = SP.Damage,
+                    tags = AT.Physical,
+                    type = BaseStats.ModType.INCREASED,
+                    maxValue = 1.2f,
+                    value = 0.8f
+                });
+
+                Il2CppSystem.Collections.Generic.List<ItemTooltipDescription> tooltip_description = new Il2CppSystem.Collections.Generic.List<ItemTooltipDescription>();
+                tooltip_description.Add(new ItemTooltipDescription { description = Locales.Get_UniqueDescription() });
+
+                Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry> entries = new Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry>();
+                entries.Add(new UniqueModDisplayListEntry(0));
+                entries.Add(new UniqueModDisplayListEntry(1));
+                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell) { entries.Add(new UniqueModDisplayListEntry(2)); }
+                entries.Add(new UniqueModDisplayListEntry(128));
+
                 UniqueList.Entry item = new UniqueList.Entry
                 {
-                    name = Get_Unique_Name(),
-                    displayName = Get_Unique_Name(),
+                    name = name,
+                    displayName = name,
                     uniqueID = unique_id,
                     isSetItem = false,
                     setID = 0,
                     overrideLevelRequirement = false,
                     levelRequirement = 78,
-                    legendaryType = LegendaryType(),
+                    legendaryType = legendaryType,
                     overrideEffectiveLevelForLegendaryPotential = true,
                     effectiveLevelForLegendaryPotential = 60,
                     canDropRandomly = Save_Manager.instance.data.Items.Mjolner.UniqueDrop,
@@ -73,18 +113,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     itemModelType = UniqueList.ItemModelType.Unique,
                     subTypeForIM = 0,
                     baseType = Basic.base_type,
-                    subTypes = SubType(),
-                    mods = Mods(),
-                    tooltipDescriptions = TooltipDescription(),
-                    loreText = Get_Unique_Lore(), //lore,
-                    tooltipEntries = TooltipEntries(),
+                    subTypes = subtypes,
+                    mods = mods,
+                    tooltipDescriptions = tooltip_description,
+                    loreText = Locales.Get_UniqueLore(),
+                    tooltipEntries = entries,
                     oldSubTypeID = 0,
                     oldUniqueID = 0
                 };
 
                 return item;
-            }            
-            public static void AddToUniqueList()
+            }
+            private static void AddToUniqueList()
             {
                 if ((!AddedToUniqueList) && (!Refs_Manager.unique_list.IsNullOrDestroyed()))
                 {
@@ -97,7 +137,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     catch { Main.logger_instance.Error("Mjolner Unique List Error"); }
                 }
             }
-            public static void AddToDictionary()
+            private static void AddToDictionary()
             {
                 if ((AddedToUniqueList) && (!AddedToDictionary) && (!Refs_Manager.unique_list.IsNullOrDestroyed()))
                 {
@@ -108,7 +148,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         {
                             foreach (UniqueList.Entry unique in Refs_Manager.unique_list.uniques)
                             {
-                                if ((unique.uniqueID == unique_id) && (unique.name == Get_Unique_Name()))
+                                if ((unique.uniqueID == unique_id) && (unique.name == Locales.Get_UniqueName()))
                                 {
                                     item = unique;
                                     break;
@@ -124,288 +164,213 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     catch { Main.logger_instance.Error("Mjolner Unique Dictionary Error"); }
                 }
             }
-            public static void Get_Unique_Icon()
+        }
+        public class Icon
+        {
+            public static void Update()
             {
-                if ((!Loading_icon) && (!Hud_Manager.asset_bundle.IsNullOrDestroyed()))
+                if (Icon.sprite.IsNullOrDestroyed()) { Icon.Get_UniqueIcon(); }
+            }
+
+            private static Sprite sprite = null;
+            private static bool loading = false;
+            private static void Get_UniqueIcon()
+            {
+                if ((!loading) && (!Hud_Manager.asset_bundle.IsNullOrDestroyed()))
                 {
-                    Loading_icon = true;                    
+                    loading = true;
                     foreach (string name in Hud_Manager.asset_bundle.GetAllAssetNames())
                     {
                         if (name.Contains("mjolner.png"))
                         {
                             Texture2D texture = Hud_Manager.asset_bundle.LoadAsset(name).TryCast<Texture2D>();
-                            Unique.Icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                            Icon.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                             break;
                         }
                     }
-                    Loading_icon = false;
+                    loading = false;
                 }
             }
-            public static string Get_Unique_Name()
-            {
-                string result = "";
-                switch (Locales.current)
-                {
-                    case Locales.Selected.English: { result = MjLocales.UniqueName.en; break; }
-                    case Locales.Selected.French: { result = MjLocales.UniqueName.fr; break; }
-                    case Locales.Selected.German: { result = MjLocales.UniqueName.de; break; }
-                    case Locales.Selected.Russian: { result = MjLocales.UniqueName.ru; break; }
-                    case Locales.Selected.Portuguese: { result = MjLocales.UniqueName.pt; break; }
 
-                    case Locales.Selected.Korean: { result = MjLocales.UniqueName.en; break; }
-                    case Locales.Selected.Polish: { result = MjLocales.UniqueName.en; break; }
-                    case Locales.Selected.Chinese: { result = MjLocales.UniqueName.en; break; }
-                    case Locales.Selected.Spanish: { result = MjLocales.UniqueName.en; break; }
-                }
-
-                return result;
-            }
-            public static string Get_Unique_Description()
+            public class Hooks
             {
-                string result = "";
-                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
+                [HarmonyPatch(typeof(InventoryItemUI), "SetImageSpritesAndColours")]
+                public class InventoryItemUI_SetImageSpritesAndColours
                 {
-                    switch (Locales.current)
+                    [HarmonyPostfix]
+                    static void Postfix(ref Il2Cpp.InventoryItemUI __instance)
                     {
-                        case Locales.Selected.English: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.French: { result = MjLocales.UniqueDescription_TriggerAll.fr; break; }
-                        case Locales.Selected.Korean: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.German: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.Russian: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.Polish: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.Portuguese: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.Chinese: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
-                        case Locales.Selected.Spanish: { result = MjLocales.UniqueDescription_TriggerAll.en; break; }
+                        if ((__instance.EntryRef.data.getAsUnpacked().FullName == Locales.Get_UniqueName()) && (!sprite.IsNullOrDestroyed()))
+                        {
+                            __instance.contentImage.sprite = sprite;
+                        }
                     }
                 }
-                else
+
+                [HarmonyPatch(typeof(UITooltipItem), "GetItemSprite")]
+                public class UITooltipItem_GetItemSprite
                 {
-                    switch (Locales.current)
+                    [HarmonyPostfix]
+                    static void Postfix(ref UnityEngine.Sprite __result, ItemData __0)
                     {
-                        case Locales.Selected.English: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.French: { result = MjLocales.UniqueDescription_TriggerSocketed.fr; break; }
-                        case Locales.Selected.Korean: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.German: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.Russian: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.Polish: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.Portuguese: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.Chinese: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                        case Locales.Selected.Spanish: { result = MjLocales.UniqueDescription_TriggerSocketed.en; break; }
-                    }
-                }
-                
-                return result;
-            }
-            public static string Get_Unique_Lore()
-            {
-                string result = "";
-                switch (Locales.current)
-                {
-                    case Locales.Selected.English: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.French: { result = MjLocales.Lore.fr; break; }
-                    case Locales.Selected.German: { result = MjLocales.Lore.de; break; }
-
-                    case Locales.Selected.Korean: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.Russian: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.Polish: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.Portuguese: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.Chinese: { result = MjLocales.Lore.en; break; }
-                    case Locales.Selected.Spanish: { result = MjLocales.Lore.en; break; }
-                }
-
-                return result;
-            }
-            
-            private static Il2CppSystem.Collections.Generic.List<byte> SubType()
-            {
-                Il2CppSystem.Collections.Generic.List<byte> result = new Il2CppSystem.Collections.Generic.List<byte>();
-                byte r = (byte)Basic.base_id;
-                result.Add(r);
-
-                return result;
-            }
-            private static Il2CppSystem.Collections.Generic.List<UniqueItemMod> Mods()
-            {
-                Il2CppSystem.Collections.Generic.List<UniqueItemMod> result = new Il2CppSystem.Collections.Generic.List<UniqueItemMod>();
-                result.Add(new UniqueItemMod
-                {
-                    canRoll = true,
-                    property = SP.Damage,
-                    tags = AT.Lightning,
-                    type = BaseStats.ModType.INCREASED,
-                    maxValue = 1.0f,
-                    value = 0.8f
-                });
-                result.Add(new UniqueItemMod
-                {
-                    canRoll = true,
-                    property = SP.Damage,
-                    tags = AT.Physical,
-                    type = BaseStats.ModType.INCREASED,
-                    maxValue = 1.2f,
-                    value = 0.8f
-                });
-
-                return result;
-            }
-            private static Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry> TooltipEntries()
-            {
-                Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry> result = new Il2CppSystem.Collections.Generic.List<UniqueModDisplayListEntry>();
-                result.Add(new UniqueModDisplayListEntry(0));
-                result.Add(new UniqueModDisplayListEntry(1));
-                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell) { result.Add(new UniqueModDisplayListEntry(2)); }                    
-                result.Add(new UniqueModDisplayListEntry(128));
-
-                return result;
-            }
-            private static Il2CppSystem.Collections.Generic.List<ItemTooltipDescription> TooltipDescription()
-            {
-                Il2CppSystem.Collections.Generic.List<ItemTooltipDescription> result = new Il2CppSystem.Collections.Generic.List<ItemTooltipDescription>();
-                result.Add(new ItemTooltipDescription { description = Get_Unique_Description() });
-
-                return result;
-            }
-            private static UniqueList.LegendaryType LegendaryType()
-            {
-                UniqueList.LegendaryType legendaryType = UniqueList.LegendaryType.LegendaryPotential;
-                if (Save_Manager.instance.data.Items.Mjolner.WeaverWill) { legendaryType = UniqueList.LegendaryType.WeaversWill; }
-
-                return legendaryType;
-            }
-            
-            //Fix for V1.2 (icon in inventory)
-            [HarmonyPatch(typeof(InventoryItemUI), "SetImageSpritesAndColours")]
-            public class InventoryItemUI_SetImageSpritesAndColours
-            {
-                [HarmonyPostfix]
-                static void Postfix(ref Il2Cpp.InventoryItemUI __instance)
-                {
-                    if ((__instance.EntryRef.data.getAsUnpacked().FullName == Get_Unique_Name()) && (!Icon.IsNullOrDestroyed()))
-                    {
-                        __instance.contentImage.sprite = Icon;
-                    }
-                }
-            }
-
-            [HarmonyPatch(typeof(UITooltipItem), "GetItemSprite")]
-            public class UITooltipItem_GetItemSprite
-            {
-                [HarmonyPostfix]
-                static void Postfix(ref UnityEngine.Sprite __result, ItemData __0)
-                {
-                    if ((__0.getAsUnpacked().FullName == Get_Unique_Name()) && (!Icon.IsNullOrDestroyed()))
-                    {
-                        __result = Icon;
+                        if ((__0.getAsUnpacked().FullName == Locales.Get_UniqueName()) && (!sprite.IsNullOrDestroyed()))
+                        {
+                            __result = sprite;
+                        }
                     }
                 }
             }
         }
-        
-        public class MjLocales
+        public class Locales
         {
-            private static string unique_name_key = "Unique_Name_" + Unique.unique_id;
-            private static string unique_description_key = "Unique_Tooltip_0_" + Unique.unique_id;
-            private static string unique_lore_key = "Unique_Lore_" + Unique.unique_id;
-
-            public class SubType
+            public static string Get_UniqueName()
             {
-                public static string en = "Rune Hammer";
-                public static string fr = "Marteau Runique";
-                public static string de = "Runenhammer";
-                public static string ru = "Рунический молот";
-                public static string pt = "Martelo Rúnico";
-                //Add all languages here
-            }
-            public class UniqueName
-            {
-                public static string en = "Mjölner";
-                public static string fr = "Mjölner";
-                public static string de = "Mjölner";
-                public static string ru = "Мьёльнир";
-                public static string pt = "Mjölner";
-                //Add all languages here
-            }
-            public class UniqueDescription_TriggerAll
-            {
-                private static int display_min_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MinTriggerChance / 255f) * 100f);
-                private static int display_max_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance / 255f) * 100f);
-                public static string en = "If you have at least " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Strength and " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligence, " + UniqueDescription_TriggerAll.display_min_chance + " to " + UniqueDescription_TriggerAll.display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack";
-                public static string pt = "Se você tiver pelo menos " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " de Força e " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " de Inteligência, ganhe " + UniqueDescription_TriggerAll.display_min_chance + " a " + UniqueDescription_TriggerAll.display_max_chance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque";
-                public static string de = "Wenn Sie mindestens " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Stärke und " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligenz, " + UniqueDescription_TriggerAll.display_min_chance + " bis " + UniqueDescription_TriggerAll.display_max_chance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah";
-                public static string fr = UniqueDescription_TriggerAll.display_min_chance + " à " + UniqueDescription_TriggerAll.display_max_chance + "% de chances de Déclenche un Sort de foudre au Toucher";
-            }
-            public class UniqueDescription_TriggerSocketed
-            {
-                public static string en = "If you have at least " + Save_Manager.instance.data.Items.Mjolner.StrRequirement + " Strength and " + Save_Manager.instance.data.Items.Mjolner.IntRequirement + " Intelligence, Trigger " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " and " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " on Hit, with a " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " second Cooldown";
-                public static string fr = "Déclenche " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0 + ", " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1 + " et " + Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2 + " à l'impact, avec un temps de recharge de " + (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000) + " seconde";
-            }
-            public class Lore
-            {
-                public static readonly string en = "Look the storm in the eye and you will have its respect.";
-                public static readonly string fr = "Entrez dans l'œil de la tempête et vous gagnerez son respect.";
-                public static readonly string de = "Blickt dem Sturm ins Auge,\r\nund sein Respekt ist Euch gewiss.";
-                public static readonly string pt = "Encare o olho da tempestade, e ela te respeitará.";
-                //Add all languages here
-            }
-
-            [HarmonyPatch(typeof(Localization), "TryGetText")]
-            public class Localization_TryGetText
-            {
-                [HarmonyPrefix]
-                static bool Prefix(ref bool __result, string __0) //, Il2CppSystem.String __1)
+                string name = "";
+                switch (LastEpoch_Hud.Locales.current)
                 {
-                    bool result = true;
-                    if (/*(__0 == basic_subtype_name_key) ||*/ (__0 == unique_name_key) ||
-                        (__0 == unique_description_key) || (__0 == unique_lore_key))
-                    {
-                        __result = true;
-                        result = false;
-                    }
-
-                    return result;
+                    case LastEpoch_Hud.Locales.Selected.English: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.French: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.German: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Russian: { name = "Мьёльнир"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Portuguese: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Korean: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Polish: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Chinese: { name = "Mjölner"; break; }
+                    case LastEpoch_Hud.Locales.Selected.Spanish: { name = "Mjölner"; break; }
                 }
+
+                return name;
+            }
+            public static string Get_UniqueDescription()
+            {
+                string description = "";
+                int str_requirement = Save_Manager.instance.data.Items.Mjolner.StrRequirement;
+                int int_requirement = Save_Manager.instance.data.Items.Mjolner.IntRequirement;
+                if (Save_Manager.instance.data.Items.Mjolner.ProcAnyLightningSpell)
+                {
+                    int display_min_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MinTriggerChance / 255f) * 100f);
+                    int display_max_chance = (int)((Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance / 255f) * 100f);
+                    switch (LastEpoch_Hud.Locales.current)
+                    {
+                        case LastEpoch_Hud.Locales.Selected.English: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                        case LastEpoch_Hud.Locales.Selected.French: { description = "Si vous avez au moins " + str_requirement + " de Force et " + int_requirement + " d'Intelligence, " + display_min_chance + " à " + display_max_chance + "% de chances de Déclenche un Sort de foudre lorsqu'une Attaque Touche"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Korean: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                        case LastEpoch_Hud.Locales.Selected.German: { description = "Wenn Sie mindestens " + str_requirement + " Stärke und " + int_requirement + " Intelligenz, " + display_min_chance + " bis " + display_max_chance + "% Chance bei Treffer einen Blitzzauber auszulösen yeah"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Russian: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Polish: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Portuguese: { description = "Se você tiver pelo menos " + str_requirement + " de Força e " + int_requirement + " de Inteligência, ganhe " + display_min_chance + " a " + display_max_chance + "% de chance para Ativar uma Magia de Raio ao Acertar um Ataque"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Chinese: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Spanish: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, " + display_min_chance + " to " + display_max_chance + "% chance to Trigger a Lightning Spell on Hit with an Attack"; break; }
+                    }
+                }
+                else
+                {
+                    double cooldown = (Save_Manager.instance.data.Items.Mjolner.SocketedCooldown / 1000);
+                    string skill_0 = Save_Manager.instance.data.Items.Mjolner.SockectedSkill_0;
+                    string skill_1 = Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1;
+                    string skill_2 = Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2;
+                    switch (LastEpoch_Hud.Locales.current)
+                    {
+                        case LastEpoch_Hud.Locales.Selected.English: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.French: { description = "Si voud avez au moins " + str_requirement + " de Force et " + int_requirement + " d'Intelligence, Déclenche " + skill_0 + ", " + skill_1 + " et " + skill_2 + " à l'impact, avec un temps de recharge de " + cooldown + " seconde"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Korean: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.German: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Russian: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Polish: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Portuguese: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Chinese: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                        case LastEpoch_Hud.Locales.Selected.Spanish: { description = "If you have at least " + str_requirement + " Strength and " + int_requirement + " Intelligence, Trigger " + skill_0 + ", " + skill_1 + " and " + skill_2 + " on Hit, with a " + cooldown + " second Cooldown"; break; }
+                    }
+                }
+
+                return description;
+            }
+            public static string Get_UniqueLore()
+            {
+                string lore = "";
+                switch (LastEpoch_Hud.Locales.current)
+                {
+                    case LastEpoch_Hud.Locales.Selected.English: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.French: { lore = "Entrez dans l'œil de la tempête et vous gagnerez son respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.German: { lore = "Blickt dem Sturm ins Auge,\r\nund sein Respekt ist Euch gewiss."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Korean: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Russian: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Polish: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Portuguese: { lore = "Encare o olho da tempestade, e ela te respeitará."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Chinese: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                    case LastEpoch_Hud.Locales.Selected.Spanish: { lore = "Look the storm in the eye and you will have its respect."; break; }
+                }
+
+                return lore;
             }
 
-            [HarmonyPatch(typeof(Localization), "GetText")]
-            public class Localization_GetText
+            public class Keys
             {
-                [HarmonyPrefix]
-                static bool Prefix(ref string __result, string __0)
+                public static string unique_name = "Unique_Name_" + Unique.unique_id;
+                public static string unique_description = "Unique_Tooltip_0_" + Unique.unique_id;
+                public static string unique_lore = "Unique_Lore_" + Unique.unique_id;
+            }
+            public class Hooks
+            {
+                [HarmonyPatch(typeof(Localization), "TryGetText")]
+                public class Localization_TryGetText
                 {
-                    bool result = true;
-                    /*if (__0 == basic_subtype_name_key)
+                    [HarmonyPrefix]
+                    static bool Prefix(ref bool __result, string __0) //, Il2CppSystem.String __1)
                     {
-                        __result = Basic.Get_Subtype_Name();
-                        result = false;
-                    }
-                    else */
-                    if (__0 == unique_name_key)
-                    {
-                        __result = Unique.Get_Unique_Name();
-                        result = false;
-                    }
-                    else if (__0 == unique_description_key)
-                    {
-                        string description = Unique.Get_Unique_Description();
-                        if (description != "")
+                        bool result = true;
+                        if (/*(__0 == basic_subtype_name_key) ||*/ (__0 == Keys.unique_name) ||
+                            (__0 == Keys.unique_description) || (__0 == Keys.unique_lore))
                         {
-                            __result = description;
+                            __result = true;
                             result = false;
                         }
+
+                        return result;
                     }
-                    else if (__0 == unique_lore_key)
+                }
+
+                [HarmonyPatch(typeof(Localization), "GetText")]
+                public class Localization_GetText
+                {
+                    [HarmonyPrefix]
+                    static bool Prefix(ref string __result, string __0)
                     {
-                        string lore = Unique.Get_Unique_Lore();
-                        if (lore != "")
+                        bool result = true;
+                        /*if (__0 == basic_subtype_name_key)
                         {
-                            __result = lore;
+                            __result = Basic.Get_Subtype_Name();
                             result = false;
                         }
-                    }
+                        else */
+                        if (__0 == Keys.unique_name)
+                        {
+                            __result = Locales.Get_UniqueName();
+                            result = false;
+                        }
+                        else if (__0 == Keys.unique_description)
+                        {
+                            string description = Locales.Get_UniqueDescription();
+                            if (description != "")
+                            {
+                                __result = description;
+                                result = false;
+                            }
+                        }
+                        else if (__0 == Keys.unique_lore)
+                        {
+                            string lore = Locales.Get_UniqueLore();
+                            if (lore != "")
+                            {
+                                __result = lore;
+                                result = false;
+                            }
+                        }
 
-                    return result;
+                        return result;
+                    }
                 }
-            }
+            }            
         }        
         public class Skills
         {
@@ -424,7 +389,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     ;
                     if (!Refs_Manager.ability_manager.IsNullOrDestroyed())
                     {
-                        //Main.logger_instance.Msg("Get Socketed Abilities");
                         int i = 0;
                         foreach (Ability ability in Refs_Manager.ability_manager.abilities)
                         {
@@ -434,7 +398,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                     (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_1) ||
                                     (ability.abilityName == Save_Manager.instance.data.Items.Mjolner.SockectedSkill_2))
                                 {
-                                    //Main.logger_instance.Msg(i + " : Added : " + ability.abilityName);
                                     Skills.Abilities[i] = ability;
                                     Skills.Times[i] = System.DateTime.Now;
                                     i++;
@@ -455,28 +418,29 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         public class Trigger
         {
-            public static bool trigger = false;
-
             public static void AllSkills(Actor hitActor)
             {
-                if (!hitActor.IsNullOrDestroyed())
+                if ((!hitActor.IsNullOrDestroyed()) && (!trigger))
                 {
-                    //Min 0f, Max 255f
+                    trigger = true;
                     float item_roll = Random.Range(Save_Manager.instance.data.Items.Mjolner.MinTriggerChance, Save_Manager.instance.data.Items.Mjolner.MaxTriggerChance);
                     float item_roll_percent = (item_roll / 255) * 100;
                     float roll_percent = Random.Range(0f, 100f);
-                    //Main.logger_instance.Msg("Min roll : " + item_roll_percent + "% , Roll : " + roll_percent + "%");
                     if ((roll_percent <= item_roll_percent) && (!Refs_Manager.player_treedata.IsNullOrDestroyed()))
                     {
                         foreach (Ability ability in Refs_Manager.player_actor.GetAbilityList().abilities)
                         {
                             if (ability.tags.HasFlag(AT.Lightning)  && ability.tags.HasFlag(AT.Spell))
                             {
-                                Main.logger_instance.Msg("Trigger Ability : " + ability.abilityName + " to " + hitActor.name);
+                                float backup_manacost = ability.manaCost;
+                                ability.manaCost = 0; //Remove ManaCost
+                                //We need AbilityMutator here for addedManaCost variable
                                 ability.castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);
+                                ability.manaCost = backup_manacost; //Reset ManaCost
                             }
                         }
                     }
+                    trigger = false;
                 }
             }
             public static void SocketedSkills(Actor hitActor)
@@ -496,14 +460,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                             if (run)
                             {
-                                //Main.logger_instance.Msg("Trigger Ability : " + Skills.Abilities[i].abilityName + " to " + hitActor.name);
-                                var backup_manacost = Skills.Abilities[i].manaCost;
-                                var backup_channelcost = Skills.Abilities[i].channelCost;
+                                float backup_manacost = Skills.Abilities[i].manaCost;
                                 Skills.Abilities[i].manaCost = 0; //Remove ManaCost
-                                Skills.Abilities[i].channelCost = 0; //Remove ChannelCost
                                 Skills.Abilities[i].castAtTargetFromConstructorAfterDelay(Refs_Manager.player_actor.abilityObjectConstructor, Vector3.zero, hitActor.position(), 0, UseType.Indirect);                                                                
                                 Skills.Abilities[i].manaCost = backup_manacost; //Reset ManaCost
-                                Skills.Abilities[i].channelCost = backup_channelcost; //Reset ChannelCost
                                 Skills.Times[i] = System.DateTime.Now;
                             }
                         }
@@ -511,11 +471,22 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     trigger = false;
                 }
             }
+
+            private static bool trigger = false;
         }
         public class Events
         {
-            public static bool OnHitEvent_Initialized = false;
-            public static void Init_OnHitEvent()
+            public static void Update()
+            {
+                if (!OnHitEvent_Initialized) { Init_OnHitEvent(); }
+            }
+            public static void Reset()
+            {
+                OnHitEvent_Initialized = false;
+            }
+
+            private static bool OnHitEvent_Initialized = false;
+            private static void Init_OnHitEvent()
             {
                 if (!Refs_Manager.player_actor.IsNullOrDestroyed())
                 {
@@ -529,8 +500,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         }
                     }
                 }
-            }
-            
+            }            
             private static readonly System.Action<Ability, Actor> OnHitAction = new System.Action<Ability, Actor>(OnHit);
             private static void OnHit(Ability ability, Actor hitActor)
             {
